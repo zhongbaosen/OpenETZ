@@ -59,10 +59,10 @@ class Login extends Component{
         <Image source={require('../../images/xhdpi/logo.png')} style={styles.logoStyle}/>
         <View style={styles.btnContainer}>
           <TouchableOpacity activeOpacity={.7} onPress={this.createAccoumt} style={[pubS.center,styles.btnStyle]}>
-            <Text style={pubS.font30_1}>create</Text>
+            <Text style={pubS.font30_1}>Create</Text>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={.7} onPress={this.importAccoumt} style={[pubS.center,styles.btnStyle,{marginTop: scaleSize(30)}]}>
-            <Text style={pubS.font30_1}>import</Text>
+            <Text style={pubS.font30_1}>Import</Text>
           </TouchableOpacity>
           {
 
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   btnContainer:{
     justifyContent:'center',
     position:'absolute',
-    top: scaleSize(700),
+    top: scaleSize(748),
     width: scaleSize(750),
     alignItems:'center',
     // borderColor:'red',

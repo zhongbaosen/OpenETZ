@@ -141,7 +141,7 @@ class Payment extends Component{
           onChangeText={this.onChangeNoteText}
         />
         <Btn
-          btnMarginTop={scaleSize(230)}
+          btnMarginTop={scaleSize(60)}
           btnPress={this.onNextStep}
           btnText={'Next step'}
         />

@@ -1,4 +1,5 @@
-rootProject.name = 'ETZWallet'
+
+rootProject.name = 'OpenETZ'
 
 include ':app'
 

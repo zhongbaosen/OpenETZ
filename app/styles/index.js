@@ -1,6 +1,7 @@
 import { setScaleText, scaleSize } from '../utils/adapter'
 import { StyleSheet } from 'react-native'
-//主题色 #023193
+
+//主题色   #144396
 // 可使用 Object.assign()方法对 这些style进行简化
 const IndexNavStyle = {
   statusBarColor: '#fff',
@@ -19,7 +20,7 @@ const AssetsNavStyle = {
   tabBarHidden: false,
   navBarTextColor: '#FFFFFF',
   navBarTextFontSize: setScaleText(30),
-  navBarBackgroundColor: '#023193',//渐变
+  navBarBackgroundColor: '#144396',//渐变
   navBarComponentAlignment: 'center',
   // navBarButtonColor: '#D2D5DB',//
   // navBarLeftButtonColor:'#D2D5DB',//只在ios有效
@@ -29,7 +30,7 @@ const AssetsNavStyle = {
   screenBackgroundColor: 'white',
   navBarTitleTextCentered: true,
   navBarHeight: scaleSize(87),
-  statusBarColor: '#023193',
+  statusBarColor: '#144396',
   statusBarTextColorScheme: 'light',
   topBarElevationShadowEnabled: false,
   navBarNoBorder: false
@@ -55,8 +56,8 @@ const DetailNavigatorStyle = {
 }
 const MainThemeNavColor = Object.assign({},DetailNavigatorStyle,{
   navBarTextColor:'#fff',
-  navBarBackgroundColor:'#023193',//主题色
-  statusBarColor:'#023193',
+  navBarBackgroundColor:'#144396',//主题色
+  statusBarColor:'#144396',
   statusBarTextColorScheme:'light'
 })
 // 隐藏底部 tabs 适用于各个详情页

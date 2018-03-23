@@ -70,7 +70,7 @@ class TradingRecord extends Component{
           renderTabBar={() => (
             <ScrollableTabBar
               underlineStyle={[ styles.underlineStyle ]}
-              style={{backgroundColor:'#023193',height: scaleSize(84)}}
+              style={{backgroundColor:'#144396',height: scaleSize(84)}}
             />
           )}
         >

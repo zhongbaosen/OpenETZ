@@ -19,14 +19,32 @@ class CreateAccount extends Component{
         psdVal: '',
         repeadPsdVal: '',
         promptVal: '',
+
+        userNameWarning: '',
+        psdWarning: '',
+        rePsdWarning: '',
       }
   }
+
   onChangeUseNameText = (val) => {
     this.setState({
-      userNmaeVal: val
+      userNmaeVal: val,
+      userNameWarning: '',
     })
   }
   onPressBtn = () => {
+    // const { userNmaeVal, psdVal, repeadPsdVal, promptVal, } = this.state
+    // if(userNmaeVal.length === 0){
+    //   this.setState({
+    //     userNameWarning: 'please enter the account name'
+    //   })
+    //   return
+    // }else{
+    //   if(psdVal.test(/^$/)){
+        
+    //   }
+    // }
+
     this.props.navigator.push({
       screen: 'create_account_success',
       title: '',
@@ -36,11 +54,13 @@ class CreateAccount extends Component{
   onChangPsdText = (val) => {
     this.setState({
       psdVal: val,
+      psdWarning: '',
     })
   }
   onChangeRepeatText = (val) => {
     this.setState({
       repeadPsdVal: val,
+      rePsdWarning: '',
     })
   }
   onChangePromptText = (val) => {
@@ -49,7 +69,7 @@ class CreateAccount extends Component{
     })
   }
   render(){
-    const { userNmaeVal, psdVal, repeadPsdVal, promptVal, } = this.state
+    const { userNmaeVal, psdVal, repeadPsdVal, promptVal, userNameWarning, psdWarning, rePsdWarning, } = this.state
     return(
       <View style={pubS.container}>
         <View style={[styles.warningView,pubS.paddingRow_24]}>
@@ -64,19 +84,21 @@ class CreateAccount extends Component{
             placeholder={'wallet name'}
             value={userNmaeVal}
             onChangeText={this.onChangeUseNameText}
-            // warningText={'please enter the account name'}
+            warningText={userNameWarning}//
           />
           <TextInputComponent
             placeholder={'password'}
             value={psdVal}
             onChangeText={this.onChangPsdText}
             secureTextEntry={true}
+            warningText={psdWarning}//password needs to contain both letters and Numbers, and at least 8 digits.
           />
           <TextInputComponent
             placeholder={'repeat password'}
             value={repeadPsdVal}
             onChangeText={this.onChangeRepeatText}
             secureTextEntry={true}
+            warningText={rePsdWarning}//two passwords are different
           />
           <TextInputComponent
             placeholder={'password hint (Optional)'}
@@ -86,7 +108,7 @@ class CreateAccount extends Component{
           <Btn
             btnMarginTop={scaleSize(60)}
             btnPress={this.onPressBtn}
-            btnText={'create'}
+            btnText={'Create'}
           />
         </View>
       </View>

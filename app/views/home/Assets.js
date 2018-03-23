@@ -55,7 +55,7 @@ class Assets extends Component{
     // let res = item.item
       return(
         <TouchableOpacity style={[styles.listItemView,styles.whStyle]} activeOpacity={.7} onPress={this.toAssetsDetail}>
-          <Image source={require('../../images/xhdpi/btn_ico_home_scan_def.png')} style={{width: scaleSize(44),height:scaleSize(44),marginTop: scaleSize(22)}}/>
+          <Image source={require('../../images/xhdpi/etz_logo.png')} style={{width: scaleSize(44),height:scaleSize(44),marginTop: scaleSize(22)}}/>
           <View style={[styles.listItemTextView]}>
             <View style={pubS.rowCenterJus}>
               <Text style={pubS.font36_2}>ETZ</Text>
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   },
   assetsTotalView: {
     height: scaleSize(300),
-    backgroundColor:'#023193',
+    backgroundColor:'#144396',
     // backgroundColor:'red',
 
   }

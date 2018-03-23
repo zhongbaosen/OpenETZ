@@ -1,4 +1,4 @@
-package com.etzwallet;
+package com.openetz;
 
 import android.app.Application;
 
@@ -22,13 +22,10 @@ public class MainApplication extends NavigationApplication {
 
     @Override
     public boolean isDebug() {
-        // Make sure you are using BuildConfig from your own application
         return BuildConfig.DEBUG;
     }
 
     protected List<ReactPackage> getPackages() {
-        // Add additional packages you require here
-        // No need to add RnnPackage and MainReactPackage
         return Arrays.<ReactPackage>asList(
           new PickerViewPackage(),
           new RandomBytesPackage(),
@@ -52,32 +49,4 @@ public class MainApplication extends NavigationApplication {
 
 }
 
-// public class MainApplication extends Application implements ReactApplication {
-//
-//   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
-//     @Override
-//     public boolean getUseDeveloperSupport() {
-//       return BuildConfig.DEBUG;
-//     }
-//
-//     @Override
-//     protected List<ReactPackage> getPackages() {
-//       return Arrays.<ReactPackage>asList(
-//           new MainReactPackage(),
-            //new RNCameraPackage()
-//       );
-//     }
-//
-//     @Override
-//     protected String getJSMainModuleName() {
-//       return "index";
-//     }
-//   };
-//
-//   @Override
-//   public ReactNativeHost getReactNativeHost() {
-//     return mReactNativeHost;
-//   }
-//
-//
-// }
+

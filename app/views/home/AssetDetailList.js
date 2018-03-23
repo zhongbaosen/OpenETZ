@@ -107,8 +107,7 @@ const styles = StyleSheet.create({
   },
   listViewStyle:{
     height: scaleSize(280),
-    backgroundColor: '#023193',
-
+    backgroundColor: '#144396',
   },
 })
 export default AssetDetailList

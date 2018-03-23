@@ -133,8 +133,7 @@ const styles = StyleSheet.create({
     },
     topView:{
       height: scaleSize(100),
-      backgroundColor: '#023193',
-
+      backgroundColor: '#144396',
     },
 })
 
