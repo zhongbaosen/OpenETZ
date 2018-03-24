@@ -10,10 +10,10 @@ import { Navigation } from 'react-native-navigation'
 import { registerScreens, registerScreenVisibilityListener, } from './config/'
 import { getPixelRatio } from './utils/adapter'
 import { TabBarAppStyle,AssetsNavStyle,MainThemeNavColor } from './styles/'
+
 registerScreens()
 registerScreenVisibilityListener()
 getPixelRatio()//得到设备的像素密度
-
 
 //首先进入启动页
 // Navigation.startSingleScreenApp({

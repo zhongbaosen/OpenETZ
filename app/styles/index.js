@@ -1,30 +1,18 @@
 import { setScaleText, scaleSize } from '../utils/adapter'
 import { StyleSheet } from 'react-native'
 
-//主题色   #144396
-// 可使用 Object.assign()方法对 这些style进行简化
-const IndexNavStyle = {
-  statusBarColor: '#fff',
-  screenBackgroundColor: 'white',
-  navBarBackgroundColor: '#fff',
-  navBarComponentAlignment: 'center',
-  navBarButtonColor: '#889696',
-  navBarTitleTextCentered: true,
-  navBarHeight: 45,
-  statusBarTextColorScheme: 'light',
-  topBarElevationShadowEnabled: false
-}
+//main theme color:   #144396
 
 
 const AssetsNavStyle = {
   tabBarHidden: false,
   navBarTextColor: '#FFFFFF',
   navBarTextFontSize: setScaleText(30),
-  navBarBackgroundColor: '#144396',//渐变
+  navBarBackgroundColor: '#144396',//
   navBarComponentAlignment: 'center',
   // navBarButtonColor: '#D2D5DB',//
-  // navBarLeftButtonColor:'#D2D5DB',//只在ios有效
-  // navBarRightButtonColor:'#2B8AFF',//只在ios有效
+  // navBarLeftButtonColor:'#D2D5DB',//only ios
+  // navBarRightButtonColor:'#2B8AFF',//only ios
   navBarHidden: false,
   statusBarHidden: false,
   screenBackgroundColor: 'white',
@@ -42,8 +30,8 @@ const DetailNavigatorStyle = {
   navBarBackgroundColor: '#fff',
   navBarComponentAlignment: 'center',
   navBarButtonColor: '#D2D5DB',//
-  navBarLeftButtonColor:'#D2D5DB',//只在ios有效
-  navBarRightButtonColor:'#2B8AFF',//只在ios有效
+  navBarLeftButtonColor:'#D2D5DB',//only ios
+  navBarRightButtonColor:'#2B8AFF',//only ios
   navBarHidden: false,
   statusBarHidden: false,
   screenBackgroundColor: 'white',
@@ -56,28 +44,10 @@ const DetailNavigatorStyle = {
 }
 const MainThemeNavColor = Object.assign({},DetailNavigatorStyle,{
   navBarTextColor:'#fff',
-  navBarBackgroundColor:'#144396',//主题色
+  navBarBackgroundColor:'#144396',
   statusBarColor:'#144396',
   statusBarTextColorScheme:'light'
 })
-// 隐藏底部 tabs 适用于各个详情页
-const HideTabsDetailStyle = {
-  tabBarHidden: true, // 隐藏底部的tabs
-  navBarBackgroundColor: '#000',
-  navBarTextColor: '#fff',
-  navBarTextFontSize: 18,
-  // navBarTextFontFamily: 'font-name',
-  navBarComponentAlignment: 'center',
-  navBarButtonColor: '#fff',
-  navBarHidden: false,
-  statusBarHidden: false,
-  screenBackgroundColor: 'white',
-  navBarTitleTextCentered: true,
-  navBarHeight: scaleSize(87),
-  statusBarColor: '#000',
-  statusBarTextColorScheme: 'light',
-  navBarNoBorder: false
-}
 
 // login register screen  nav bar style
 const SingleScreenAppNavigatorStyle = {
@@ -142,46 +112,6 @@ const SingleScreenAppNavigatorStyle = {
   // topBarBorderWidth: 2, // Optional, set the width of the border
 }
 
-const TabBarAppStyle = {
-  tabBarHidden: false, // make the tab bar hidden
-  tabBarButtonColor: '#C7CAD0', // change the color of the tab icons and text (also unselected)
-  tabBarSelectedButtonColor: '#2B8AFF', // change the color of the selected tab icon and text (only selected)
-  tabBarBackgroundColor: '#fff', // change the background color of the tab bar
-  tabBarTranslucent: true, // change the translucent of the tab bar to false
-  // tabBarTextFontFamily: 'Avenir-Medium' //change the tab font family
-  // tabBarLabelColor: '#2f3a40', // iOS only. change the color of tab text
-  // tabBarSelectedLabelColor: '#ff3366', // iOS only. change the color of the selected tab text
-  forceTitlesDisplay: true, // Android only. If true - Show all bottom tab labels. If false - only the selected tab's label is visible.
-  tabBarHideShadow: true // iOS only. Remove default tab bar top shadow (hairline)
-}
-
-const DrawerStyle = {
-  // optional, add this if you want a side menu drawer in your app
-  left: {
-    // optional, define if you want a drawer from the left
-    screen: 'example.FirstSideMenu', // unique ID registered with Navigation.registerScreen
-    passProps: {} // simple serializable object that will pass as props to all top screens (optional)
-  },
-  right: {
-    // optional, define if you want a drawer from the right
-    screen: 'example.SecondSideMenu', // unique ID registered with Navigation.registerScreen
-    passProps: {} // simple serializable object that will pass as props to all top screens (optional)
-  },
-  style: {
-    // ( iOS only )
-    drawerShadow: true, // optional, add this if you want a side menu drawer shadow
-    contentOverlayColor: 'rgba(0,0,0,0.25)', // optional, add this if you want a overlay color when drawer is open
-    leftDrawerWidth: 50, // optional, add this if you want a define left drawer width (50=percent)
-    rightDrawerWidth: 50, // optional, add this if you want a define right drawer width (50=percent)
-    shouldStretchDrawer: true // optional, iOS only with 'MMDrawer' type, whether or not the panning gesture will “hard-stop” at the maximum width for a given drawer side, default : true
-  },
-  type: 'MMDrawer', // optional, iOS only, types: 'TheSideBar', 'MMDrawer' default: 'MMDrawer'
-  animationType: 'door', // optional, iOS only, for MMDrawer: 'door', 'parallax', 'slide', 'slide-and-scale'
-  // for TheSideBar: 'airbnb', 'facebook', 'luvocracy','wunder-list'
-  disableOpenGesture: false // optional, can the drawer be opened with a swipe instead of button
-}
-
-// login and register pages
 const pubS = {
 
   paddingCloumn20:{
@@ -201,7 +131,6 @@ const pubS = {
     justifyContent: 'center',
     alignItems: 'center'
   },
-  // 居中
   center: {
     justifyContent: 'center',
     alignItems: 'center'
@@ -390,13 +319,9 @@ const pubS = {
   },
 }
 export {
-  IndexNavStyle,
   DetailNavigatorStyle,
-  HideTabsDetailStyle,
   SingleScreenAppNavigatorStyle,
   pubS,
-  DrawerStyle,
-  TabBarAppStyle,
   AssetsNavStyle,
   MainThemeNavColor
 }

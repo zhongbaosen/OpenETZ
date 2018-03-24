@@ -10,7 +10,13 @@ import {
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
-import { TextInputComponent,Btn } from '../../components/'
+import { TextInputComponent,Btn,Loading } from '../../components/'
+
+// var bip39 = require('bip39')
+// var hdkey = require('ethereumjs-wallet/hdkey')
+// var util = require('ethereumjs-util')
+// var randomBytes = require('randombytes')
+
 class CreateAccount extends Component{
   constructor(props){
       super(props)
@@ -23,7 +29,22 @@ class CreateAccount extends Component{
         userNameWarning: '',
         psdWarning: '',
         rePsdWarning: '',
+
+        visible: false,
       }
+  }
+
+  componentWillMount(){
+    
+  }
+
+  componentWillReceiveProps(nextProps){
+    // if(){
+    //   this.props.navigator.push({
+    //     screen: 'create_account_success',
+    //     navigatorStyle: DetailNavigatorStyle,
+    //   })
+    // }
   }
 
   onChangeUseNameText = (val) => {
@@ -33,23 +54,60 @@ class CreateAccount extends Component{
     })
   }
   onPressBtn = () => {
-    // const { userNmaeVal, psdVal, repeadPsdVal, promptVal, } = this.state
-    // if(userNmaeVal.length === 0){
-    //   this.setState({
-    //     userNameWarning: 'please enter the account name'
-    //   })
-    //   return
-    // }else{
-    //   if(psdVal.test(/^$/)){
-        
-    //   }
-    // }
+    const { userNmaeVal, psdVal, repeadPsdVal, promptVal, } = this.state
+    let reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
 
-    this.props.navigator.push({
-      screen: 'create_account_success',
-      title: '',
-      navigatorStyle: DetailNavigatorStyle,
-    })
+    if(userNmaeVal.length === 0){
+      this.setState({
+        userNameWarning: 'please enter the account name'
+      })
+      return
+    }else{
+      if(reg.test(psdVal)){
+        this.setState({
+          psdWarning: 'password needs to contain both letters and Numbers, and at least 8 digits.'
+        })
+        return
+      }else{
+        if(psdVal !== repeadPsdVal){
+          this.setState({
+            repeadPsdVal: 'two passwords are different'
+          })
+          return
+        }else{        
+          this.onCreate()
+        }
+      }        
+    }
+  }
+
+  onCreate(){
+    // this.setState({
+    //   visible: true
+    // })
+
+    // var mnemonic = bip39.generateMnemonic();
+    // console.log('mnemonic==',mnemonic)
+    
+    // var seed = bip39.mnemonicToSeed(mnemonic)
+    // console.log('seed==',seed)
+    // var hdWallet = hdkey.fromMasterSeed(seed)
+    // console.log('hdWallet==',hdWallet)
+
+    // var w = hdWallet.getWallet()
+    // var k = w.toV3("123456789")
+
+    // console.log('k==',k)
+
+    // var key1 = hdWallet.derivePath("m/44'/60'/0'/0/0")
+
+    // console.log("明文私钥:", key1._hdkey._privateKey.toString('hex'))
+
+    // var address1 = util.pubToAddress(key1._hdkey._publicKey, true)
+
+    // address1 = util.toChecksumAddress(address1.toString('hex'))
+
+    // console.log('地址',address1);
   }
   onChangPsdText = (val) => {
     this.setState({
@@ -69,7 +127,7 @@ class CreateAccount extends Component{
     })
   }
   render(){
-    const { userNmaeVal, psdVal, repeadPsdVal, promptVal, userNameWarning, psdWarning, rePsdWarning, } = this.state
+    const { userNmaeVal, psdVal, repeadPsdVal, promptVal, userNameWarning, psdWarning, rePsdWarning,visible } = this.state
     return(
       <View style={pubS.container}>
         <View style={[styles.warningView,pubS.paddingRow_24]}>
@@ -91,14 +149,14 @@ class CreateAccount extends Component{
             value={psdVal}
             onChangeText={this.onChangPsdText}
             secureTextEntry={true}
-            warningText={psdWarning}//password needs to contain both letters and Numbers, and at least 8 digits.
+            warningText={psdWarning}//
           />
           <TextInputComponent
             placeholder={'repeat password'}
             value={repeadPsdVal}
             onChangeText={this.onChangeRepeatText}
             secureTextEntry={true}
-            warningText={rePsdWarning}//two passwords are different
+            warningText={rePsdWarning}//
           />
           <TextInputComponent
             placeholder={'password hint (Optional)'}
@@ -111,6 +169,7 @@ class CreateAccount extends Component{
             btnText={'Create'}
           />
         </View>
+        <Loading loading_visible={visible}/>
       </View>
     )
   }

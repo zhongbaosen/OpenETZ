@@ -10,9 +10,7 @@ import {
 
 import { pubS,DetailNavigatorStyle} from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
-const Web3 = require('web3');
-const web3 = new Web3();
-// web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
+
 class Login extends Component{
   constructor(props){
     super(props)
@@ -20,8 +18,11 @@ class Login extends Component{
 
     }
   }
-
+  componentDidMount(){
+    
+  }
   createAccoumt = () => {
+
     this.props.navigator.push({
       screen: 'create_account',
       title:'create',
@@ -38,13 +39,6 @@ class Login extends Component{
     })
   }
   // termsOfService = () => {
-  //   console.log('web3===',web3)
-    // web3.eth.getCoinbase((err, coinbase) => {
-    //   const balance = web3.eth.getBalance(coinbase, (err2, balance) => {
-    //     console.log('balance ' + balance);
-    //     this.setState({balance});
-    //   });
-    // });
     // this.props.navigator.push({
     //   screen: 'terms_of_service',
     //   title:'服务条款',
