@@ -49,6 +49,19 @@ const MainThemeNavColor = Object.assign({},DetailNavigatorStyle,{
   statusBarTextColorScheme:'light'
 })
 
+const TabBarAppStyle = {
+  tabBarHidden: false, // make the tab bar hidden
+  tabBarButtonColor: '#C7CAD0', // change the color of the tab icons and text (also unselected)
+  tabBarSelectedButtonColor: '#2B8AFF', // change the color of the selected tab icon and text (only selected)
+  tabBarBackgroundColor: '#fff', // change the background color of the tab bar
+  tabBarTranslucent: true, // change the translucent of the tab bar to false
+  // tabBarTextFontFamily: 'Avenir-Medium' //change the tab font family
+  // tabBarLabelColor: '#2f3a40', // iOS only. change the color of tab text
+  // tabBarSelectedLabelColor: '#ff3366', // iOS only. change the color of the selected tab text
+  forceTitlesDisplay: true, // Android only. If true - Show all bottom tab labels. If false - only the selected tab's label is visible.
+  tabBarHideShadow: true // iOS only. Remove default tab bar top shadow (hairline)
+}
+
 // login register screen  nav bar style
 const SingleScreenAppNavigatorStyle = {
   // Common
@@ -264,7 +277,10 @@ const pubS = {
       color:'#657CAB',
       fontSize: setScaleText(28)
   },
-
+  font28_4:{
+      color:'#fff',
+      fontSize: setScaleText(28)
+  },
   font30_1:{
     color:'#fff',
     fontSize: setScaleText(30)
@@ -305,6 +321,10 @@ const pubS = {
     color:'#FFF222',
     fontSize: setScaleText(36)
   },
+  font36_4:{
+    color:'#FFF',
+    fontSize: setScaleText(36)
+  },
   font54_1:{
     color:'#fff',
     fontSize: setScaleText(54)
@@ -323,5 +343,6 @@ export {
   SingleScreenAppNavigatorStyle,
   pubS,
   AssetsNavStyle,
-  MainThemeNavColor
+  MainThemeNavColor,
+  TabBarAppStyle
 }

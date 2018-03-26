@@ -40,9 +40,14 @@
     "react-native-randombytes": "^2.2.0",
     "react-native-root-toast": "^3.0.1",
     "react-native-scrollable-tab-view": "^0.8.0",
+    "react-native-storage": "^0.2.2",
     "react-native-tcp": "^2.0.4",
     "react-native-udp": "^1.2.9",
+    "react-redux": "^5.0.7",
     "readable-stream": "^1.0.33",
+    "realm": "^2.3.3",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
     "timers-browserify": "^1.4.2",
@@ -53,8 +58,10 @@
     "web3": "^1.0.0-beta.33"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-jest": "20.0.3",
-    "babel-preset-react-native": "2.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react-native": "^2.0.0",
     "jest": "20.0.4",
     "react-test-renderer": "16.0.0-alpha.12",
     "rn-nodeify": "github:mvayngrib/rn-nodeify"

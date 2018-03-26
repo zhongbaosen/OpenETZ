@@ -1,0 +1,6 @@
+
+const CREATE_ACCOUNT = 'CREATE_ACCOUNT'
+
+export {
+	CREATE_ACCOUNT,
+}

@@ -17,6 +17,7 @@ import com.reactnativenavigation.NavigationApplication;
 
 import com.bitgo.randombytes.RandomBytesPackage;
 import org.reactnative.camera.RNCameraPackage;
+import io.realm.react.RealmReactPackage;
 public class MainApplication extends NavigationApplication {
 
     @Override
@@ -28,7 +29,8 @@ public class MainApplication extends NavigationApplication {
         return Arrays.<ReactPackage>asList(
           new PickerViewPackage(),
           new RandomBytesPackage(),
-          new RNCameraPackage()
+          new RNCameraPackage(),
+          new RealmReactPackage()
         );
     }
 

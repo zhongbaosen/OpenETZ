@@ -16,10 +16,10 @@ export default class Loading extends Component {
     };
   }
   componentWillMount(){
-    this.setState({visible: this.props.loading_visible})
+    this.setState({visible: this.props.loadingVisible})
   }
   componentWillReceiveProps(nextProps) {
-    nextProps.loading_visible ? this.setState({visible:true}) : this.setState({visible:false})
+    nextProps.loadingVisible ? this.setState({visible:true}) : this.setState({visible:false})
   }
   static defaultProps = {
     opacity: .3,

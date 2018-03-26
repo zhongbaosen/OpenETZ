@@ -10,28 +10,46 @@ import {
   ScrollView,
   Alert,
   TextInput,
+  BackHandler
 } from 'react-native'
 
-import { pubS } from '../../styles/'
+import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { Btn } from '../../components/'
 import Modal from 'react-native-modal'
+import { connect } from 'react-redux'
 class BackUpAccount extends Component{
   constructor(props){
     super(props)
     this.state = {
       iptPsdVisible: false,
+      pKeyVisible: false,
       psdVal: ''
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
+
   onNavigatorEvent(event){
     if (event.type == 'NavBarButtonPress') {
-      if (event.id == 'save_back_up_info') {
-        alert('Save')
+      console.log('event.id===',event.id)
+      switch(event.id){
+        case 'save_back_up_info':
+          alert('save')
+          break
+        // case 'backPress':
+        //   this.props.navigator.resetTo({
+        //     screen: 'account_manage',
+        //     title:'Manage wallets',
+        //     overrideBackPress: true,
+        //     navigatorStyle: DetailNavigatorStyle,
+        //   })
+        //   break
+        default:
+          break
       }
     }
   }
+
   deleteAccount = () => {
     alert('delete')
   }
@@ -50,26 +68,41 @@ class BackUpAccount extends Component{
       psdVal: val
     })
   }
-
+  onPKeyHide = () => {
+    this.setState({
+      pKeyVisible: false
+    })
+  }
   onCancelBtn = () => {
     this.setState({
       iptPsdVisible: false
     })
   }
   onSureBtn = () => {
+    const { psdVal } = this.state
     this.setState({
       iptPsdVisible: false
     })
+    if(psdVal !== this.props.createAccountReducer.psd){
+      alert('Password is error')
+      return
+    }else{
+      this.setState({
+        pKeyVisible:true
+      })
+    }
   }
   render(){
-    const { iptPsdVisible,psdVal } = this.state
+    const { iptPsdVisible,psdVal,pKeyVisible } = this.state
+    const { address, privateKey, userName, psd, prompt, } = this.props.createAccountReducer
+
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
-        <Image source={require('../../images/xhdpi/btn_ico_home_collection_def.png')} style={styles.avateStyle}/>
-        <Text style={pubS.font26_5}>{'0x47874587...47sd2sd522'}</Text>
+        <Image source={require('../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
+        <Text style={pubS.font26_5}>{address}</Text>
         <View style={[styles.userNameViewStyle,pubS.rowCenterJus,pubS.bottomStyle]}>
           <Text style={pubS.font26_4}>wallet name</Text>
-          <Text style={pubS.font26_4}>Username</Text>
+          <Text style={pubS.font26_4}>{userName}</Text>
         </View>
 
         <Btn
@@ -111,11 +144,69 @@ class BackUpAccount extends Component{
             </View>
           </View>
         </Modal>
+
+        <Modal
+          isVisible={pKeyVisible}
+          onBackButtonPress={this.onPKeyHide}
+          onBackdropPress={this.onPKeyHide}
+          backdropOpacity={.8}
+        >
+          <View style={styles.pkViewStyle}>
+            <View style={[{height: scaleSize(90),backgroundColor:'#2B8AFF',width: '100%'},pubS.center]}>
+              <Text style={[pubS.font36_4,{fontWeight: 'bold'}]}>backup private key</Text>
+              <TouchableOpacity activeOpacity={.7} onPress={this.onPKeyHide} style={styles.iconStyle}>
+                <Image source={require('../../images/xhdpi/btn_ico_collectionnobackup_close_def.png')} style={{height: scaleSize(30),width: scaleSize(30)}}/>
+              </TouchableOpacity>
+            </View>
+            <View style={{backgroundColor:'#FFE186',paddingLeft: scaleSize(28),paddingRight: scaleSize(28),paddingTop: scaleSize(13),paddingBottom: scaleSize(13)}}>
+              <Text style={pubS.font22_1}>Security warning: the private key is not encrypted, export private key would be risky, so it is recommended to use mnemonic words and Keystore to backup.</Text>
+            </View>
+            <View style={[styles.pkStyle,pubS.center]}>
+              <Text style={pubS.font24_3}>{address}</Text>
+            </View>
+            <TouchableOpacity onPress={this.onCopyBtn} activeOpacity={.7} style={[styles.copyBtnStyle,pubS.center]}>
+              <Text style={pubS.font28_4}>copy</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+
       </View>
     )
   }
 }
 const styles = StyleSheet.create({
+  copyBtnStyle:{
+    width: scaleSize(500),
+    height: scaleSize(70),
+    backgroundColor: '#2B8AFF',
+    borderRadius: scaleSize(35),
+    marginTop: scaleSize(24),
+
+  },
+  pkStyle:{
+    height: scaleSize(100),
+    width: scaleSize(500),
+    backgroundColor: '#E3E8F1',
+    paddingLeft: scaleSize(19),
+    paddingRight: scaleSize(19),
+    marginTop: scaleSize(33),
+    borderRadius: scaleSize(6),
+  },
+  iconStyle:{
+    position: 'absolute',
+    top: scaleSize(30),
+    right: scaleSize(30),
+  },
+  pkViewStyle: {
+    width: scaleSize(560),
+    height: scaleSize(480),
+    alignSelf: 'center',
+    alignItems:'center',
+    borderRadius: scaleSize(10),
+    backgroundColor:'#fff',
+    alignItems:'center'
+  },
   modalBtnStyle:{
     borderBottomLeftRadius : scaleSize(26),
     borderRightWidth: StyleSheet.hairlineWidth,
@@ -157,4 +248,8 @@ const styles = StyleSheet.create({
 
   }
 })
-export default BackUpAccount
+export default connect(
+  state => ({
+    createAccountReducer: state.createAccountReducer
+  })
+)(BackUpAccount)

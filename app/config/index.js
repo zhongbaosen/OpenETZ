@@ -1,6 +1,9 @@
 import { StyleSheet, View, Text, Image } from 'react-native'
 import { Navigation, ScreenVisibilityListener } from 'react-native-navigation'
 
+import store from '../store/'
+import { Provider } from 'react-redux'
+
 import Splash from '../views/Splash'
 import Login from '../views/login/'
 import CreateAccount from '../views/login/CreateAccount'
@@ -28,25 +31,25 @@ import TradingRecordDetail from '../views/home/TradingRecordDetail'
 
 
 export function registerScreens() {
-  Navigation.registerComponent('splash', () => Splash)
-  Navigation.registerComponent('login', () => Login)
-  Navigation.registerComponent('create_account', () => CreateAccount)
-  Navigation.registerComponent('import_account', () => ImportAccount)
-  Navigation.registerComponent('terms_of_service', () => TermsOfService)
-  Navigation.registerComponent('create_account_success', () => CreateAccountSuccess)
-  Navigation.registerComponent('back_up_account', () => BackUpAccount)
-  Navigation.registerComponent('home_assets', () => Assets)
-  Navigation.registerComponent('home_personal', () => Personal)
-  Navigation.registerComponent('msg_center_list', () => MsgCenterList)
-  Navigation.registerComponent('on_payment', () => Payment)
-  Navigation.registerComponent('on_collection', () => Collection)
-  Navigation.registerComponent('trading_record', () => TradingRecord)
-  Navigation.registerComponent('scan_qr_code', () => ScanQrCode)
-  Navigation.registerComponent('asset_detail_list', () => AssetDetailList)
-  Navigation.registerComponent('trading_record_detail', () => TradingRecordDetail)
-  Navigation.registerComponent('contact_service', () => ContactService)
-  Navigation.registerComponent('help_center', () => HelpCenter)
-  Navigation.registerComponent('account_manage', () => AccountManage)
+  Navigation.registerComponent('splash', () => Splash,store,Provider)
+  Navigation.registerComponent('login', () => Login,store,Provider)
+  Navigation.registerComponent('create_account', () => CreateAccount,store,Provider)
+  Navigation.registerComponent('import_account', () => ImportAccount,store,Provider)
+  Navigation.registerComponent('terms_of_service', () => TermsOfService,store,Provider)
+  Navigation.registerComponent('create_account_success', () => CreateAccountSuccess,store,Provider)
+  Navigation.registerComponent('back_up_account', () => BackUpAccount,store,Provider)
+  Navigation.registerComponent('home_assets', () => Assets,store,Provider)
+  Navigation.registerComponent('home_personal', () => Personal,store,Provider)
+  Navigation.registerComponent('msg_center_list', () => MsgCenterList,store,Provider)
+  Navigation.registerComponent('on_payment', () => Payment,store,Provider)
+  Navigation.registerComponent('on_collection', () => Collection,store,Provider)
+  Navigation.registerComponent('trading_record', () => TradingRecord,store,Provider)
+  Navigation.registerComponent('scan_qr_code', () => ScanQrCode,store,Provider)
+  Navigation.registerComponent('asset_detail_list', () => AssetDetailList,store,Provider)
+  Navigation.registerComponent('trading_record_detail', () => TradingRecordDetail,store,Provider)
+  Navigation.registerComponent('contact_service', () => ContactService,store,Provider)
+  Navigation.registerComponent('help_center', () => HelpCenter,store,Provider)
+  Navigation.registerComponent('account_manage', () => AccountManage,store,Provider)
 
 }
 

@@ -11,29 +11,18 @@ import { registerScreens, registerScreenVisibilityListener, } from './config/'
 import { getPixelRatio } from './utils/adapter'
 import { TabBarAppStyle,AssetsNavStyle,MainThemeNavColor } from './styles/'
 
+import './utils/globalWeb3.js'
 registerScreens()
 registerScreenVisibilityListener()
-getPixelRatio()//得到设备的像素密度
+getPixelRatio()
 
-//首先进入启动页
-// Navigation.startSingleScreenApp({
-//   screen: {
-//     screen: 'splash',
-//     navigatorStyle: {navBarHidden: true,statusBarColor:'#f36'},
-//   }
-// })
-
-
-//登录页  导入账户 创建账户
 Navigation.startSingleScreenApp({
   screen: {
-    screen: 'login',
+    screen: 'splash',
     navigatorStyle: {navBarHidden: true,statusBarColor:'#144396'},
   }
 })
 
-// 主页   资产  我的
-//ios  底部 tab style
 const bottomTabStyle = {
   top: 6,
   left: 6,
@@ -79,15 +68,23 @@ const tabs = [
 function toHome () {
 
    return Navigation.startTabBasedApp({
-      tabs,
-      appStyle: TabBarAppStyle,
-    })
+            tabs,
+            appStyle: TabBarAppStyle,
+          })
 
 }
 
-
+function toLogin () {
+  return Navigation.startSingleScreenApp({
+          screen: {
+            screen: 'login',
+            navigatorStyle: {navBarHidden: true,statusBarColor:'#144396'},
+          }
+        })
+}
 // toHome()
-
+toLogin()
 export {
   toHome,
+  toLogin
 }

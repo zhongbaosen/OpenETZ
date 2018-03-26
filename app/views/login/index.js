@@ -27,6 +27,7 @@ class Login extends Component{
       screen: 'create_account',
       title:'create',
       navigatorStyle: DetailNavigatorStyle,
+      passProps: { from: 'login_create'}
     })
   }
 

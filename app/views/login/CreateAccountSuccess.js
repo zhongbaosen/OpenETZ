@@ -1,5 +1,3 @@
-
-
 import React, { Component } from 'react'
 import {
   View,
@@ -19,6 +17,8 @@ class CreateAccountSuccess extends Component{
       screen: 'back_up_account',
       title: 'username',
       navigatorStyle: DetailNavigatorStyle,
+      // passProps: { fromCreateSucc: true},
+      // overrideBackPress: true,
       navigatorButtons: {
         rightButtons: [
           {

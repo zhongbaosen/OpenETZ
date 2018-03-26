@@ -11,17 +11,15 @@ import {
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn,Loading } from '../../components/'
-
-// var bip39 = require('bip39')
-// var hdkey = require('ethereumjs-wallet/hdkey')
-// var util = require('ethereumjs-util')
-// var randomBytes = require('randombytes')
+import { connect } from 'react-redux'
+import { createAccountAction } from '../../actions/createAccountAction'
+var bip39 = require('bip39')
 
 class CreateAccount extends Component{
   constructor(props){
       super(props)
       this.state = {
-        userNmaeVal: '',
+        userNameVal: '',
         psdVal: '',
         repeadPsdVal: '',
         promptVal: '',
@@ -34,36 +32,39 @@ class CreateAccount extends Component{
       }
   }
 
-  componentWillMount(){
-    
-  }
-
   componentWillReceiveProps(nextProps){
-    // if(){
-    //   this.props.navigator.push({
-    //     screen: 'create_account_success',
-    //     navigatorStyle: DetailNavigatorStyle,
-    //   })
-    // }
+    if(this.props.createAccountReducer.isLoading !== nextProps.createAccountReducer.isLoading && !nextProps.createAccountReducer.isLoading){
+      this.setState({
+        visible: false
+      })
+      this.props.navigator.push({
+        screen: 'create_account_success',
+        navigatorStyle: DetailNavigatorStyle,
+      })
+    }
   }
 
+  componentWillUnmount(){
+    this.setState({
+      visible: true
+    })
+  }
   onChangeUseNameText = (val) => {
     this.setState({
-      userNmaeVal: val,
+      userNameVal: val,
       userNameWarning: '',
     })
   }
   onPressBtn = () => {
-    const { userNmaeVal, psdVal, repeadPsdVal, promptVal, } = this.state
-    let reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
-
-    if(userNmaeVal.length === 0){
+    const { userNameVal, psdVal, repeadPsdVal, promptVal, } = this.state
+    let reg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/ //(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}
+    if(userNameVal.length === 0){
       this.setState({
         userNameWarning: 'please enter the account name'
       })
       return
     }else{
-      if(reg.test(psdVal)){
+      if(!reg.test(psdVal)){
         this.setState({
           psdWarning: 'password needs to contain both letters and Numbers, and at least 8 digits.'
         })
@@ -71,7 +72,7 @@ class CreateAccount extends Component{
       }else{
         if(psdVal !== repeadPsdVal){
           this.setState({
-            repeadPsdVal: 'two passwords are different'
+            rePsdWarning: 'two passwords are different'
           })
           return
         }else{        
@@ -82,32 +83,24 @@ class CreateAccount extends Component{
   }
 
   onCreate(){
-    // this.setState({
-    //   visible: true
-    // })
-
-    // var mnemonic = bip39.generateMnemonic();
-    // console.log('mnemonic==',mnemonic)
+    const { userNameVal, psdVal, promptVal} = this.state
+    this.setState({
+      visible: true
+    })
+    this.props.navigator.push({
+        screen: 'create_account_success',
+        navigatorStyle: DetailNavigatorStyle,
+      })
+    // setTimeout(() => {
+      this.props.dispatch(createAccountAction({
+        userNameVal,
+        psdVal,
+        promptVal,
+        fromLogin: this.props.from === 'login_create' ? true : false
+      }))
+    // },100)
     
-    // var seed = bip39.mnemonicToSeed(mnemonic)
-    // console.log('seed==',seed)
-    // var hdWallet = hdkey.fromMasterSeed(seed)
-    // console.log('hdWallet==',hdWallet)
-
-    // var w = hdWallet.getWallet()
-    // var k = w.toV3("123456789")
-
-    // console.log('k==',k)
-
-    // var key1 = hdWallet.derivePath("m/44'/60'/0'/0/0")
-
-    // console.log("明文私钥:", key1._hdkey._privateKey.toString('hex'))
-
-    // var address1 = util.pubToAddress(key1._hdkey._publicKey, true)
-
-    // address1 = util.toChecksumAddress(address1.toString('hex'))
-
-    // console.log('地址',address1);
+    
   }
   onChangPsdText = (val) => {
     this.setState({
@@ -127,7 +120,9 @@ class CreateAccount extends Component{
     })
   }
   render(){
-    const { userNmaeVal, psdVal, repeadPsdVal, promptVal, userNameWarning, psdWarning, rePsdWarning,visible } = this.state
+    const { userNameVal, psdVal, repeadPsdVal, promptVal, userNameWarning, psdWarning, rePsdWarning,visible } = this.state
+
+    const { isLoading } = this.props.createAccountReducer
     return(
       <View style={pubS.container}>
         <View style={[styles.warningView,pubS.paddingRow_24]}>
@@ -140,7 +135,7 @@ class CreateAccount extends Component{
         <View style={{paddingTop:10,}}>
           <TextInputComponent
             placeholder={'wallet name'}
-            value={userNmaeVal}
+            value={userNameVal}
             onChangeText={this.onChangeUseNameText}
             warningText={userNameWarning}//
           />
@@ -169,7 +164,7 @@ class CreateAccount extends Component{
             btnText={'Create'}
           />
         </View>
-        <Loading loading_visible={visible}/>
+        <Loading loadingVisible={false}/>
       </View>
     )
   }
@@ -183,4 +178,8 @@ const styles = StyleSheet.create({
 
   },
 })
-export default CreateAccount
+export default connect(
+  state => ({
+    createAccountReducer: state.createAccountReducer
+  })
+)(CreateAccount)

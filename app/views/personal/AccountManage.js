@@ -10,7 +10,7 @@ import {
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
-
+import { toHome } from '../../root'
 class AccountCard extends Component {
   render(){
     const { accountName, accountPsd, accountTotal, accountUnit, accountBackUp} = this.props
@@ -41,6 +41,14 @@ class AccountCard extends Component {
 }
 
 class AccountManage extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      
+    }
+  }
+
+
   toDetail = () => {
     this.props.navigator.push({
       screen: 'back_up_account',
