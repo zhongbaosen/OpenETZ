@@ -6,29 +6,40 @@ import {
   Button
 } from 'react-native'
 import { toHome, toLogin} from '../root'
+import { getLocalDataAction } from '../actions/getLocalDataAction' 
+import { connect } from 'react-redux'
  class Splash extends Component{
- 	// componentWillMount(){
+ 	componentWillMount(){
  	// 	localStorage.remove({
 		// 	key: 'account'
 		// });
- 	// }
+ 	}
  	componentDidMount(){
- 		localStorage.load({
- 			key: 'account'
- 		}).then(ret => {
- 			console.log('ret==',ret)
- 			toHome()
- 		}).catch(err => {
- 			toLogin()
- 		})
+
+    toLogin()
+    
+ 		// localStorage.load({
+ 		// 	key: 'account'
+ 		// }).then(ret => {
+ 		// 	console.log('ret==',ret)
+   //    this.props.dispatch(getLocalDataAction(ret.keyStore,ret.userName))
+ 		// 	toHome()
+ 		// }).catch(err => {
+ 		// 	toLogin()
+ 		// })
  	}
 
-    render(){
-    	return(
-	      <View style={{flex:1}}>
-	      	<Image source={require('../images/xhdpi/splash.png')} style={{width: '100%', height:'100%'}}/>
-	      </View>
-    	)
-    }
+
+  render(){
+  	return(
+      <View style={{flex:1}}>
+      	<Image source={require('../images/xhdpi/splash.png')} style={{width: '100%', height:'100%'}}/>
+      </View>
+  	)
+  }
 }
-export default Splash
+export default connect(
+  state => ({
+    getLocalDataReducer: state.getLocalDataReducer
+  })
+)(Splash)

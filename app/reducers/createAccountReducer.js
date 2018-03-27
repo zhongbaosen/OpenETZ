@@ -11,6 +11,7 @@ const initState = {
 	userName: '',
 	psd: '',
 	prompt: '',
+	
 }
 
 export default function createAccountReducer(state = initState,action){
@@ -18,11 +19,14 @@ export default function createAccountReducer(state = initState,action){
 		case 'CREATE_ACCOUNT':
 			return onCreate(state,action)
 			break
+		
 		default:
 			return state
 			break
 	}
 }
+
+
 
 const onCreate = (state,action) => {
 	const { userNameVal, psdVal, promptVal,fromLogin } = action.payload
@@ -42,8 +46,8 @@ const onCreate = (state,action) => {
 	    	data:{
 	    		keyStore: keyStore,
 	    		userName: userNameVal,
-	    		expires: null,
-	    	}
+	    	},
+	    	expires: null,
 	    })
     }else{//add other accounts
 

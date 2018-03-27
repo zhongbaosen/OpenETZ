@@ -11,6 +11,8 @@ import {
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { toHome } from '../../root'
+import { connect } from 'react-redux'
+const Wallet = require('ethereumjs-wallet')
 class AccountCard extends Component {
   render(){
     const { accountName, accountPsd, accountTotal, accountUnit, accountBackUp} = this.props
@@ -18,7 +20,7 @@ class AccountCard extends Component {
       <TouchableOpacity style={styles.cardView} activeOpacity={.7} onPress={accountBackUp}>
         <View style={[styles.cardTopView,pubS.bottomStyle,pubS.rowCenterJus]}>
           <View style={[pubS.rowCenter]}>
-            <Image source={require('../../images/xhdpi/btn_ico_home_collection_def.png')} style={{height: scaleSize(55),width: scaleSize(55)}}/>
+            <Image source={require('../../images/xhdpi/Penguin.png')} style={{height: scaleSize(55),width: scaleSize(55)}}/>
             <View style={{marginLeft: scaleSize(30)}}>
               <Text style={pubS.font28_3}>{accountName}</Text>
               <Text style={pubS.font22_4}>{accountPsd}</Text>
@@ -44,24 +46,45 @@ class AccountManage extends Component{
   constructor(props){
     super(props)
     this.state = {
-      
-    }
+      userName: '',
+      addressText: '',
+    } 
   }
 
+  componentWillMount(){
+    localStorage.load({
+      key: 'account'
+    }).then(ret => {
+      // console.log('account====',ret)
+    
+      this.setState({
+        userName: ret.userName,
+        addressText: ret.keyStore.address
+      })
+    
+    }).catch(err => {
+      
+    })
+  }
 
   toDetail = () => {
+    const { userName, addressText } = this.state
     this.props.navigator.push({
       screen: 'back_up_account',
-      title: 'username',
+      title: userName,
       navigatorStyle: DetailNavigatorStyle,
-      navigatorButtons: {
-        rightButtons: [
-          {
-            title: 'save',
-            id: 'save_back_up_info'
-          }
-        ]
-      }
+      passProps: {
+        userName: userName,
+        address: `0x${addressText}`
+      },
+      // navigatorButtons: {
+      //   rightButtons: [
+      //     {
+      //       title: 'save',
+      //       id: 'save_back_up_info'
+      //     }
+      //   ]
+      // }
     })
   }
   createAccountBtn = () => {
@@ -79,11 +102,13 @@ class AccountManage extends Component{
     })
   }
   render(){
+    // const { localKeyStore, userName } = this.props.getLocalDataReducer
+    const { userName,addressText } = this.state
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
         <AccountCard
-          accountName={'username'}
-          accountPsd={'0x1258749...2bkskdil78'}
+          accountName={userName}
+          accountPsd={`0x${addressText}`}
           accountTotal={'1000'}
           accountUnit={'ether'}
           accountBackUp={this.toDetail}
@@ -135,4 +160,8 @@ const styles = StyleSheet.create({
     marginTop: scaleSize(30),
   },
 })
-export default AccountManage
+export default connect(
+  state => ({
+    // getLocalDataReducer: state.getLocalDataReducer
+  })
+)(AccountManage)

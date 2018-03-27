@@ -82,8 +82,6 @@ function toLogin () {
           }
         })
 }
-// toHome()
-toLogin()
 export {
   toHome,
   toLogin

@@ -1,5 +1,3 @@
-
-
 import React, { Component } from 'react'
 import {
   View,
@@ -10,21 +8,25 @@ import {
   ScrollView,
   Alert,
   TextInput,
-  BackHandler
+  BackHandler,
+  Clipboard,
+  ToastAndroid
 } from 'react-native'
-
+import { Navigation } from 'react-native-navigation'
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { Btn } from '../../components/'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
+const Wallet = require('ethereumjs-wallet')
 class BackUpAccount extends Component{
   constructor(props){
     super(props)
     this.state = {
       iptPsdVisible: false,
       pKeyVisible: false,
-      psdVal: ''
+      psdVal: '',
+      privKey: '',
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
@@ -51,7 +53,15 @@ class BackUpAccount extends Component{
   }
 
   deleteAccount = () => {
-    alert('delete')
+      localStorage.remove({
+       key: 'account'
+      })
+      Navigation.startSingleScreenApp({
+        screen: {
+          screen: 'login',
+          navigatorStyle: {navBarHidden: true,statusBarColor:'#144396'},
+        }
+      })
   }
   backUpBnt = () => {
       this.setState({
@@ -60,7 +70,8 @@ class BackUpAccount extends Component{
   }
   onHide = () => {
     this.setState({
-      iptPsdVisible: false
+      iptPsdVisible: false,
+      psdVal: '',
     })
   }
   onChangePsdText = (val) => {
@@ -70,39 +81,74 @@ class BackUpAccount extends Component{
   }
   onPKeyHide = () => {
     this.setState({
-      pKeyVisible: false
+      pKeyVisible: false,
+      privKey: '',
     })
   }
-  onCancelBtn = () => {
-    this.setState({
-      iptPsdVisible: false
-    })
-  }
+  // onCancelBtn = () => {
+  //   this.setState({
+  //     iptPsdVisible: false,
+  //     psdVal: '',
+  //   })
+  // }
   onSureBtn = () => {
-    const { psdVal } = this.state
-    this.setState({
-      iptPsdVisible: false
+
+    localStorage.load({
+      key: 'account'
+    }).then(ret => {
+      this.getWallet(ret)
+    }).catch(err => {
+      
     })
-    if(psdVal !== this.props.createAccountReducer.psd){
-      alert('Password is error')
-      return
-    }else{
+
+  }
+
+ async  returnPriv(ret){
+    const { psdVal } = this.state
+    const newWallet = await Wallet.fromV3(ret.keyStore,psdVal)
+    let priv = await newWallet._privKey.toString('hex')
+    this.setState({
+      privKey: priv,
+      pKeyVisible: true
+    })
+    this.onHide()
+  }
+
+  getWallet = (ret) => {
+     
+    try{
+        
+        this.returnPriv(ret)
+
+        // console.log('getAddress==',`0x${newWallet.getAddress().toString('hex')}`)
+        // console.log('getPrivateKey==',newWallet.getPrivateKey())
+        // newWallet.getPublicKey()
+        // console.log('getPublicKey==',newWallet.getPublicKey())
+        // console.log('newWallet==',newWallet)
+
+        
+    }catch (err){
+      alert('Password error!')
       this.setState({
-        pKeyVisible:true
+        psdVal: ''
       })
     }
   }
-  render(){
-    const { iptPsdVisible,psdVal,pKeyVisible } = this.state
-    const { address, privateKey, userName, psd, prompt, } = this.props.createAccountReducer
 
+  onCopyBtn = () => {
+    Clipboard.setString(this.state.privKey)
+    ToastAndroid.show('copy successful~',3000)
+  }
+  render(){
+    const { iptPsdVisible,psdVal,pKeyVisible,privKey } = this.state
+    const { address, privateKey, userName, psd, prompt, } = this.props.createAccountReducer
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
         <Image source={require('../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
-        <Text style={pubS.font26_5}>{address}</Text>
+        <Text style={pubS.font26_5}>{this.props.address}</Text>
         <View style={[styles.userNameViewStyle,pubS.rowCenterJus,pubS.bottomStyle]}>
           <Text style={pubS.font26_4}>wallet name</Text>
-          <Text style={pubS.font26_4}>{userName}</Text>
+          <Text style={pubS.font26_4}>{this.props.userName}</Text>
         </View>
 
         <Btn
@@ -132,10 +178,11 @@ class BackUpAccount extends Component{
               onChangeText={ this.onChangePsdText}
               underlineColorAndroid={'transparent'}
               textAlignVertical={'center'}
+              secureTextEntry={true}
               style={styles.textIptStyle}
             />
             <View style={[pubS.rowCenter,pubS.topBorderStyle,{height: scaleSize(88),marginTop: scaleSize(25),width: '100%'}]}>
-              <TouchableOpacity activeOpacity={.7} onPress={this.onCancelBtn} style={[pubS.center,styles.modalBtnStyle]}>
+              <TouchableOpacity activeOpacity={.7} onPress={this.onHide} style={[pubS.center,styles.modalBtnStyle]}>
                 <Text style={pubS.font34_3}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity activeOpacity={.7} onPress={this.onSureBtn} style={[pubS.center,{width:'50%',borderBottomRightRadius:scaleSize(26)}]}>
@@ -162,15 +209,13 @@ class BackUpAccount extends Component{
               <Text style={pubS.font22_1}>Security warning: the private key is not encrypted, export private key would be risky, so it is recommended to use mnemonic words and Keystore to backup.</Text>
             </View>
             <View style={[styles.pkStyle,pubS.center]}>
-              <Text style={pubS.font24_3}>{address}</Text>
+              <Text style={pubS.font24_3}>{privKey}</Text>
             </View>
             <TouchableOpacity onPress={this.onCopyBtn} activeOpacity={.7} style={[styles.copyBtnStyle,pubS.center]}>
               <Text style={pubS.font28_4}>copy</Text>
             </TouchableOpacity>
           </View>
         </Modal>
-
-
       </View>
     )
   }

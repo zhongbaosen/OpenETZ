@@ -15,6 +15,9 @@ const createAccountAction = (parames) => {
 		dispatch(onCreate())
 	}
 }
+
+
 export {
-	createAccountAction
+	createAccountAction,
+	
 }

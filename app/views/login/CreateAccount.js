@@ -31,7 +31,6 @@ class CreateAccount extends Component{
         visible: false,
       }
   }
-
   componentWillReceiveProps(nextProps){
     if(this.props.createAccountReducer.isLoading !== nextProps.createAccountReducer.isLoading && !nextProps.createAccountReducer.isLoading){
       this.setState({
