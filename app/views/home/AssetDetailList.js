@@ -38,6 +38,13 @@ class AssetDetailList extends Component{
       screen: 'trading_record_detail',
       title:'Transaction Records',
       navigatorStyle: MainThemeNavColor,
+      passProps: {
+        tx_sender: 'senderAddress',
+        tx_receiver:'receiverAddress',
+        tx_note: '合作愉快',
+        tx_hash: '0x462e3c5c32e4b19fa1378a1d40006ff85030cb48eaa7a6f94411c3e5761c6421',
+        tx_value: '1000',
+      }
     })
   }
   renderItem = () => {

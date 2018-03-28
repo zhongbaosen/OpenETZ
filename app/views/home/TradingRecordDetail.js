@@ -7,7 +7,9 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
+  WebView, 
+  ToastAndroid, 
+  Clipboard
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
@@ -37,33 +39,54 @@ class TradingRecordDetail extends Component{
 
     }
   }
-  toWebView = () => {
-    alert('open webview')
+
+  componentWillMount(){
+    web3.eth.getBlock(5369090).then((res,rej)=>{
+      console.log(res)
+      console.log(rej)
+    })
+  }
+
+  toWebView = (hash) => {
+    this.props.navigator.push({
+      screen: 'tx_web_view',
+      navigatorStyle:{
+        navBarHidden: true,
+        statusBarColor: '#fff',
+        screenBackgroundColor: 'white',
+        tabBarHidden: true
+      },
+      passProps: {
+        hash,
+      }
+    })
   }
   onCopyBtn = () => {
-    alert('copy succeeful')
+    Clipboard.setString(this.props.tx_receiver)
+    ToastAndroid.show('copy succeeful',3000)
   }
   render(){
+    const { tx_sender, tx_receiver, tx_note, tx_hash, tx_value, } = this.props
     return(
       <View style={pubS.container}>
         <Image source={require('../../images/xhdpi/ico_selectasset_transactionrecords_succeed.png')} style={styles.iocnStyle}/>
         <View style={styles.topView}></View>
         <View style={styles.mainStyle}>
           <View style={[styles.accountStyle,pubS.rowCenter2]}>
-            <Text style={pubS.font60_1}>123</Text>
-            <Text style={[pubS.font22_2,{marginLeft: scaleSize(18),marginTop: scaleSize(28)}]}>etz</Text>
+            <Text style={pubS.font60_1}>{tx_value}</Text>
+            <Text style={[pubS.font22_3,{marginLeft: scaleSize(18),marginTop: scaleSize(28)}]}>etz</Text>
           </View>
           <TextInstructions
             title={'payer'}
-            instructions={'0xa2e73fc0addjakdadjaldjladalb4sw1s7ds5d'}
+            instructions={tx_sender}
           />
           <TextInstructions
             title={'payee'}
-            instructions={'0xa2e73fc0addjakdadjaldjladalb4sw1s7ds5d'}
+            instructions={tx_receiver}
           />
           <TextInstructions
             title={'note'}
-            instructions={'合作愉快！'}
+            instructions={tx_note}
           />
 
           <View style={[{width: scaleSize(680),alignSelf:'center',marginTop: scaleSize(30),marginBottom: scaleSize(10)},pubS.bottomStyle]}></View>
@@ -71,9 +94,9 @@ class TradingRecordDetail extends Component{
             <View>
               <TextInstructions
                 title={'transaction number'}
-                instructions={'0xakd2l3...c92skl0w'}
+                instructions={`${tx_hash.slice(0,8)}...${tx_hash.slice(tx_hash.length-8,tx_hash.length)}`}
                 inColor={'#2B8AFF'}
-                onPressText={this.toWebView}
+                onPressText={() => this.toWebView(tx_hash)}
                 />
               <TextInstructions
                 title={'block'}
@@ -86,7 +109,7 @@ class TradingRecordDetail extends Component{
             </View>
             <View style={{marginTop: scaleSize(40)}}>
               <QRCode
-                value={'payTotalVal'}
+                value={tx_receiver}
                 size={scaleSize(170)}
                 bgColor='#000'
                 fgColor='#fff'
@@ -124,7 +147,7 @@ const styles = StyleSheet.create({
       borderBottomWidth: StyleSheet.hairlineWidth,
       width: scaleSize(680),
       alignSelf:'center',
-      marginBottom: scaleSize(10)
+      marginBottom: scaleSize(10),
       // borderWidth:1,
     },
     mainStyle:{

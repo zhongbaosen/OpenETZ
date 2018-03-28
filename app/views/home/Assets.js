@@ -93,7 +93,7 @@ class Assets extends Component{
         navBarTextColor:'#fff',
         navBarBackgroundColor:'#000',
         statusBarColor:'#000',
-        statusBarTextColorScheme:'light'
+        statusBarTextColorScheme:'light',
       }),
     })
   }
@@ -103,6 +103,7 @@ class Assets extends Component{
       screen: 'on_payment',
       title:'Payment',
       navigatorStyle: DetailNavigatorStyle,
+      
     })
   }
   onCollection = () => {

@@ -28,6 +28,7 @@ import TradingRecord from '../views/home/tradingRecord/'
 import ScanQrCode from '../views/home/ScanQrCode'
 import AssetDetailList from '../views/home/AssetDetailList'
 import TradingRecordDetail from '../views/home/TradingRecordDetail'
+import TxWebView from '../views/home/TxWebView'
 
 
 export function registerScreens() {
@@ -50,6 +51,7 @@ export function registerScreens() {
   Navigation.registerComponent('contact_service', () => ContactService,store,Provider)
   Navigation.registerComponent('help_center', () => HelpCenter,store,Provider)
   Navigation.registerComponent('account_manage', () => AccountManage,store,Provider)
+  Navigation.registerComponent('tx_web_view', () => TxWebView,store,Provider)
 
 }
 

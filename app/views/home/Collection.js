@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   Clipboard,
+  ToastAndroid
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
@@ -14,16 +15,32 @@ import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn } from '../../components/'
 import Modal from 'react-native-modal'
 import QRCode from 'react-native-qrcode'
-// import Toast from 'react-native-root-toast'
+const wallet = require('ethereumjs-wallet')
 class Collection extends Component{
   constructor(props){
     super(props)
     this.state={
         visible: false,
         payTotalVal: '',
-        addressText: '0x121212121212121'
+        addressText: ''
     }
 
+  }
+
+  componentWillMount(){
+    localStorage.load({
+     key: 'account'
+    }).then(ret => {
+      this.setState({
+        addressText: `0x${ret.keyStore.address}`
+      })
+     console.log('ret==',ret)
+     // let newWallet =  Wallet.fromV3(ret.keyStore,'1234567q')
+     // console.log('newWallet==',newWallet)
+     // console.log('address==',`0x${newWallet.getAddress().toString('hex')}`)
+    }).catch(err => {
+
+    })
   }
 
   componentWillUnmount(){
@@ -34,18 +51,15 @@ class Collection extends Component{
     let a= await Clipboard.getString()
   }
 
-  onChangePayTotal = (val) => {
-    this.setState({
-      payTotalVal: val,
-    })
-  }
+  // onChangePayTotal = (val) => {
+  //   this.setState({
+  //     payTotalVal: val,
+  //   })
+  // }
 
   onPressCopyBtn = () => {
       Clipboard.setString(this.state.addressText)
-      // let t1 = Toast.show('复制地址成功~')
-      // setTimeout(function () {
-      //     Toast.hide(t1)
-      // }, 3000)
+      ToastAndroid.show('copy successful~',3000)
   }
 
   onHide = () => {
@@ -73,25 +87,27 @@ class Collection extends Component{
   }
 
   render(){
-    const { payTotalVal,visible } = this.state
+    const { payTotalVal,visible,addressText } = this.state
     return(
       <View style={[pubS.container,{paddingTop: scaleSize(35)}]}>
-        <TextInputComponent
-          placeholder={'Enter receive amount (Optional)'}
-          value={payTotalVal}
-          onChangeText={this.onChangePayTotal}
-        >
-        </TextInputComponent>
+        {
+        // <TextInputComponent
+        //   placeholder={'Enter receive amount (Optional)'}
+        //   value={payTotalVal}
+        //   onChangeText={this.onChangePayTotal}
+        // >
+        // </TextInputComponent>
+        }
 
         <View style={{marginTop: scaleSize(125),alignSelf:'center'}}>
           <QRCode
-            value={payTotalVal}
+            value={addressText}
             size={scaleSize(400)}
             bgColor='#000'
             fgColor='#fff'
           />
         </View>
-        <Text style={[pubS.font24_2,{marginTop: scaleSize(19),alignSelf:'center'}]}>{this.state.addressText}</Text>
+        <Text style={[pubS.font24_2,{marginTop: scaleSize(19),alignSelf:'center'}]}>{addressText}</Text>
         <Btn
           btnPress={this.onPressCopyBtn}
           btnText={'Copy receiving wallet address'}

@@ -10,8 +10,6 @@ import { Navigation } from 'react-native-navigation'
 import { registerScreens, registerScreenVisibilityListener, } from './config/'
 import { getPixelRatio } from './utils/adapter'
 import { TabBarAppStyle,AssetsNavStyle,MainThemeNavColor } from './styles/'
-
-import './utils/globalWeb3.js'
 registerScreens()
 registerScreenVisibilityListener()
 getPixelRatio()

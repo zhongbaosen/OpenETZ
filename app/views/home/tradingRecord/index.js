@@ -76,7 +76,9 @@ class TradingRecord extends Component{
         >
             <RecordAll key={1} tabLabel={'All'}/>
             <RecordPay key={2} tabLabel={'Send'}/>
-            <RecordCollection key={3} tabLabel={'Receive'}/>
+            {
+              //<RecordCollection key={3} tabLabel={'Receive'}/>
+            }
 
         </ScrollableTabView>
       </View>

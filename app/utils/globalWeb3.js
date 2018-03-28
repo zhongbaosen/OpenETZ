@@ -19,6 +19,7 @@ const storage = new Storage({
   // sync: 
 })  
 
-const web3 = new Web3()
+
+const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.etherzero.org:443"))
 global.web3 = web3
 global.localStorage = storage

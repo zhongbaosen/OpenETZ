@@ -18,8 +18,16 @@ class ScanQrCode extends Component{
 
     }
   }
-  onSuccess = () => {
-
+  onSuccess = (e) => {
+    this.props.navigator.push({
+      screen: 'on_payment',
+      title:'Payment',
+      navigatorStyle: DetailNavigatorStyle,
+      overrideBackPress: true,
+      passProps: {
+        receive_address: e.data
+      }
+    })
   }
 
   onCancel = () => {

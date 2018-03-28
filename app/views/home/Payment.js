@@ -8,40 +8,87 @@ import {
   ScrollView,
 } from 'react-native'
 
-import { pubS,DetailNavigatorStyle } from '../../styles/'
+import { pubS,DetailNavigatorStyle,MainThemeNavColor } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn } from '../../components/'
 // import Toast from 'react-native-root-toast'
 import Modal from 'react-native-modal'
+const Wallet = require('ethereumjs-wallet')
+const EthereumTx = require('ethereumjs-tx')
 class Payment extends Component{
   constructor(props){
     super(props)
     this.state={
-      payAddressVal: '',
+      receiverAddress: '0xef4b8381f12ad29230d68ce65576acd633d6959b',
       payTotalVal: '',
       noteVal: '',
+      payAddressWarning: '',
+      payTotalWarning: '',
+      payPsdWarning: '',
       payPsdVal: '',
       visible: false,
-      modalTitleText:'支付详情',
+      modalTitleText:'Payment details',
       modalTitleIcon: require('../../images/xhdpi/nav_ico_paymentdetails_close_def.png'),
-      modalSetp1: true
-    }
-  }
-
-  componentWillUnmount(){
-    this.setState({
       modalSetp1: true,
-      visible: false
+      senderAddress: '',
+    }
+
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
+  }
+  
+  onNavigatorEvent(event){
+     if(event.id === 'backPress'){
+        if(this.props.receive_address){
+          this.props.navigator.popToRoot({
+            animated: true, 
+            animationType: 'fade'
+          })
+        }
+     }
+  } 
+
+  componentWillMount(){
+
+
+    if(this.props.receive_address){
+      this.setState({
+        receiverAddress: this.props.receive_address
+      })
+    }
+     // this.getBranch()
+   // web3.eth.getTransactionCount('0xeF4b8381f12AD29230d68Ce65576Acd633D6959B').then((res,rej)=> {
+   //  console.log('res=====',res)
+   //  console.log('reh111=====',rej)
+    
+   // })
+
+    localStorage.load({
+     key: 'account'
+    }).then(ret => {
+      this.setState({
+        senderAddress: `0x${ret.keyStore.address}`
+      })
+    }).catch(err => {
+
     })
+  }
+  async getBranch(){
+    // let a = await web3.eth.getBalance('0xec80a9fe89b05e337efa9c801c07c8444d9cb32e')
+    // console.log('aaaaaaaaaaaaaa',a)
+  }
+  componentWillUnmount(){
+    this.onPressClose()
   }
   onChangePayAddrText = (val) => {
     this.setState({
-      payAddressVal: val,
+      receiverAddress: val,
+      payAddressWarning: ''
     })
   }
   onChangePaTotalText = (val) => {
     this.setState({
       payTotalVal: val,
+      payTotalWarning: ''
     })
   }
   onChangeNoteText = (val) => {
@@ -51,9 +98,30 @@ class Payment extends Component{
   }
 
   onNextStep = () => {
-    this.setState({
-      visible: true
-    })
+    // this.setState({
+    //       visible: true
+    // })
+    const { receiverAddress, payTotalVal, noteVal, } = this.state
+    let addressReg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{42}$/
+    if(!addressReg.test(receiverAddress)){
+      this.setState({
+        payAddressWarning: 'please enter the account address',
+      })
+      return
+    }else{
+      if(payTotalVal.length === 0){
+        this.setState({
+          payTotalWarning: 'please enter the payment amount'
+        })
+        return
+      }else{
+        this.setState({
+          visible: true
+        })
+      }
+    }
+
+    
   }
 
   toScan = () => {
@@ -77,16 +145,14 @@ class Payment extends Component{
   onPressClose = () => {
     this.setState({
       visible: false,
-      modalSetp1: true
+      modalSetp1: true,
+      payPsdVal: ''
     })
   }
 
   onPressCloseIcon = () => {
     if(this.state.modalSetp1){
-      this.setState({
-        visible: false,
-        modalSetp1: true
-      })
+      this.onPressClose()
     }else{
       this.setState({
         modalSetp1: true,
@@ -104,7 +170,90 @@ class Payment extends Component{
     })
   }
   onPressPayBtn = () => {
-    alert('pay')
+    
+    const { payPsdVal, payPsdWarning } = this.state
+    if(payPsdVal.length === 0){
+      this.setState({
+        payPsdWarning: 'please enter the password'
+      })
+      return
+    }else{
+      this.getLocal()
+      
+    }
+  }
+  getLocal = () => {
+    localStorage.load({
+      key: 'account'
+    }).then(ret => {
+      this.validatPsd(ret)
+    }).catch(err => {
+      
+    })
+  }
+  validatPsd = (ret) => {
+   
+    try{
+
+      this.makeTransact(ret)
+
+    } catch(err){
+      this.setState({
+        visible: true,
+        modalSetp1: false,
+        payPsdVal: '',
+        payPsdWarning: 'password is error'
+      })
+    }
+  }
+  async makeTransact(ret){
+      const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal } = this.state
+      console.log('senderAddress==',senderAddress)
+      let newWallet = await Wallet.fromV3(ret.keyStore,payPsdVal)
+      let privKey = await newWallet._privKey.toString('hex')
+      console.log('privKey==',privKey)
+      let bufPrivKey = new Buffer(privKey, 'hex')
+      // console.log('bufPrivKey==',bufPrivKey)
+      let nonceNumber = await web3.eth.getTransactionCount(senderAddress)
+      // console.log('nonceNumber===',nonceNumber)
+      console.log('payTotalVal==',payTotalVal)
+      let totalValue = web3.utils.toWei(payTotalVal,'ether')
+      let hex16 = parseInt(totalValue).toString(16)
+      const txParams = {
+          nonce: `0x${nonceNumber}`,
+          gasPrice: '0x09184e72a000', 
+          gasLimit: '0x2710',
+          to: receiverAddress,
+          value: `0x${hex16}`,
+          data: '',
+          chainId: 88
+      }
+      console.log('txParams====',txParams)
+      const tx = new EthereumTx(txParams)
+      tx.sign(bufPrivKey)
+      const serializedTx = tx.serialize()
+      console.log('serializedTx==',serializedTx)
+      // console.log('web3.eth=======',web3.eth)
+      web3.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`,function(err,hash){
+        console.log('err==',err)
+        console.log('hash==',hash)
+
+        this.props.navigator.push({
+          screen: 'trading_record_detail',
+          title:'Transaction Records',
+          navigatorStyle: MainThemeNavColor,
+          passProps: {
+            tx_sender: senderAddress,
+            tx_receiver:receiverAddress,
+            tx_note: noteVal,
+            tx_hash: hash,
+            tx_value: payTotalVal,
+          }
+        })
+      })
+
+      this.onPressClose()
+      
   }
   onChangePayPsdText = (val) => {
     this.setState({
@@ -112,7 +261,8 @@ class Payment extends Component{
     })
   }
   render(){
-    const { payAddressVal, payTotalVal, noteVal,visible,modalTitleText,modalTitleIcon,payPsdVal,modalSetp1 } = this.state
+    const { receiverAddress, payTotalVal, noteVal,visible,modalTitleText,modalTitleIcon,payPsdVal,
+            modalSetp1,payAddressWarning,payTotalWarning,senderAddress,payPsdWarning } = this.state
     return(
       <View style={pubS.container}>
         <TextInputComponent
@@ -123,9 +273,9 @@ class Payment extends Component{
         />
         <TextInputComponent
           placeholder={'receiver’s account address'}
-          value={payAddressVal}
+          value={receiverAddress}
           onChangeText={this.onChangePayAddrText}
-          //warningText={'please enter the account address'}
+          warningText={payAddressWarning}
           isScan={true}
           onPressIptRight={this.toScan}
         />
@@ -133,7 +283,8 @@ class Payment extends Component{
           placeholder={'payment amount'}
           value={payTotalVal}
           onChangeText={this.onChangePaTotalText}
-          //warningText={'please enter the payment amount'}
+          warningText={payTotalWarning}
+          keyboardType={'numeric'}
         />
         <TextInputComponent
           placeholder={'backup'}
@@ -164,21 +315,21 @@ class Payment extends Component{
               modalSetp1 ?
               <View>
                 <RowText
-                rowTitle={'Order information'}
-                rowContent={'Payment'}
+                  rowTitle={'Order information'}
+                  rowContent={noteVal}
                 />
                 <RowText
-                rowTitle={'transfer wallet address'}
-                rowContent={'12345'}
+                  rowTitle={'Transfer wallet address'}
+                  rowContent={receiverAddress}
                 />
                 <RowText
-                rowTitle={'Payment account'}
-                rowContent={'12345'}
+                  rowTitle={'Payment account'}
+                  rowContent={senderAddress}
                 />
                 <RowText
-                rowTitle={'Amount'}
-                rowContent={'100'}
-                rowUnit={'ETZ'}
+                  rowTitle={'Amount'}
+                  rowContent={payTotalVal}
+                  rowUnit={'ETZ'}
                 />
 
                 <Btn
@@ -193,7 +344,8 @@ class Payment extends Component{
                   placeholder={'Enter password'}
                   value={payPsdVal}
                   onChangeText={this.onChangePayPsdText}
-                  //warningText={'please enter the payment amount'}
+                  warningText={payPsdWarning}
+                  secureTextEntry={true}
                 />
                 <Btn
                   btnPress={this.onPressPayBtn}

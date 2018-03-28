@@ -95,6 +95,8 @@ class Privatekey extends Component{
     let w = hdWallet.getWallet()
     let keystore = w.toV3(psdVal)
 
+    
+
     localStorage.save({
       key: 'account',
       data:{
