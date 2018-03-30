@@ -3,6 +3,12 @@ import { StyleSheet } from 'react-native'
 
 //main theme color:   #144396
 
+const ScanNavStyle = Object.assign({},DetailNavigatorStyle,{
+        navBarTextColor:'#fff',
+        navBarBackgroundColor:'#000',
+        statusBarColor:'#000',
+        statusBarTextColorScheme:'light',
+      })
 
 const AssetsNavStyle = {
   tabBarHidden: false,
@@ -344,5 +350,6 @@ export {
   pubS,
   AssetsNavStyle,
   MainThemeNavColor,
-  TabBarAppStyle
+  TabBarAppStyle,
+  ScanNavStyle
 }

@@ -36,20 +36,20 @@ const tabs = [
     selectedIcon: require('./images/xhdpi/tab_ico_home_asset_def.png'),
     navigatorStyle: AssetsNavStyle,
     title:'username',
-    // navigatorButtons: {
-    //   rightButtons: [
-    //     {
-    //         icon: require('./images/xhdpi/nav_ico_home_more_def.png'),
-    //         id: 'right_drawer'
-    //     }
-    //   ],
+    navigatorButtons: {
+      rightButtons: [
+        {
+            icon: require('./images/xhdpi/nav_ico_home_more_def.png'),
+            id: 'right_drawer'
+        }
+      ],
     //   leftButtons: [
     //     {
     //       icon: require('./images/xhdpi/nav_ico_home_message_def.png'),
     //       id: 'left_drawer'
     //     }
     //   ]
-    // },
+    },
 
     iconInsets: bottomTabStyle
   },
@@ -61,6 +61,7 @@ const tabs = [
     navigatorStyle: Object.assign({},AssetsNavStyle,{ navBarHidden: true, }),
     iconInsets: bottomTabStyle
   },
+
 ]
 
 function toHome () {
@@ -68,6 +69,11 @@ function toHome () {
    return Navigation.startTabBasedApp({
             tabs,
             appStyle: TabBarAppStyle,
+            drawer: {
+              right: {
+                screen: 'switch_wallet'
+              }
+            }
           })
 
 }

@@ -15,7 +15,7 @@ class RecordListItem extends Component{
   static defaultProps = {
     moneyTextColor: '#657CAB',
     payFail: false,//付款失败
-    listIcon: require('../../../images/xhdpi/btn_ico_home_scan_def.png'),
+    listIcon: require('../../../images/xhdpi/etz_logo.png'),
     style: {},
     listIconStyle: {width: scaleSize(44),height:scaleSize(44)},
     onPressListItem: undefined,

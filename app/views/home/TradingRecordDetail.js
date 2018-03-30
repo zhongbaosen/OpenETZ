@@ -15,6 +15,7 @@ import {
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import QRCode from 'react-native-qrcode'
+const moment = require('moment')
 class TextInstructions extends Component{
   static defaultProps = {
     inColor: '#657CAB',
@@ -36,14 +37,40 @@ class TradingRecordDetail extends Component{
   constructor(props){
     super(props)
     this.state = {
-
+      blockNum: 0,
+      fromAddress: '',
+      toAddress: '',
+      txTime: '',
     }
   }
 
   componentWillMount(){
-    web3.eth.getBlock(5369090).then((res,rej)=>{
-      console.log(res)
-      console.log(rej)
+    
+    this.getReceiptTx()
+  }
+  shouldComponentUpdate(nextProps,nextState){
+    if(this.state.blockNum === nextState.blockNum && this.state.txTime === nextState.txTime){
+      return false
+    }else{
+      return true
+    }
+  }
+  async getReceiptTx(){
+    let res = await web3.eth.getTransactionReceipt(this.props.tx_hash)
+    this.setState({
+      blockNum: res.blockNumber,
+      fromAddress: res.from,
+      toAddress: res.to,
+    })
+  }
+
+  async getTxTime(bNum){
+    let newDate = new Date()
+    let result = await web3.eth.getBlock(bNum)
+    let t = result.timestamp * 1000
+    this.setState({
+      // txTime:  moment(result.timestamp).format('YYYY MM DD') 
+      txTime: newDate.toLocaleString(t)
     })
   }
 
@@ -65,8 +92,14 @@ class TradingRecordDetail extends Component{
     Clipboard.setString(this.props.tx_receiver)
     ToastAndroid.show('copy succeeful',3000)
   }
+
+  
   render(){
     const { tx_sender, tx_receiver, tx_note, tx_hash, tx_value, } = this.props
+    const { blockNum,fromAddress, toAddress,txTime } = this.state
+    if(blockNum > 0) {
+      this.getTxTime(blockNum)
+    }
     return(
       <View style={pubS.container}>
         <Image source={require('../../images/xhdpi/ico_selectasset_transactionrecords_succeed.png')} style={styles.iocnStyle}/>
@@ -78,11 +111,11 @@ class TradingRecordDetail extends Component{
           </View>
           <TextInstructions
             title={'payer'}
-            instructions={tx_sender}
+            instructions={fromAddress}
           />
           <TextInstructions
             title={'payee'}
-            instructions={tx_receiver}
+            instructions={toAddress}
           />
           <TextInstructions
             title={'note'}
@@ -100,11 +133,11 @@ class TradingRecordDetail extends Component{
                 />
               <TextInstructions
                 title={'block'}
-                instructions={'5014752'}
+                instructions={blockNum}
                 />
               <TextInstructions
-                title={'transaction Time'}
-                instructions={'02/12/2018 22:26:27 +0800'}
+                title={'transaction time'}
+                instructions={txTime}
                 />
             </View>
             <View style={{marginTop: scaleSize(40)}}>

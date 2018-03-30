@@ -29,7 +29,7 @@ import ScanQrCode from '../views/home/ScanQrCode'
 import AssetDetailList from '../views/home/AssetDetailList'
 import TradingRecordDetail from '../views/home/TradingRecordDetail'
 import TxWebView from '../views/home/TxWebView'
-
+import SwitchWallet from '../views/home/SwitchWallet'
 
 export function registerScreens() {
   Navigation.registerComponent('splash', () => Splash,store,Provider)
@@ -52,6 +52,7 @@ export function registerScreens() {
   Navigation.registerComponent('help_center', () => HelpCenter,store,Provider)
   Navigation.registerComponent('account_manage', () => AccountManage,store,Provider)
   Navigation.registerComponent('tx_web_view', () => TxWebView,store,Provider)
+  Navigation.registerComponent('switch_wallet', () => SwitchWallet,store,Provider)
 
 }
 

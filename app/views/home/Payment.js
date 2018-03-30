@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native'
 
-import { pubS,DetailNavigatorStyle,MainThemeNavColor } from '../../styles/'
+import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn } from '../../components/'
 // import Toast from 'react-native-root-toast'
@@ -128,12 +128,7 @@ class Payment extends Component{
     this.props.navigator.push({
       screen: 'scan_qr_code',
       title:'Scan',
-      navigatorStyle: Object.assign({},DetailNavigatorStyle,{
-        navBarTextColor:'#fff',
-        navBarBackgroundColor:'#000',
-        statusBarColor:'#000',
-        statusBarTextColorScheme:'light'
-      }),
+      navigatorStyle: ScanNavStyle,
     })
   }
   toMoreCion = () => {
@@ -233,26 +228,45 @@ class Payment extends Component{
       tx.sign(bufPrivKey)
       const serializedTx = tx.serialize()
       console.log('serializedTx==',serializedTx)
-      // console.log('web3.eth=======',web3.eth)
+      // web3.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`)
+      // .on('transactionHash', function(hash){
+      //    console.log('hash==',hash)
+
+      //    this.props.navigator.push({
+      //     screen: 'trading_record_detail',
+      //     title:'Transaction Records',
+      //     navigatorStyle: MainThemeNavColor,
+      //     passProps: {
+      //       // tx_sender: senderAddress,
+      //       // tx_receiver:receiverAddress,
+      //       tx_note: noteVal,
+      //       tx_hash: hash,
+      //       tx_value: payTotalVal,
+      //     }
+      //    })
+
+      // })
+      // .on('receipt', function(receipt){
+      //     console.log('receipt==',receipt)
+      //     if(receipt.status==="0x1"){//"0x1" succ "0x0" fail
+
+      //     }
+      // })
+      // .on('confirmation', function(confirmationNumber, receipt){ 
+      //   console.log('confirmationNumber==',confirmationNumber)
+      // })
+      // .on('error', (error) => {
+      //   console.log('error==',error)
+      // });
+      this.onPressClose()
       web3.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`,function(err,hash){
         console.log('err==',err)
         console.log('hash==',hash)
-
-        this.props.navigator.push({
-          screen: 'trading_record_detail',
-          title:'Transaction Records',
-          navigatorStyle: MainThemeNavColor,
-          passProps: {
-            tx_sender: senderAddress,
-            tx_receiver:receiverAddress,
-            tx_note: noteVal,
-            tx_hash: hash,
-            tx_value: payTotalVal,
-          }
-        })
+        if(hash.length > 0){
+          alert('payment succeeful~')
+        }
       })
 
-      this.onPressClose()
       
   }
   onChangePayPsdText = (val) => {
