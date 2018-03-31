@@ -18,6 +18,7 @@ import com.reactnativenavigation.NavigationApplication;
 import com.bitgo.randombytes.RandomBytesPackage;
 import org.reactnative.camera.RNCameraPackage;
 import io.realm.react.RealmReactPackage;
+import org.pgsqlite.SQLitePluginPackage;
 public class MainApplication extends NavigationApplication {
 
     @Override
@@ -30,7 +31,8 @@ public class MainApplication extends NavigationApplication {
           new PickerViewPackage(),
           new RandomBytesPackage(),
           new RNCameraPackage(),
-          new RealmReactPackage()
+          new RealmReactPackage(),
+          new SQLitePluginPackage()
         );
     }
 

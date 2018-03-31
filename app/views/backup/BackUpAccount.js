@@ -18,7 +18,12 @@ import { setScaleText, scaleSize } from '../../utils/adapter'
 import { Btn } from '../../components/'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
+import UserSQLite from '../../utils/accountDB'
 const Wallet = require('ethereumjs-wallet')
+
+const sqLite = new UserSQLite();  
+let db;  
+
 class BackUpAccount extends Component{
   constructor(props){
     super(props)
@@ -30,7 +35,12 @@ class BackUpAccount extends Component{
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
-
+  componentWillMount(){
+    
+  }
+  compennetDidUnmount(){  
+    sqLite.close();  
+  } 
   onNavigatorEvent(event){
     if (event.type == 'NavBarButtonPress') {
       console.log('event.id===',event.id)
@@ -53,15 +63,22 @@ class BackUpAccount extends Component{
   }
 
   deleteAccount = () => {
-      localStorage.remove({
-       key: 'account'
-      })
-      Navigation.startSingleScreenApp({
-        screen: {
-          screen: 'login',
-          navigatorStyle: {navBarHidden: true,statusBarColor:'#144396'},
-        }
-      })
+      if(!db){  
+        db = sqLite.open();  
+      } 
+      db.transaction((tx)=>{  
+        tx.executeSql("delete from account where address= " + "?", [this.props.address],(tx,results)=>{  
+          alert('删除成功')
+          // var len = results.rows.length;  
+
+          // for(let i=0; i<len; i++){  
+          //   var u = results.rows.item(i);
+          //   console.log('iuuuuuuuuuuuuu',u)  
+          // }  
+          });  
+        },(error)=>{
+          console.log('删除',error)
+      }); 
   }
   backUpBnt = () => {
       this.setState({
@@ -84,6 +101,20 @@ class BackUpAccount extends Component{
       pKeyVisible: false,
       privKey: '',
     })
+
+    if(!db){  
+        db = sqLite.open();  
+    }  
+    db.transaction((tx)=>{  
+      tx.executeSql("update account set backup_status = 1 where address= " + "?", [this.props.address],(tx,results)=>{  
+        console.log('更新成功')  
+      });  
+    },(error)=>{
+      console.log('更新失败',error)
+    }); 
+
+
+
   }
   // onCancelBtn = () => {
   //   this.setState({

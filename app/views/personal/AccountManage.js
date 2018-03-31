@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  FlatList,
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
@@ -13,9 +14,12 @@ import { setScaleText, scaleSize } from '../../utils/adapter'
 import { toHome } from '../../root'
 import { connect } from 'react-redux'
 const Wallet = require('ethereumjs-wallet')
+// import UserSQLite from '../../utils/accountDB'
+// const sqLite = new UserSQLite();  
+// let db; 
 class AccountCard extends Component {
   render(){
-    const { accountName, accountPsd, accountTotal, accountUnit, accountBackUp} = this.props
+    const { accountName, accountPsd, accountTotal, accountUnit, accountBackUp, backupState} = this.props
     return(
       <TouchableOpacity style={styles.cardView} activeOpacity={.7} onPress={accountBackUp}>
         <View style={[styles.cardTopView,pubS.bottomStyle,pubS.rowCenterJus]}>
@@ -29,9 +33,13 @@ class AccountCard extends Component {
           <Image source={require('../../images/xhdpi/btn_ico_payment_select_def.png')} style={{width:scaleSize(16),height: scaleSize(30)}}/>
         </View>
         <View style={[styles.cardBottomView,pubS.rowCenterJus]}>
-          <View style={[styles.backupBtn,pubS.center]}>
-            <Text style={pubS.font22_5}>backup</Text>
-          </View>
+          {
+            backupState===0 ? 
+            <View style={[styles.backupBtn,pubS.center]}>
+              <Text style={pubS.font22_5}>backup</Text>
+            </View>
+            : null
+          }
           <View style={pubS.rowCenter}>
             <Text style={pubS.font34_1}>{accountTotal}</Text>
             <Text style={[pubS.font24_5,{marginLeft: 2,marginTop:2,}]}>{accountUnit}</Text>
@@ -46,36 +54,50 @@ class AccountManage extends Component{
   constructor(props){
     super(props)
     this.state = {
-      userName: '',
-      addressText: '',
+      hasBackup: 0,
+      cardItems: []
     } 
   }
 
   componentWillMount(){
-    localStorage.load({
-      key: 'account'
-    }).then(ret => {
-      // console.log('account====',ret)
-    
-      this.setState({
-        userName: ret.userName,
-        addressText: ret.keyStore.address
-      })
-    
-    }).catch(err => {
-      
+
+    // const { cardItems } = this.state
+    // if(!db){  
+    //   db = sqLite.open();  
+    // }  
+    // db.transaction((tx)=>{  
+    //   tx.executeSql("select * from account ", [],(tx,results)=>{
+    //     var len = results.rows.length; 
+    //     let empty = [] 
+    //     for(let i=0; i<len; i++){  
+    //       var u = results.rows.item(i);
+    //       console.log('uuuuuuuuuuuu',u)
+    //       empty.push(u)
+    //       this.setState({
+    //         cardItems: empty
+    //       })
+    //     }  
+    //   });  
+    // },(error)=>{
+    //   console.log('打印异常信息 ',error);  
+    // }); 
+
+    this.setState({
+      cardItems: this.props.accountManageReducer.accountInfo
     })
+
+
   }
 
-  toDetail = () => {
-    const { userName, addressText } = this.state
+  toDetail = (address,name) => {
     this.props.navigator.push({
       screen: 'back_up_account',
-      title: userName,
+      title: name,
       navigatorStyle: DetailNavigatorStyle,
       passProps: {
-        userName: userName,
-        address: `0x${addressText}`
+        userName: name,
+        address: address
+
       },
       // navigatorButtons: {
       //   rightButtons: [
@@ -87,6 +109,7 @@ class AccountManage extends Component{
       // }
     })
   }
+
   createAccountBtn = () => {
     this.props.navigator.push({
       screen: 'create_account',
@@ -101,27 +124,43 @@ class AccountManage extends Component{
       navigatorStyle: DetailNavigatorStyle,
     })
   }
+
+  renderItem = (item) => {
+    let res = item.item
+    // console.log('1111111111111111111111',res)
+    return(
+      <AccountCard
+        accountName={res.account_name}
+        accountPsd={`0x${res.address}`}
+        accountTotal={res.assets_total}
+        accountUnit={'ether'}
+        accountBackUp={() => this.toDetail(res.address,res.account_name)}
+        backupState={res.backup_status}
+      />
+    )
+  }
   render(){
     // const { localKeyStore, userName } = this.props.getLocalDataReducer
-    const { userName,addressText } = this.state
+    const { hasBackup,cardItems } = this.state
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
-        <AccountCard
-          accountName={userName}
-          accountPsd={`0x${addressText}`}
-          accountTotal={'1000'}
-          accountUnit={'ether'}
-          accountBackUp={this.toDetail}
-        />
-
-      <View style={[{width: '100%',bottom:0,position:'absolute'},pubS.rowCenter]}>
-        <TouchableOpacity activeOpacity={.7} onPress={this.createAccountBtn} style={[styles.btnStyle,pubS.center,{backgroundColor:'#2B8AFF'}]}>
-          <Text style={pubS.font30_3}>create</Text>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={.7} onPress={this.importAccountBtn} style={[styles.btnStyle,pubS.center,{backgroundColor:'#2B58FF'}]}>
-          <Text style={pubS.font30_3}>import</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={{marginBottom: scaleSize(96)}}>
+          <FlatList
+            data={cardItems}
+            renderItem={this.renderItem}
+            keyExtractor = {(item, index) => index}
+            // ListFooterComponent={this.ListFooterComponent}
+            // ListHeaderComponent={this.ListHeaderComponent}
+          />
+        </View>
+        <View style={[{width: '100%',bottom:0,position:'absolute'},pubS.rowCenter]}>
+          <TouchableOpacity activeOpacity={.7} onPress={this.createAccountBtn} style={[styles.btnStyle,pubS.center,{backgroundColor:'#2B8AFF'}]}>
+            <Text style={pubS.font30_3}>create</Text>
+          </TouchableOpacity>
+          <TouchableOpacity activeOpacity={.7} onPress={this.importAccountBtn} style={[styles.btnStyle,pubS.center,{backgroundColor:'#2B58FF'}]}>
+            <Text style={pubS.font30_3}>import</Text>
+          </TouchableOpacity>
+       </View>
       </View>
     )
   }
@@ -162,6 +201,6 @@ const styles = StyleSheet.create({
 })
 export default connect(
   state => ({
-    // getLocalDataReducer: state.getLocalDataReducer
+    accountManageReducer: state.accountManageReducer
   })
 )(AccountManage)

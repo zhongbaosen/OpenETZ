@@ -12,7 +12,12 @@ import { pubS,DetailNavigatorStyle,MainThemeNavColor } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import RecordListItem from './tradingRecord/RecordListItem'
 import { splitNumber } from '../../utils/splitNumber'
-import { tradingAction } from '../../actions/tradingAction'
+import TradingSQLite from '../../utils/tradingDB'
+import UserSQLite from '../../utils/accountDB'
+const tradingSqLite = new TradingSQLite()  
+let t_db
+const sqLite = new UserSQLite();  
+let db  
 const DATA = [
   {
     a_type: 'ETZ',
@@ -32,15 +37,47 @@ class AssetDetailList extends Component{
   constructor(props){
     super(props)
     this.state = {
-
+      listData: []
     }
   }
 
   componentDidMount(){
-    web3.eth.getTransactionCount('0xec80a9fe89b05e337efa9c801c07c8444d9cb32e').then((res,rej)=>{
-      console.log('res===',res)
-      console.log('rej===',rej)
+    if(!t_db){
+      t_db = tradingSqLite.open()
+    }
+    if(!db){
+      db = sqLite.open()
+    }
+
+
+
+    db.transaction((tx) => {
+      tx.executeSql("select * from account where is_selected=1",[],(tx,results)=>{
+        let aName = results.rows.item(0).account_name
+        t_db.transaction((tx)=>{  
+            tx.executeSql("select * from trading where tx_account_name = ?", [aName],(tx,t_results)=>{  
+              let len = t_results.rows.length 
+              let list = []
+              for(let i=0; i<len; i++){  
+                let u = t_results.rows.item(i)
+                list.push(u)
+              }
+              this.setState({
+                listData: list
+              })
+            })
+        },(error)=>{
+
+        })
+      })
+    },(error) => {
+
     })
+
+
+
+
+
   }
 
   toTradingRecordDetail = () => {
@@ -57,13 +94,18 @@ class AssetDetailList extends Component{
       }
     })
   }
-  renderItem = () => {
+  renderItem = (item) => {
+    let res = item.item
+
     return(
       <RecordListItem
         style={{marginBottom: scaleSize(10)}}
         listIcon={require('../../images/xhdpi/lab_ico_selectasset_collection_def.png')}
         listIconStyle={{width: scaleSize(20),height:scaleSize(20)}}
         onPressListItem={this.toTradingRecordDetail}
+        receiverAddress={res.tx_receiver}
+        receiverTime={res.tx_time}
+        receiverVal={res.tx_value}
       />
     )
   }
@@ -94,7 +136,7 @@ class AssetDetailList extends Component{
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
         <FlatList
-          data={DATA}
+          data={this.state.listData}
           renderItem={this.renderItem}
           keyExtractor = {(item, index) => index}
           ListHeaderComponent={this.ListHeaderComponent}

@@ -4,11 +4,13 @@ import reduxThunk from 'redux-thunk'
 
 import createAccountReducer from '../reducers/createAccountReducer'
 import getLocalDataReducer from '../reducers/getLocalDataReducer'
-import trandingReducer from '../reducers/trandingReducer'
+import tradingManageReducer from '../reducers/tradingManageReducer'
+import accountManageReducer from '../reducers/accountManageReducer'
 const rootReducer = combineReducers({
   	createAccountReducer,
   	getLocalDataReducer,
-  	trandingReducer,
+  	tradingManageReducer,
+  	accountManageReducer,
 })
 const store = createStore(
   rootReducer,

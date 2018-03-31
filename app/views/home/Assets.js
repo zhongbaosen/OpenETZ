@@ -13,6 +13,7 @@ import {
 import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import Drawer from 'react-native-drawer'
+import { connect } from 'react-redux'
 class Assets extends Component{
   constructor(props){
     super(props)
@@ -22,27 +23,13 @@ class Assets extends Component{
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
-  componentWillMount(){
-    localStorage.load({
-      key: 'account'
-    }).then( ret => {
-      web3.eth.getBalance(ret.keyStore.address).then((res,rej)=>{
-        this.setState({
-          etzBalance: web3.utils.fromWei(res,'ether')
-        })
-      })
-    }).catch(err => {
-      
-    })
-  }
-
   onNavigatorEvent (event) {
     if (event.type == 'NavBarButtonPress') {
       if (event.id == 'right_drawer') {
         this.props.navigator.toggleDrawer({
-          side: 'right', // the side of the drawer since you can have two, 'left' / 'right'
-          animated: true, // does the toggle have transition animation or does it happen immediately (optional)
-          // to: 'open' // optional, 'open' = open the drawer, 'closed' = close it, missing = the opposite of current state
+          side: 'right', 
+          animated: true,
+          // to: 'open'
         })
       }
       if (event.id == 'left_drawer') {
@@ -53,7 +40,7 @@ class Assets extends Component{
           navigatorButtons: {
             rightButtons: [
               {
-                  title:'ReadedAll',
+                  title:'Readed All',
                   id: 'readed_all'
               }
             ],
@@ -63,6 +50,28 @@ class Assets extends Component{
     }
     
   }
+  componentWillMount(){
+
+    const { accountInfo } = this.props.accountManageReducer
+    accountInfo.map((val,index) => {
+      // console.log('val1111111111111',val)
+      if(val.is_selected === 1){
+
+        this.props.navigator.setTitle({
+          title: val.account_name
+        })
+
+        web3.eth.getBalance(`0x${val.address}`).then((res,rej)=>{
+          // console.log('res==',res)
+          this.setState({
+            etzBalance: web3.utils.fromWei(res,'ether')
+          })
+        })
+      }
+    })
+
+  }
+
   // renderItem = (item) => {
   //   // let res = item.item
   //     return(
@@ -105,7 +114,12 @@ class Assets extends Component{
     this.props.navigator.push({
       screen: 'scan_qr_code',
       title:'Scan',
-      navigatorStyle: ScanNavStyle,
+      navigatorStyle: Object.assign({},DetailNavigatorStyle,{
+        navBarTextColor:'#fff',
+        navBarBackgroundColor:'#000',
+        statusBarColor:'#000',
+        statusBarTextColorScheme:'light',
+      }),
     })
   }
 
@@ -289,4 +303,8 @@ const styles = StyleSheet.create({
 
   }
 })
-export default Assets
+export default connect(
+  state => ({
+    accountManageReducer: state.accountManageReducer
+  })
+)(Assets)

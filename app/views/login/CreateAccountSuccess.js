@@ -12,13 +12,26 @@ import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { Btn } from '../../components/'
 class CreateAccountSuccess extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      userName: '',
+      address: '',
+    }
+  }
+  componentDidMount(){
+
+  }
+
   onPressBackUp = () => {
     this.props.navigator.push({
       screen: 'back_up_account',
       title: 'username',
       navigatorStyle: DetailNavigatorStyle,
-      // passProps: { fromCreateSucc: true},
-      // overrideBackPress: true,
+      // passProps: {
+      //   userName: userName,
+      //   address: `0x${addressText}`
+      // },
       navigatorButtons: {
         rightButtons: [
           {

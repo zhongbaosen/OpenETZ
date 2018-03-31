@@ -6,20 +6,29 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ToastAndroid,
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn } from '../../components/'
 // import Toast from 'react-native-root-toast'
+import { connect } from 'react-redux'
 import Modal from 'react-native-modal'
+import { insert2TradingDBAction } from '../../actions/tradingManageAction'
 const Wallet = require('ethereumjs-wallet')
 const EthereumTx = require('ethereumjs-tx')
+
+import UserSQLite from '../../utils/accountDB'
+const sqLite = new UserSQLite()  
+let db 
+
+let self = null
 class Payment extends Component{
   constructor(props){
     super(props)
     this.state={
-      receiverAddress: '0xef4b8381f12ad29230d68ce65576acd633d6959b',
+      receiverAddress: '0x45e2c3a5cb65440a2f33057591432f059a893915',//0xec80a9fe89b05e337efa9c801c07c8444d9cb32e  账号2
       payTotalVal: '',
       noteVal: '',
       payAddressWarning: '',
@@ -31,8 +40,9 @@ class Payment extends Component{
       modalTitleIcon: require('../../images/xhdpi/nav_ico_paymentdetails_close_def.png'),
       modalSetp1: true,
       senderAddress: '',
+      keyStore: {}
     }
-
+    self = this
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
   
@@ -49,33 +59,46 @@ class Payment extends Component{
 
   componentWillMount(){
 
+    const { accountInfo } = this.props.accountManageReducer
 
     if(this.props.receive_address){
       this.setState({
         receiverAddress: this.props.receive_address
       })
     }
-     // this.getBranch()
-   // web3.eth.getTransactionCount('0xeF4b8381f12AD29230d68Ce65576Acd633D6959B').then((res,rej)=> {
-   //  console.log('res=====',res)
-   //  console.log('reh111=====',rej)
-    
-   // })
 
-    localStorage.load({
-     key: 'account'
-    }).then(ret => {
-      this.setState({
-        senderAddress: `0x${ret.keyStore.address}`
-      })
-    }).catch(err => {
+    accountInfo.map((val,index) => {
+      if(val.is_selected === 1){
+        let ks =  {
+          "version": val.version,
+          "id": val.kid,
+          "address": val.address,
+          "crypto": {
+            ciphertext: val.ciphertext,
+            cipherparams: {
+              "iv": val.iv
+            },
+            "cipher": val.cipher,
+            "kdf": val.kdf,
+            "kdfparams": {
+              "dklen": val.dklen,
+              "salt": val.salt,
+              "n":val.n,
+              "r":val.r,
+              "p":val.p
+            },
+            "mac": val.mac
+          }
+        }
 
+        this.setState({
+          senderAddress: `0x${val.address}`,
+          keyStore: ks
+        })
+      }
     })
   }
-  async getBranch(){
-    // let a = await web3.eth.getBalance('0xec80a9fe89b05e337efa9c801c07c8444d9cb32e')
-    // console.log('aaaaaaaaaaaaaa',a)
-  }
+
   componentWillUnmount(){
     this.onPressClose()
   }
@@ -98,9 +121,6 @@ class Payment extends Component{
   }
 
   onNextStep = () => {
-    // this.setState({
-    //       visible: true
-    // })
     const { receiverAddress, payTotalVal, noteVal, } = this.state
     let addressReg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{42}$/
     if(!addressReg.test(receiverAddress)){
@@ -119,16 +139,19 @@ class Payment extends Component{
           visible: true
         })
       }
-    }
-
-    
+    }    
   }
 
   toScan = () => {
     this.props.navigator.push({
       screen: 'scan_qr_code',
       title:'Scan',
-      navigatorStyle: ScanNavStyle,
+      navigatorStyle: Object.assign({},DetailNavigatorStyle,{
+        navBarTextColor:'#fff',
+        navBarBackgroundColor:'#000',
+        statusBarColor:'#000',
+        statusBarTextColorScheme:'light',
+      }),
     })
   }
   toMoreCion = () => {
@@ -173,24 +196,15 @@ class Payment extends Component{
       })
       return
     }else{
-      this.getLocal()
-      
+      this.validatPsd()
     }
   }
-  getLocal = () => {
-    localStorage.load({
-      key: 'account'
-    }).then(ret => {
-      this.validatPsd(ret)
-    }).catch(err => {
-      
-    })
-  }
-  validatPsd = (ret) => {
+
+  validatPsd = () => {
    
     try{
 
-      this.makeTransact(ret)
+      this.makeTransact()
 
     } catch(err){
       this.setState({
@@ -201,21 +215,22 @@ class Payment extends Component{
       })
     }
   }
-  async makeTransact(ret){
+  async makeTransact(){
+      console.log('this.state.keyStore===',this.state.keyStore)
       const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal } = this.state
       console.log('senderAddress==',senderAddress)
-      let newWallet = await Wallet.fromV3(ret.keyStore,payPsdVal)
+      let newWallet = await Wallet.fromV3(this.state.keyStore,payPsdVal)
       let privKey = await newWallet._privKey.toString('hex')
       console.log('privKey==',privKey)
       let bufPrivKey = new Buffer(privKey, 'hex')
       // console.log('bufPrivKey==',bufPrivKey)
       let nonceNumber = await web3.eth.getTransactionCount(senderAddress)
-      // console.log('nonceNumber===',nonceNumber)
+
       console.log('payTotalVal==',payTotalVal)
       let totalValue = web3.utils.toWei(payTotalVal,'ether')
       let hex16 = parseInt(totalValue).toString(16)
       const txParams = {
-          nonce: `0x${nonceNumber}`,
+          nonce: `0x${nonceNumber.toString(16)}`,
           gasPrice: '0x09184e72a000', 
           gasLimit: '0x2710',
           to: receiverAddress,
@@ -228,44 +243,76 @@ class Payment extends Component{
       tx.sign(bufPrivKey)
       const serializedTx = tx.serialize()
       console.log('serializedTx==',serializedTx)
-      // web3.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`)
-      // .on('transactionHash', function(hash){
-      //    console.log('hash==',hash)
 
-      //    this.props.navigator.push({
-      //     screen: 'trading_record_detail',
-      //     title:'Transaction Records',
-      //     navigatorStyle: MainThemeNavColor,
-      //     passProps: {
-      //       // tx_sender: senderAddress,
-      //       // tx_receiver:receiverAddress,
-      //       tx_note: noteVal,
-      //       tx_hash: hash,
-      //       tx_value: payTotalVal,
-      //     }
-      //    })
-
-      // })
-      // .on('receipt', function(receipt){
-      //     console.log('receipt==',receipt)
-      //     if(receipt.status==="0x1"){//"0x1" succ "0x0" fail
-
-      //     }
-      // })
-      // .on('confirmation', function(confirmationNumber, receipt){ 
-      //   console.log('confirmationNumber==',confirmationNumber)
-      // })
-      // .on('error', (error) => {
-      //   console.log('error==',error)
-      // });
       this.onPressClose()
-      web3.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`,function(err,hash){
-        console.log('err==',err)
-        console.log('hash==',hash)
-        if(hash.length > 0){
-          alert('payment succeeful~')
+      let hashVal = ''
+      web3.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`)
+      .on('transactionHash', function(hash){
+         console.log('hash==',hash)
+        hashVal = hash
+        ToastAndroid.show('payment succeeful~',3000)
+        self.props.navigator.popToRoot({
+          animated: true,
+          animationType: 'fade',
+        })
+
+          
+         // this.props.navigator.push({
+         //  screen: 'trading_record_detail',
+         //  title:'Transaction Records',
+         //  navigatorStyle: MainThemeNavColor,
+         //  passProps: {
+         //    // tx_sender: senderAddress,
+         //    // tx_receiver:receiverAddress,
+         //    tx_note: noteVal,
+         //    tx_hash: hash,
+         //    tx_value: payTotalVal,
+         //  }
+         // })
+
+      })
+      .on('receipt', function(receipt){
+          console.log('receipt==',receipt)
+          // if(receipt.status==="0x1"){//"0x1" succ "0x0" fail
+           
+          // }else{
+          //   
+          //   this.props.navigator.pop()
+          // }
+      })
+      .on('confirmation', function(confirmationNumber, receipt){ 
+        console.log('confirmationNumber==',confirmationNumber)
+        if(confirmationNumber === 24){
+          setTimeout(() => {
+            self.props.dispatch(insert2TradingDBAction({
+              tx_hash: hashVal,
+              tx_value: payTotalVal,
+              tx_sender: senderAddress,
+              tx_receiver: receiverAddress,
+              tx_note: noteVal,
+            }))
+          },500)
         }
       })
+      .on('error', (error) => {
+        console.log('error==',error)
+        ToastAndroid.show('payment fail~',3000)
+      });
+
+      
+
+
+      // web3.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`,function(err,hash){
+      //   console.log('err==',err)
+      //   console.log('hash==',hash)
+      //   if(hash.length > 0){
+      //     ToastAndroid.show('payment succeeful~',3000)
+      //     this.props.navigator.popToRoot({
+      //       animated: true,
+      //       animationType: 'fade',
+      //     })
+      //   }
+      // })
 
       
   }
@@ -368,7 +415,6 @@ class Payment extends Component{
                 />
               </View>
             }
-
           </View>
         </Modal>
       </View>
@@ -421,4 +467,8 @@ const styles = StyleSheet.create({
     },
 })
 
-export default Payment
+export default connect(
+  state => ({
+    accountManageReducer: state.accountManageReducer
+  })
+)(Payment)

@@ -35,7 +35,7 @@ const tabs = [
     icon: require('./images/xhdpi/tab_ico_personalcenter_assets_def.png'),
     selectedIcon: require('./images/xhdpi/tab_ico_home_asset_def.png'),
     navigatorStyle: AssetsNavStyle,
-    title:'username',
+    title:' ',
     navigatorButtons: {
       rightButtons: [
         {
@@ -43,12 +43,12 @@ const tabs = [
             id: 'right_drawer'
         }
       ],
-    //   leftButtons: [
-    //     {
-    //       icon: require('./images/xhdpi/nav_ico_home_message_def.png'),
-    //       id: 'left_drawer'
-    //     }
-    //   ]
+      // leftButtons: [
+      //   {
+      //     icon: require('./images/xhdpi/nav_ico_home_message_def.png'),
+      //     id: 'left_drawer'
+      //   }
+      // ]
     },
 
     iconInsets: bottomTabStyle

@@ -15,6 +15,7 @@ import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn } from '../../components/'
 import Modal from 'react-native-modal'
 import QRCode from 'react-native-qrcode'
+import { connect } from 'react-redux'
 const wallet = require('ethereumjs-wallet')
 class Collection extends Component{
   constructor(props){
@@ -28,19 +29,23 @@ class Collection extends Component{
   }
 
   componentWillMount(){
-    localStorage.load({
-     key: 'account'
-    }).then(ret => {
-      this.setState({
-        addressText: `0x${ret.keyStore.address}`
-      })
-     console.log('ret==',ret)
-     // let newWallet =  Wallet.fromV3(ret.keyStore,'1234567q')
-     // console.log('newWallet==',newWallet)
-     // console.log('address==',`0x${newWallet.getAddress().toString('hex')}`)
-    }).catch(err => {
 
+
+
+    const { accountInfo, } = this.props.accountManageReducer
+    accountInfo.map((val,index) => {
+      if(val.is_selected === 1){
+        this.setState({
+          addressText: `0x${val.address}`
+        })
+      }
+      if(val.backup_status === 0){
+        this.setState({
+          visible: true
+        })
+      }
     })
+
   }
 
   componentWillUnmount(){
@@ -126,17 +131,17 @@ class Collection extends Component{
         <View style={[{alignItems:'center'}]}>
             <View style={styles.blueView}>
                 <Text style={[pubS.font36_3,{marginTop: scaleSize(32)}]}>Please backup your account first</Text>
-                <Text style={[pubS.font22_2,{marginTop: scaleSize(27),width: '75%'}]} numberOfLines={9}>
+                <Text style={[pubS.font22_2,{marginTop: scaleSize(13),width: '90%',textAlign:'center'}]}>
                     Blockchain account is different from traditional website account, it is the account of the decentralized system based on cryptography.
                     You must keep your account's private key and trade password in a safe place.
                     Any accident may result in assets loss. We suggest to do double backup first and then import small amount for test, finally began to use happily.
                 </Text>
             </View>
             <View style={styles.whileView}>
-                <Text style={[pubS.font30_2,{marginTop: scaleSize(50)}]}>{`--  Backup mnemonic words --`}</Text>
-                <Text style={pubS.font24_2}>When lost account or password, mnemonic words can help to restore account</Text>
-                <Text style={[pubS.font30_2,{marginTop: scaleSize(46)}]}>{`--  Backup Keystore file  --`}</Text>
-                <Text style={pubS.font24_2}>Official account format, private key file which protected by transaction password.</Text>
+                <Text style={[pubS.font30_2,{marginTop: scaleSize(25)}]}>{`--  Backup mnemonic words --`}</Text>
+                <Text style={[pubS.font24_2,{textAlign:'center'}]}>When lost account or password, mnemonic words can help to restore account</Text>
+                <Text style={[pubS.font30_2,{marginTop: scaleSize(25)}]}>{`--  Backup Keystore file  --`}</Text>
+                <Text style={[pubS.font24_2,{textAlign:'center'}]}>Official account format, private key file which protected by transaction password.</Text>
                 <TouchableOpacity activeOpacity={.7} onPress={this.backupBtn} style={[styles.backupBtnStyle,pubS.center]}>
                   <Text style={pubS.font28_2}>backup now</Text>
                 </TouchableOpacity>
@@ -193,4 +198,8 @@ const styles = StyleSheet.create({
 
   }
 })
-export default Collection
+export default connect(
+  state => ({
+    accountManageReducer: state.accountManageReducer
+  })
+)(Collection)

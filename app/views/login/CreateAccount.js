@@ -13,7 +13,6 @@ import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn,Loading } from '../../components/'
 import { connect } from 'react-redux'
 import { createAccountAction } from '../../actions/createAccountAction'
-var bip39 = require('bip39')
 
 class CreateAccount extends Component{
   constructor(props){
