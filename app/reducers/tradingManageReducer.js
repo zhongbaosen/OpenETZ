@@ -45,9 +45,6 @@ const insertToDB = (state,action) => {
 
      db.transaction((tx) => {
         tx.executeSql("select account_name from account where is_selected=1 ", [], (tx,results) => {
-
-
-        	console.log('results.rows.item(0)======',results.rows.item(0))
             currentAccount = results.rows.item(0).account_name
 
         },(error) => {

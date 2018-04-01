@@ -31,6 +31,8 @@ let t_db
   
 
   componentDidMount(){
+
+    toHome()
     // web3.eth.getTransaction('0x59eaf968a7b4d1f54daf8dcb31961c5df898cd39d42bf5589c9695c821274b26').then((res,rej)=>{//5388393
     //   console.log('getTransaction',res)
 
@@ -50,33 +52,33 @@ let t_db
 
 
       
-    setTimeout(() => {
-      if(!db){  
-        db = sqLite.open();  
-      }  
-      // sqLite.dropTable()
-      // sqLite.deleteData()
+    // setTimeout(() => {
+    //   if(!db){  
+    //     db = sqLite.open();  
+    //   }  
+    //   // sqLite.dropTable()
+    //   // sqLite.deleteData()
 
-      db.transaction((tx) => {
-        tx.executeSql("select * from account ", [], (tx,results) => {
+    //   db.transaction((tx) => {
+    //     tx.executeSql("select * from account ", [], (tx,results) => {
 
-          let len = results.rows.length 
-          let allAccounts = [] 
-          for(let i=0; i<len; i++){  
-            let u = results.rows.item(i)
-            allAccounts.push(u)
+    //       let len = results.rows.length 
+    //       let allAccounts = [] 
+    //       for(let i=0; i<len; i++){  
+    //         let u = results.rows.item(i)
+    //         allAccounts.push(u)
 
-            this.updateAssetsTotal(u)
+    //         this.updateAssetsTotal(u)
 
-          } 
-          this.props.dispatch(getAccountInfoAction(allAccounts))
-          toHome()
-        },(error) => {
-          toLogin()
-        })
-      })
+    //       } 
+    //       this.props.dispatch(getAccountInfoAction(allAccounts))
+    //       toHome()
+    //     },(error) => {
+    //       toLogin()
+    //     })
+    //   })
 
-    },2000)
+    // },2000)
   } 
 
 

@@ -143,14 +143,14 @@ class Assets extends Component{
       screen: 'trading_record',
       title:'Transaction Records',
       navigatorStyle: MainThemeNavColor,
-      navigatorButtons: {
-        rightButtons: [
-          {
-            icon: require('../../images/xhdpi/nav_ico_transactionrecords_picker_def.png'),
-            id: 'calendar_picker'
-          }
-        ]
-      }
+      // navigatorButtons: {
+      //   rightButtons: [
+      //     {
+      //       icon: require('../../images/xhdpi/nav_ico_transactionrecords_picker_def.png'),
+      //       id: 'calendar_picker'
+      //     }
+      //   ]
+      // }
     })
   }
   // ListHeaderComponent = () => {

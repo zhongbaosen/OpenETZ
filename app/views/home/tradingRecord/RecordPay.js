@@ -13,29 +13,32 @@ import {
 import { pubS,DetailNavigatorStyle } from '../../../styles/'
 import { setScaleText, scaleSize } from '../../../utils/adapter'
 import RecordListItem from './RecordListItem'
-const DATA = [
-  {
-    a_type: 'ETZ',
-    a_total_name: 'Bitcoin',
-    a_dollar: '123,45',
-    a_mrb: '123,345,67',
-  },
-]
-
+import { sliceAddress,timeStamp2Date } from '../../../utils/splitNumber'
 
 class RecordPay extends Component{
-  renderPay = () => {
+  constructor(props){
+    super(props)
+    this.state={
+      
+    }
+  }
+
+  renderPay = (item) => {
+    let res = item.item
     return(
       <RecordListItem
-        payFail={true}
+        receiverAddress={sliceAddress(res.tx_receiver)}
+        receiverTime={timeStamp2Date(res.tx_time)}
+        receiverVal={`-${res.tx_value}`}
       />
     )
   }
+
   render(){
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB',paddingTop: scaleSize(10)}]}>
         <FlatList
-          data={DATA}
+          data={this.props.list}
           renderItem={this.renderPay}
           keyExtractor = {(item, index) => index}
         />

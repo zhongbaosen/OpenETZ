@@ -14,7 +14,7 @@ import { setScaleText, scaleSize } from '../../../utils/adapter'
 class RecordListItem extends Component{
   static defaultProps = {
     moneyTextColor: '#657CAB',
-    payFail: false,//付款失败
+    payFail: false,
     listIcon: require('../../../images/xhdpi/etz_logo.png'),
     style: {},
     listIconStyle: {width: scaleSize(44),height:scaleSize(44)},

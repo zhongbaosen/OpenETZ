@@ -1,4 +1,3 @@
-
 //交易记录详情
 import React, { Component } from 'react'
 import {
@@ -15,7 +14,7 @@ import {
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import QRCode from 'react-native-qrcode'
-const moment = require('moment')
+import { sliceAddress,timeStamp2FullDate } from '../../utils/splitNumber'
 class TextInstructions extends Component{
   static defaultProps = {
     inColor: '#657CAB',
@@ -37,42 +36,10 @@ class TradingRecordDetail extends Component{
   constructor(props){
     super(props)
     this.state = {
-      blockNum: 0,
-      fromAddress: '',
-      toAddress: '',
-      txTime: '',
+   
     }
   }
 
-  componentWillMount(){
-    
-    this.getReceiptTx()
-  }
-  shouldComponentUpdate(nextProps,nextState){
-    if(this.state.blockNum === nextState.blockNum && this.state.txTime === nextState.txTime){
-      return false
-    }else{
-      return true
-    }
-  }
-  async getReceiptTx(){
-    let res = await web3.eth.getTransactionReceipt(this.props.tx_hash)
-    this.setState({
-      blockNum: res.blockNumber,
-      fromAddress: res.from,
-      toAddress: res.to,
-    })
-  }
-
-  async getTxTime(bNum){
-    let newDate = new Date()
-    let result = await web3.eth.getBlock(bNum)
-    let t = result.timestamp * 1000
-    this.setState({
-      // txTime:  moment(result.timestamp).format('YYYY MM DD') 
-      txTime: newDate.toLocaleString(t)
-    })
-  }
 
   toWebView = (hash) => {
     this.props.navigator.push({
@@ -89,37 +56,34 @@ class TradingRecordDetail extends Component{
     })
   }
   onCopyBtn = () => {
-    Clipboard.setString(this.props.tx_receiver)
+    Clipboard.setString(this.props.detailInfo.tx_receiver)
     ToastAndroid.show('copy succeeful',3000)
   }
 
   
   render(){
-    const { tx_sender, tx_receiver, tx_note, tx_hash, tx_value, } = this.props
-    const { blockNum,fromAddress, toAddress,txTime } = this.state
-    if(blockNum > 0) {
-      this.getTxTime(blockNum)
-    }
+    const { detailInfo} = this.props
+
     return(
       <View style={pubS.container}>
         <Image source={require('../../images/xhdpi/ico_selectasset_transactionrecords_succeed.png')} style={styles.iocnStyle}/>
         <View style={styles.topView}></View>
         <View style={styles.mainStyle}>
           <View style={[styles.accountStyle,pubS.rowCenter2]}>
-            <Text style={pubS.font60_1}>{tx_value}</Text>
+            <Text style={pubS.font60_1}>{detailInfo.tx_value}</Text>
             <Text style={[pubS.font22_3,{marginLeft: scaleSize(18),marginTop: scaleSize(28)}]}>etz</Text>
           </View>
           <TextInstructions
             title={'payer'}
-            instructions={fromAddress}
+            instructions={detailInfo.tx_sender}
           />
           <TextInstructions
             title={'payee'}
-            instructions={toAddress}
+            instructions={detailInfo.tx_receiver}
           />
           <TextInstructions
             title={'note'}
-            instructions={tx_note}
+            instructions={detailInfo.tx_note}
           />
 
           <View style={[{width: scaleSize(680),alignSelf:'center',marginTop: scaleSize(30),marginBottom: scaleSize(10)},pubS.bottomStyle]}></View>
@@ -127,28 +91,28 @@ class TradingRecordDetail extends Component{
             <View>
               <TextInstructions
                 title={'transaction number'}
-                instructions={`${tx_hash.slice(0,8)}...${tx_hash.slice(tx_hash.length-8,tx_hash.length)}`}
+                instructions={sliceAddress(detailInfo.tx_hash)} 
                 inColor={'#2B8AFF'}
-                onPressText={() => this.toWebView(tx_hash)}
+                onPressText={() => this.toWebView(detailInfo.tx_hash)}
                 />
               <TextInstructions
                 title={'block'}
-                instructions={blockNum}
+                instructions={detailInfo.tx_block_number}
                 />
               <TextInstructions
                 title={'transaction time'}
-                instructions={txTime}
+                instructions={timeStamp2FullDate(detailInfo.tx_time)}
                 />
             </View>
             <View style={{marginTop: scaleSize(40)}}>
               <QRCode
-                value={tx_receiver}
+                value={detailInfo.tx_receiver}
                 size={scaleSize(170)}
                 bgColor='#000'
                 fgColor='#fff'
               />
               <TouchableOpacity onPress={this.onCopyBtn} activeOpacity={.7} style={[styles.btnStyle,pubS.center]}>
-                <Text style={pubS.font22_2}>copy URL</Text>
+                <Text style={pubS.font22_3}>copy URL</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -11,7 +11,7 @@ import {
 import { pubS,DetailNavigatorStyle,MainThemeNavColor } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import RecordListItem from './tradingRecord/RecordListItem'
-import { splitNumber } from '../../utils/splitNumber'
+import { splitNumber,sliceAddress,timeStamp2Date } from '../../utils/splitNumber'
 import TradingSQLite from '../../utils/tradingDB'
 import UserSQLite from '../../utils/accountDB'
 const tradingSqLite = new TradingSQLite()  
@@ -49,8 +49,6 @@ class AssetDetailList extends Component{
       db = sqLite.open()
     }
 
-
-
     db.transaction((tx) => {
       tx.executeSql("select * from account where is_selected=1",[],(tx,results)=>{
         let aName = results.rows.item(0).account_name
@@ -74,37 +72,29 @@ class AssetDetailList extends Component{
 
     })
 
-
-
-
-
+    
   }
 
-  toTradingRecordDetail = () => {
+  toTradingRecordDetail = (res) => {
     this.props.navigator.push({
       screen: 'trading_record_detail',
       title:'Transaction Records',
       navigatorStyle: MainThemeNavColor,
       passProps: {
-        // tx_sender: 'senderAddress',
-        // tx_receiver:'receiverAddress',
-        tx_note: '合作愉快',
-        tx_hash: '0x462e3c5c32e4b19fa1378a1d40006ff85030cb48eaa7a6f94411c3e5761c6421',
-        tx_value: '1000',
+        detailInfo: res
       }
     })
   }
   renderItem = (item) => {
     let res = item.item
-
     return(
       <RecordListItem
         style={{marginBottom: scaleSize(10)}}
         listIcon={require('../../images/xhdpi/lab_ico_selectasset_collection_def.png')}
         listIconStyle={{width: scaleSize(20),height:scaleSize(20)}}
-        onPressListItem={this.toTradingRecordDetail}
-        receiverAddress={res.tx_receiver}
-        receiverTime={res.tx_time}
+        onPressListItem={() => this.toTradingRecordDetail(res)}
+        receiverAddress={sliceAddress(res.tx_receiver)}
+        receiverTime={timeStamp2Date(res.tx_time)}
         receiverVal={res.tx_value}
       />
     )
@@ -133,6 +123,7 @@ class AssetDetailList extends Component{
     })
   }
   render(){
+    console.log('交易列表',this.state.listData)
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
         <FlatList
