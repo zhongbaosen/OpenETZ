@@ -28,7 +28,7 @@ class Payment extends Component{
   constructor(props){
     super(props)
     this.state={
-      receiverAddress: '0x45e2c3a5cb65440a2f33057591432f059a893915',//0xec80a9fe89b05e337efa9c801c07c8444d9cb32e  账号2
+      receiverAddress: '',//0xec80a9fe89b05e337efa9c801c07c8444d9cb32e
       payTotalVal: '',
       noteVal: '',
       payAddressWarning: '',

@@ -14,6 +14,9 @@ import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import Drawer from 'react-native-drawer'
 import { connect } from 'react-redux'
+import { onSwitchDrawerAction } from '../../actions/onSwitchDrawerAction'
+import SwitchWallet from './SwitchWallet'
+import { switchDrawer } from '../../utils/switchDrawer'
 class Assets extends Component{
   constructor(props){
     super(props)
@@ -26,11 +29,12 @@ class Assets extends Component{
   onNavigatorEvent (event) {
     if (event.type == 'NavBarButtonPress') {
       if (event.id == 'right_drawer') {
-        this.props.navigator.toggleDrawer({
-          side: 'right', 
-          animated: true,
-          // to: 'open'
-        })
+        // this.props.navigator.toggleDrawer({
+        //   side: 'right', 
+        //   animated: true,
+        //   to: 'open'
+        // })
+        this._drawer.open()
       }
       if (event.id == 'left_drawer') {
         this.props.navigator.push({
@@ -187,6 +191,18 @@ class Assets extends Component{
   addAssetsBtn = () => {
     alert('add')
   }
+
+  onDrawerCloseStart = () => {
+    switchDrawer(false)
+    // this.props.dispatch(onSwitchDrawerAction(0))
+  }
+  onDrawerOpenStart = () => {
+    switchDrawer(true)
+    // this.props.dispatch(onSwitchDrawerAction(1))
+  }
+  onCloseDrawer = () => {
+    this._drawer.close()
+  }
   render(){
 
     return(
@@ -200,7 +216,18 @@ class Assets extends Component{
           //   ListHeaderComponent={this.ListHeaderComponent}
           // />
         }
-        
+        <Drawer
+          ref={(ref) => this._drawer = ref}
+          type="overlay"
+          openDrawerOffset={0.4}
+          side={'right'}
+          tapToClose={true}
+          ref={(ref) => this._drawer = ref}
+          content={<SwitchWallet thisPorps={this} onCloseSwitchDrawer={this.onCloseDrawer}/>}
+          onCloseStart={this.onDrawerCloseStart}
+          onOpenStart={this.onDrawerOpenStart}
+        >
+
           <View>
             <View style={[styles.assetsTotalView,pubS.center]}>
                 <Text style={pubS.font72_1}>≈0</Text>
@@ -241,7 +268,7 @@ class Assets extends Component{
               </View>
             </View>
           </TouchableOpacity>
-        
+        </Drawer>
       </View>
     )
   }

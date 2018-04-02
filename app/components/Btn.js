@@ -13,11 +13,12 @@ export default class Btn extends Component {
     btnWidth: scaleSize(680),
     bgColor: '#2B8AFF',
     btnMarginTop: 0,
+    opacity: .7
   }
   render () {
-    const {  btnWidth, btnPress, btnText,btnMarginTop,bgColor } = this.props
+    const {  btnWidth, btnPress, btnText,btnMarginTop,bgColor,opacity } = this.props
     return (
-      <TouchableOpacity style={[{width: btnWidth ,marginTop: btnMarginTop,backgroundColor:bgColor,}, pubS.center, styles.btnView]} activeOpacity={.7} onPress={btnPress}>
+      <TouchableOpacity style={[{width: btnWidth ,marginTop: btnMarginTop,backgroundColor:bgColor,}, pubS.center, styles.btnView]} activeOpacity={opacity} onPress={btnPress}>
         <Text style={pubS.font26_1}>{btnText}</Text>
       </TouchableOpacity>
     )

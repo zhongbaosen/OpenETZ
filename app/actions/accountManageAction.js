@@ -1,5 +1,6 @@
 import * as types from  '../constants/accountManageConstant'
 const getAccountInfoAction = (info) => {
+	console.log('5555555555555',info)
 	const getInfo = () => {
 		return {
 			type: types.GET_ACCOUNT_INFO,

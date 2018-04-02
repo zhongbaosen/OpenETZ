@@ -10,7 +10,7 @@ let db
 const initState = {
 	accountInfo: [],
 	currentAddr: '',
-	importSucc: false
+	importSucc: false,
 }
 export default function accountManageReducer (state = initState,action) {
 	switch(action.type){
@@ -50,28 +50,22 @@ const onSwitch = (state,action) => {
 		        db = sqLite.open();  
 		    }  
 		    db.transaction((tx)=>{  
-		      tx.executeSql("update account set is_selected = 1 where address= " + "?", [curr],(tx,results)=>{  
-		        console.log('账号切换is_selected = 1 更新成功')
-		        //其他账号 is_selected全部置为0
-		        //update account set is_selected = 0 where address != ? 
+		      tx.executeSql("update account set is_selected = 1 where address= ? ", [curr],(tx,results)=>{  
 		        db.transaction((tx) => {
-		        	tx.executeSql("update account set is_selected = 0 where address != " + "?", [curr],(tx,results)=>{
-		        		console.log('账号切换is_selected = 0 更新成功')
+		        	tx.executeSql("update account set is_selected = 0 where address != ? ", [curr],(tx,results)=>{
 		        	})
 		        }, (error) => {
-		        	console.log('账号切换is_selected = 0 更新失败')
+		        	console.error(error)
 		        })
-
-
 		      });  
 		    },(error)=>{
-		      console.log('账号切换is_selected = 1更新失败',error)
+		      console.error(error)
 		    })
 		}	
 	})
 	return {
 		...state,
-		currentAddr: curr
+		currentAddr: curr,
 	}
 }
 

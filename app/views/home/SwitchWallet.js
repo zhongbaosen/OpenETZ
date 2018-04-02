@@ -17,36 +17,38 @@ class SwitchWallet extends Component {
 		this.state={
 
 		}
-		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
+		// this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
 	}
 	componentWillMount(){
 		
 	}
-	onNavigatorEvent(event){
+	// onNavigatorEvent(event){
 		
-	}
+	// }
 	onScan = () => {
-		// this.props.navigator.push({
-	 //      screen: 'scan_qr_code',
-	 //      title:'Scan',
-	 //      navigatorStyle: Object.assign({},DetailNavigatorStyle,{
-	 //        navBarTextColor:'#fff',
-	 //        navBarBackgroundColor:'#000',
-	 //        statusBarColor:'#000',
-	 //        statusBarTextColorScheme:'light',
-	 //      }),
-	 //    })
+		this.props.thisPorps.props.navigator.push({
+	      screen: 'scan_qr_code',
+	      title:'Scan',
+	      navigatorStyle: Object.assign({},DetailNavigatorStyle,{
+	        navBarTextColor:'#fff',
+	        navBarBackgroundColor:'#000',
+	        statusBarColor:'#000',
+	        statusBarTextColorScheme:'light',
+	      }),
+	    })
+		this.props.onCloseSwitchDrawer()
 	}
 	onCreate = () => {
-		// this.props.navigator.push({
-	 //      screen: 'create_account',
-	 //      title:'create',
-	 //      navigatorStyle: DetailNavigatorStyle,
-	 //    })
+		this.props.thisPorps.props.navigator.push({
+	      screen: 'create_account',
+	      title:'create',
+	      navigatorStyle: DetailNavigatorStyle,
+	    })
+	    this.props.onCloseSwitchDrawer()
 	}
 	onSwitch = (addr) => {
 		this.props.dispatch(switchAccountAction(addr))
-		
+		this.props.onCloseSwitchDrawer()
 	}
 	render(){
 		const { accountInfo,currentAddr } = this.props.accountManageReducer

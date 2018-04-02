@@ -1,6 +1,6 @@
 import { setScaleText, scaleSize } from '../utils/adapter'
 import { StyleSheet } from 'react-native'
-
+import { switchDrawer } from '../utils/switchDrawer'
 //main theme color:   #144396
 
 const ScanNavStyle = Object.assign({},DetailNavigatorStyle,{
@@ -11,7 +11,6 @@ const ScanNavStyle = Object.assign({},DetailNavigatorStyle,{
       })
 
 const AssetsNavStyle = {
-  tabBarHidden: false,
   navBarTextColor: '#FFFFFF',
   navBarTextFontSize: setScaleText(30),
   navBarBackgroundColor: '#144396',//
@@ -19,7 +18,6 @@ const AssetsNavStyle = {
   // navBarButtonColor: '#D2D5DB',//
   // navBarLeftButtonColor:'#D2D5DB',//only ios
   // navBarRightButtonColor:'#2B8AFF',//only ios
-  navBarHidden: false,
   statusBarHidden: false,
   screenBackgroundColor: 'white',
   navBarTitleTextCentered: true,
@@ -27,7 +25,10 @@ const AssetsNavStyle = {
   statusBarColor: '#144396',
   statusBarTextColorScheme: 'light',
   topBarElevationShadowEnabled: false,
-  navBarNoBorder: false
+  navBarNoBorder: false,
+
+  tabBarHidden: switchDrawer(), 
+  navBarHidden: switchDrawer(),
 }
 const DetailNavigatorStyle = {
   tabBarHidden: true,

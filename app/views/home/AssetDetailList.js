@@ -18,20 +18,6 @@ const tradingSqLite = new TradingSQLite()
 let t_db
 const sqLite = new UserSQLite();  
 let db  
-const DATA = [
-  {
-    a_type: 'ETZ',
-    a_total_name: 'Bitcoin',
-    a_dollar: '123,45',
-    a_mrb: '123,345,67',
-  },
-  {
-    a_type: 'ETZ',
-    a_total_name: 'Bitcoin',
-    a_dollar: '123,45',
-    a_mrb: '123,345,67',
-  },
-]
 
 class AssetDetailList extends Component{
   constructor(props){
@@ -50,7 +36,7 @@ class AssetDetailList extends Component{
     }
 
     db.transaction((tx) => {
-      tx.executeSql("select * from account where is_selected=1",[],(tx,results)=>{
+      tx.executeSql("select * from account where is_selected = 1",[],(tx,results)=>{
         let aName = results.rows.item(0).account_name
         t_db.transaction((tx)=>{  
             tx.executeSql("select * from trading where tx_account_name = ?", [aName],(tx,t_results)=>{  

@@ -38,6 +38,7 @@ class CreateAccount extends Component{
       this.props.navigator.push({
         screen: 'create_account_success',
         navigatorStyle: DetailNavigatorStyle,
+        overrideBackPress: true,
       })
     }
   }
@@ -86,9 +87,9 @@ class CreateAccount extends Component{
       visible: true
     })
     this.props.navigator.push({
-        screen: 'create_account_success',
-        navigatorStyle: DetailNavigatorStyle,
-      })
+      screen: 'create_account_success',
+      navigatorStyle: DetailNavigatorStyle,
+    })
     // setTimeout(() => {
       this.props.dispatch(createAccountAction({
         userNameVal,

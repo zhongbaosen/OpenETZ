@@ -14,12 +14,7 @@ registerScreens()
 registerScreenVisibilityListener()
 getPixelRatio()
 
-Navigation.startSingleScreenApp({
-  screen: {
-    screen: 'splash',
-    navigatorStyle: {navBarHidden: true,statusBarColor:'#144396'},
-  }
-})
+
 
 const bottomTabStyle = {
   top: 6,
@@ -34,7 +29,7 @@ const tabs = [
     screen: 'home_assets',
     icon: require('./images/xhdpi/tab_ico_personalcenter_assets_def.png'),
     selectedIcon: require('./images/xhdpi/tab_ico_home_asset_def.png'),
-    navigatorStyle: AssetsNavStyle,
+    navigatorStyle: AssetsNavStyle, //tabBarHidden: true,  navBarHidden: true,
     title:' ',
     navigatorButtons: {
       rightButtons: [
@@ -86,7 +81,20 @@ function toLogin () {
           }
         })
 }
+
+function toSplash () {
+  Navigation.startSingleScreenApp({
+    screen: {
+      screen: 'splash',
+      navigatorStyle: {navBarHidden: true,statusBarColor:'#144396'},
+    }
+  })
+}
+
+toSplash()
+
 export {
   toHome,
-  toLogin
+  toLogin,
+  toSplash
 }

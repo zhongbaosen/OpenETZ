@@ -11,6 +11,7 @@ import {
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { Btn } from '../../components/'
+import { toSplash } from '../../root'
 class CreateAccountSuccess extends Component{
   constructor(props){
     super(props)
@@ -18,29 +19,37 @@ class CreateAccountSuccess extends Component{
       userName: '',
       address: '',
     }
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
-  componentDidMount(){
+  
+  onNavigatorEvent(event){
+    if (event.type == 'NavBarButtonPress') {
+      if(event.id === 'backPress'){
+          toSplash()
+      }
+    }
+  }
 
-  }
 
   onPressBackUp = () => {
-    this.props.navigator.push({
-      screen: 'back_up_account',
-      title: 'username',
-      navigatorStyle: DetailNavigatorStyle,
-      // passProps: {
-      //   userName: userName,
-      //   address: `0x${addressText}`
-      // },
-      navigatorButtons: {
-        rightButtons: [
-          {
-            title: 'Save',
-            id: 'save_back_up_info'
-          }
-        ]
-      }
-    })
+    toSplash()
+    // this.props.navigator.push({
+    //   screen: 'back_up_account',
+    //   title: 'username',
+    //   navigatorStyle: DetailNavigatorStyle,
+    //   // passProps: {
+    //   //   userName: userName,
+    //   //   address: `0x${addressText}`
+    //   // },
+    //   navigatorButtons: {
+    //     rightButtons: [
+    //       {
+    //         title: 'Save',
+    //         id: 'save_back_up_info'
+    //       }
+    //     ]
+    //   }
+    // })
   }
   render(){
     return(

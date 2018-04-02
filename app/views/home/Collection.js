@@ -16,6 +16,13 @@ import { TextInputComponent,Btn } from '../../components/'
 import Modal from 'react-native-modal'
 import QRCode from 'react-native-qrcode'
 import { connect } from 'react-redux'
+
+import UserSQLite from '../../utils/accountDB'
+import TradingSQLite from '../../utils/tradingDB'
+const sqLite = new UserSQLite();  
+let db;  
+
+
 const wallet = require('ethereumjs-wallet')
 class Collection extends Component{
   constructor(props){
@@ -30,21 +37,34 @@ class Collection extends Component{
 
   componentWillMount(){
 
+    if(!db){  
+        db = sqLite.open();  
+    }
 
+    db.transaction((tx) => {
+        tx.executeSql("select * from account ", [], (tx,results) => {
 
-    const { accountInfo, } = this.props.accountManageReducer
-    accountInfo.map((val,index) => {
-      if(val.is_selected === 1){
-        this.setState({
-          addressText: `0x${val.address}`
+          let len = results.rows.length 
+          
+          for(let i=0; i<len; i++){  
+            let result = results.rows.item(i)
+            console.log('55555555555555555555555555555',result)
+            if(result.is_selected === 1){
+              this.setState({
+                addressText: `0x${result.address}`
+              })
+            }
+            
+            if(result.backup_status === 0){
+              this.setState({
+                visible: true
+              })
+            }
+          } 
+        },(error) => {
+          console.error(error)
         })
-      }
-      if(val.backup_status === 0){
-        this.setState({
-          visible: true
-        })
-      }
-    })
+      })
 
   }
 

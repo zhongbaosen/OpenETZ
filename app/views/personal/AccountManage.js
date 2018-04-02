@@ -13,10 +13,11 @@ import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { toHome } from '../../root'
 import { connect } from 'react-redux'
+import { sliceAddress } from '../../utils/splitNumber'
 const Wallet = require('ethereumjs-wallet')
-// import UserSQLite from '../../utils/accountDB'
-// const sqLite = new UserSQLite();  
-// let db; 
+import UserSQLite from '../../utils/accountDB'
+const sqLite = new UserSQLite();  
+let db; 
 class AccountCard extends Component {
   render(){
     const { accountName, accountPsd, accountTotal, accountUnit, accountBackUp, backupState} = this.props
@@ -38,7 +39,7 @@ class AccountCard extends Component {
             <View style={[styles.backupBtn,pubS.center]}>
               <Text style={pubS.font22_5}>backup</Text>
             </View>
-            : null
+            : <View/>
           }
           <View style={pubS.rowCenter}>
             <Text style={pubS.font34_1}>{accountTotal}</Text>
@@ -61,30 +62,30 @@ class AccountManage extends Component{
 
   componentWillMount(){
 
-    // const { cardItems } = this.state
-    // if(!db){  
-    //   db = sqLite.open();  
-    // }  
-    // db.transaction((tx)=>{  
-    //   tx.executeSql("select * from account ", [],(tx,results)=>{
-    //     var len = results.rows.length; 
-    //     let empty = [] 
-    //     for(let i=0; i<len; i++){  
-    //       var u = results.rows.item(i);
-    //       console.log('uuuuuuuuuuuu',u)
-    //       empty.push(u)
-    //       this.setState({
-    //         cardItems: empty
-    //       })
-    //     }  
-    //   });  
-    // },(error)=>{
-    //   console.log('打印异常信息 ',error);  
-    // }); 
+    const { cardItems } = this.state
+    if(!db){  
+      db = sqLite.open();  
+    }  
+    db.transaction((tx)=>{  
+      tx.executeSql("select * from account ", [],(tx,results)=>{
+        var len = results.rows.length; 
+        let empty = [] 
+        for(let i=0; i<len; i++){  
+          var u = results.rows.item(i);
+          // console.log('uuuuuuuuuuuuuuuuuuuuuuu',u)
+          empty.push(u)
+          this.setState({
+            cardItems: empty
+          })
+        }  
+      });  
+    },(error)=>{
+      console.log('打印异常信息 ',error);  
+    }); 
 
-    this.setState({
-      cardItems: this.props.accountManageReducer.accountInfo
-    })
+    // this.setState({
+    //   cardItems: this.props.accountManageReducer.accountInfo
+    // })
 
 
   }
@@ -131,7 +132,7 @@ class AccountManage extends Component{
     return(
       <AccountCard
         accountName={res.account_name}
-        accountPsd={`0x${res.address}`}
+        accountPsd={sliceAddress(`0x${res.address}`,10)}
         accountTotal={res.assets_total}
         accountUnit={'ether'}
         accountBackUp={() => this.toDetail(res.address,res.account_name)}
@@ -142,6 +143,7 @@ class AccountManage extends Component{
   render(){
     // const { localKeyStore, userName } = this.props.getLocalDataReducer
     const { hasBackup,cardItems } = this.state
+
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
         <View style={{marginBottom: scaleSize(96)}}>

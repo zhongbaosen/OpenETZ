@@ -15,6 +15,7 @@ import {
 import { Navigation } from 'react-native-navigation'
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
+import { sliceAddress } from '../../utils/splitNumber'
 import { Btn } from '../../components/'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
@@ -32,11 +33,26 @@ class BackUpAccount extends Component{
       pKeyVisible: false,
       psdVal: '',
       privKey: '',
+      backuped: false
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
   componentWillMount(){
-    
+    if(!db){  
+        db = sqLite.open();  
+    }  
+    db.transaction((tx)=>{  
+      tx.executeSql("select * from account where address= ? ", [this.props.address],(tx,results)=>{  
+        let res = results.rows.item(0)
+        if(res.backup_status === 1){
+          this.setState({
+            backuped: true
+          })
+        }
+      });  
+    },(error)=>{
+      console.error(error)
+    }); 
   }
   compennetDidUnmount(){  
     sqLite.close();  
@@ -68,7 +84,7 @@ class BackUpAccount extends Component{
       } 
       db.transaction((tx)=>{  
         tx.executeSql("delete from account where address= " + "?", [this.props.address],(tx,results)=>{  
-          alert('删除成功')
+          alert('delete successful~')
           // var len = results.rows.length;  
 
           // for(let i=0; i<len; i++){  
@@ -77,10 +93,10 @@ class BackUpAccount extends Component{
           // }  
           });  
         },(error)=>{
-          console.log('删除',error)
+          console.error(error)
       }); 
   }
-  backUpBnt = () => {
+  backUpBtn = () => {
       this.setState({
         iptPsdVisible: true
       })
@@ -102,9 +118,7 @@ class BackUpAccount extends Component{
       privKey: '',
     })
 
-    if(!db){  
-        db = sqLite.open();  
-    }  
+   
     db.transaction((tx)=>{  
       tx.executeSql("update account set backup_status = 1 where address= " + "?", [this.props.address],(tx,results)=>{  
         console.log('更新成功')  
@@ -116,74 +130,81 @@ class BackUpAccount extends Component{
 
 
   }
-  // onCancelBtn = () => {
-  //   this.setState({
-  //     iptPsdVisible: false,
-  //     psdVal: '',
-  //   })
-  // }
-  onSureBtn = () => {
 
-    localStorage.load({
-      key: 'account'
-    }).then(ret => {
-      this.getWallet(ret)
-    }).catch(err => {
-      
-    })
-
-  }
-
- async  returnPriv(ret){
+  onConfirm = () => {
+    //当前账号的keystore  生成 private key
     const { psdVal } = this.state
-    const newWallet = await Wallet.fromV3(ret.keyStore,psdVal)
-    let priv = await newWallet._privKey.toString('hex')
-    this.setState({
-      privKey: priv,
-      pKeyVisible: true
-    })
-    this.onHide()
-  }
+  
+    let keyStore = {}
+    db.transaction((tx)=>{  
+      tx.executeSql(" select * from account where address = ? ", [this.props.address],(tx,results)=>{  
+        let res = results.rows.item(0)
+        keyStore = {
+          "version":res.version,
+          "id":res.id,
+          "address":res.address,
+          "crypto":{
+            "ciphertext":res.ciphertext,
+            "cipherparams":{
+                "iv":res.iv
+            },
+            "cipher":res.cipher,
+            "kdf":res.kdf,
+            "kdfparams":{
+              "dklen":res.dklen,
+              "salt":res.salt,
+              "n":res.n,
+              "r":res.r,
+              "p":res.p
+            },
+            "mac":res.mac
+          }
+        }
 
-  getWallet = (ret) => {
-     
-    try{
-        
-        this.returnPriv(ret)
-
-        // console.log('getAddress==',`0x${newWallet.getAddress().toString('hex')}`)
-        // console.log('getPrivateKey==',newWallet.getPrivateKey())
-        // newWallet.getPublicKey()
-        // console.log('getPublicKey==',newWallet.getPublicKey())
-        // console.log('newWallet==',newWallet)
-
-        
-    }catch (err){
+        // console.log('keyStore=============',keyStore)
+        const newWallet = Wallet.fromV3(keyStore,psdVal)
+        let priv = newWallet._privKey.toString('hex')
+        // console.log('priv======',priv)
+        this.setState({
+          privKey: priv,
+          pKeyVisible: true
+        })
+        this.onHide()
+      });  
+    },(error)=>{
       alert('Password error!')
       this.setState({
         psdVal: ''
       })
-    }
+    }); 
+
+
+
   }
+
+
+
 
   onCopyBtn = () => {
     Clipboard.setString(this.state.privKey)
     ToastAndroid.show('copy successful~',3000)
   }
   render(){
-    const { iptPsdVisible,psdVal,pKeyVisible,privKey } = this.state
-    const { address, privateKey, userName, psd, prompt, } = this.props.createAccountReducer
+    const { iptPsdVisible,psdVal,pKeyVisible,privKey,backuped } = this.state
+    const { address, privateKey, userName, psd, prompt} = this.props.createAccountReducer
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
         <Image source={require('../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
-        <Text style={pubS.font26_5}>{this.props.address}</Text>
+        <Text style={pubS.font26_5}>{sliceAddress(this.props.address,10)}</Text>
         <View style={[styles.userNameViewStyle,pubS.rowCenterJus,pubS.bottomStyle]}>
           <Text style={pubS.font26_4}>wallet name</Text>
           <Text style={pubS.font26_4}>{this.props.userName}</Text>
         </View>
 
         <Btn
-          btnPress={this.backUpBnt}
+          btnPress={backuped ? () => {return} : () => this.backUpBtn() }
+          bgColor={backuped ? '#BDC0C6' : '#2B8AFF'}
+          opacity={backuped ? 1 : .7}
           btnText={'backup private key'}
           btnMarginTop={scaleSize(317)}
         />
@@ -216,7 +237,7 @@ class BackUpAccount extends Component{
               <TouchableOpacity activeOpacity={.7} onPress={this.onHide} style={[pubS.center,styles.modalBtnStyle]}>
                 <Text style={pubS.font34_3}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={.7} onPress={this.onSureBtn} style={[pubS.center,{width:'50%',borderBottomRightRadius:scaleSize(26)}]}>
+              <TouchableOpacity activeOpacity={.7} onPress={this.onConfirm} style={[pubS.center,{width:'50%',borderBottomRightRadius:scaleSize(26)}]}>
                 <Text style={pubS.font34_3}>Confirm</Text>
               </TouchableOpacity>
             </View>

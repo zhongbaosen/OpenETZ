@@ -27,8 +27,9 @@ function aa(str){
 }
 
 
-function sliceAddress(str){
-  return `${str.slice(0,8)}...${str.slice(str.length-8,str.length)}`
+function sliceAddress(str,len){
+  len = len || 8
+  return `${str.slice(0,len)}...${str.slice(str.length-len,str.length)}`
 }
 
 function timeStamp2Date(d){

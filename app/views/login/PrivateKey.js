@@ -12,7 +12,7 @@ import { pubS } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import ScrollableTabView, { DefaultTabBar, ScrollableTabBar } from 'react-native-scrollable-tab-view'
 import { TextInputComponent,Btn } from '../../components/'
-import { toHome } from '../../root'
+import { toSplash } from '../../root'
 import { importAccountAction } from '../../actions/accountManageAction'
 import { connect } from 'react-redux'
 import { Navigation } from 'react-native-navigation'
@@ -33,13 +33,7 @@ class PrivateKey extends Component{
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
-      // toHome()
-      Navigation.startSingleScreenApp({
-        screen: {
-          screen: 'splash',
-          navigatorStyle: {navBarHidden: true,statusBarColor:'#144396'},
-        }
-      })
+      toSplash()
     }
   }
   onChangePrivateText = (val) => {
@@ -107,17 +101,6 @@ class PrivateKey extends Component{
       password: psdVal,
       userName: userNameVal
     }))
-
-    // localStorage.save({
-    //   key: 'account',
-    //   data:{
-    //     keyStore: keystore,
-    //     userName: userNameVal,
-    //   },
-    //   expires: null,
-    // })
-    // console.log('keystore===', keystore)
-    // toHome()
   }
   onChangeUseNameText = (val) => {
     this.setState({

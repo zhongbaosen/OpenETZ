@@ -1,0 +1,4 @@
+const ON_SWITCH_DRAWER = 'ON_SWITCH_DRAWER'
+export { 
+	ON_SWITCH_DRAWER
+}
