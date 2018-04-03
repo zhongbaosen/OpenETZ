@@ -11,6 +11,8 @@ const initState = {
 	accountInfo: [],
 	currentAddr: '',
 	importSucc: false,
+	deleteFinished: false,
+	updateBackupSucc: false,
 }
 export default function accountManageReducer (state = initState,action) {
 	switch(action.type){
@@ -23,12 +25,67 @@ export default function accountManageReducer (state = initState,action) {
 		case types.ON_IMPORT_ACCOUNT:
 			return onImport(state,action)
 			break
+		case types.ON_DELETE_ACCOUNT:
+			return onDelete(state,action)
+			break
+		case types.RESET_DELETE_STATUS:
+			return onReset(state,action)
+			break
+		case types.UPDATE_BACKUP_STATUS:
+			return onUpateBackup(state,action)
+			break
 		default:
 			return state
 			break
 
 	}
 }
+const onUpateBackup = (state,action) => {
+	const { addr } = action.payload
+	let status = false
+	if(!db){  
+       db = sqLite.open();  
+    } 
+	db.transaction((tx)=>{  
+      tx.executeSql("update account set backup_status = 1 where address= ? ", [addr],(tx,results)=>{  
+        console.log('更新成功')  
+        // status = true
+      }) 
+    },(error)=>{
+      console.log('更新失败',error)
+    })
+
+
+	return {
+		...state,
+		updateBackupSucc: true
+	}
+}
+const onReset = (state,action) => {
+	return {
+		...state,
+		deleteFinished: false,
+		updateBackupSucc: false,
+	}
+}
+const onDelete = (state,action) => {
+	const { deleteId } = action.payload
+	if(!db){  
+      db = sqLite.open();  
+    } 
+    db.transaction((tx)=>{  
+      tx.executeSql("delete from account where id= ? ", [deleteId],(tx,results)=>{  
+          
+       })  
+      },(error)=>{
+        console.error(error)
+    }); 
+
+	return {
+		...state,
+		deleteFinished: true
+	}
+}	
 const getAccInfo = (state,action) => {
 	// console.log('222222222222222222222==',action.payload.info)
 	return {
@@ -80,7 +137,7 @@ const onImport = (state,action) => {
     // let w = hdWallet.getWallet()
     let keyStore = w.toV3(password)
 
-    console.log('keyStore====',keyStore)
+    console.log('import keyStore====',keyStore)
 
 
     if(!db){  

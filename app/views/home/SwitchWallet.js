@@ -11,6 +11,7 @@ import { pubS,ScanNavStyle,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { connect } from 'react-redux'
 import { switchAccountAction } from '../../actions/accountManageAction'
+import { toSplash } from '../../root'
 class SwitchWallet extends Component {
 	constructor(props){
 		super(props)
@@ -49,6 +50,7 @@ class SwitchWallet extends Component {
 	onSwitch = (addr) => {
 		this.props.dispatch(switchAccountAction(addr))
 		this.props.onCloseSwitchDrawer()
+		toSplash()
 	}
 	render(){
 		const { accountInfo,currentAddr } = this.props.accountManageReducer

@@ -1,6 +1,5 @@
 import * as types from  '../constants/accountManageConstant'
 const getAccountInfoAction = (info) => {
-	console.log('5555555555555',info)
 	const getInfo = () => {
 		return {
 			type: types.GET_ACCOUNT_INFO,
@@ -42,8 +41,50 @@ const importAccountAction = (data) => {
 		dispatch(getInfo())
 	}
 }
+
+const deleteAccountAction = (deleteId) => {
+	const onDelete = () => {
+		return {
+			type: types.ON_DELETE_ACCOUNT,
+			payload: {
+				deleteId
+			}
+		}
+	}
+	return(dispatch,getState) => {
+		dispatch(onDelete())
+	}
+}
+
+const resetDeleteStatusAction = () => {
+	const onReset = () => {
+		return {
+			type: types.RESET_DELETE_STATUS,
+		}
+	}
+	return(dispatch,getState) => {
+		dispatch(onReset())
+	}
+}
+const updateBackupStatusAction = (addr) => {
+	const onUpdate = () => {
+		return {
+			type: types.UPDATE_BACKUP_STATUS,
+			payload: {
+				addr,
+			}
+		}
+	}
+	return(dispatch,getState) => {
+		dispatch(onUpdate())
+	}
+}
 export {
 	getAccountInfoAction,
 	switchAccountAction,
 	importAccountAction,
+	deleteAccountAction,
+	resetDeleteStatusAction,
+	updateBackupStatusAction,
+
 }

@@ -55,50 +55,56 @@ class AccountManage extends Component{
   constructor(props){
     super(props)
     this.state = {
-      hasBackup: 0,
       cardItems: []
     } 
   }
 
   componentWillMount(){
 
+    
+
+    this.searchAccountList()
+
+  }
+
+  componentWillReceiveProps(nextProps){
+    if(this.props.accountManageReducer.deleteFinished !== nextProps.accountManageReducer.deleteFinished && nextProps.accountManageReducer.deleteFinished){
+      this.searchAccountList()
+    }
+    if(this.props.accountManageReducer.updateBackupSucc !== nextProps.accountManageReducer.updateBackupSucc && nextProps.accountManageReducer.updateBackupSucc){
+      this.searchAccountList()
+    }
+  }
+  searchAccountList = () => {
     const { cardItems } = this.state
     if(!db){  
-      db = sqLite.open();  
+      db = sqLite.open()  
     }  
     db.transaction((tx)=>{  
       tx.executeSql("select * from account ", [],(tx,results)=>{
-        var len = results.rows.length; 
+        var len = results.rows.length 
         let empty = [] 
         for(let i=0; i<len; i++){  
-          var u = results.rows.item(i);
-          // console.log('uuuuuuuuuuuuuuuuuuuuuuu',u)
+          var u = results.rows.item(i)
           empty.push(u)
           this.setState({
             cardItems: empty
           })
         }  
-      });  
+      })  
     },(error)=>{
-      console.log('打印异常信息 ',error);  
-    }); 
-
-    // this.setState({
-    //   cardItems: this.props.accountManageReducer.accountInfo
-    // })
-
-
+      console.log('打印异常信息 ',error) 
+    })
   }
-
-  toDetail = (address,name) => {
+  toDetail = (address,name,id) => {
     this.props.navigator.push({
       screen: 'back_up_account',
       title: name,
       navigatorStyle: DetailNavigatorStyle,
       passProps: {
         userName: name,
-        address: address
-
+        address: address,
+        b_id: id,
       },
       // navigatorButtons: {
       //   rightButtons: [
@@ -135,15 +141,15 @@ class AccountManage extends Component{
         accountPsd={sliceAddress(`0x${res.address}`,10)}
         accountTotal={res.assets_total}
         accountUnit={'ether'}
-        accountBackUp={() => this.toDetail(res.address,res.account_name)}
+        accountBackUp={() => this.toDetail(res.address,res.account_name,res.id)}
         backupState={res.backup_status}
       />
     )
   }
   render(){
     // const { localKeyStore, userName } = this.props.getLocalDataReducer
-    const { hasBackup,cardItems } = this.state
-
+    const { cardItems } = this.state
+    console.log('cardItems111111111111111',cardItems)
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
         <View style={{marginBottom: scaleSize(96)}}>

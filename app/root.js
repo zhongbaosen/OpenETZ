@@ -29,23 +29,7 @@ const tabs = [
     screen: 'home_assets',
     icon: require('./images/xhdpi/tab_ico_personalcenter_assets_def.png'),
     selectedIcon: require('./images/xhdpi/tab_ico_home_asset_def.png'),
-    navigatorStyle: AssetsNavStyle, //tabBarHidden: true,  navBarHidden: true,
-    title:' ',
-    navigatorButtons: {
-      rightButtons: [
-        {
-            icon: require('./images/xhdpi/nav_ico_home_more_def.png'),
-            id: 'right_drawer'
-        }
-      ],
-      // leftButtons: [
-      //   {
-      //     icon: require('./images/xhdpi/nav_ico_home_message_def.png'),
-      //     id: 'left_drawer'
-      //   }
-      // ]
-    },
-
+    navigatorStyle: Object.assign({},AssetsNavStyle,{ navBarHidden: true, }), //AssetsNavStyle, //tabBarHidden: true,  navBarHidden: true,
     iconInsets: bottomTabStyle
   },
   {

@@ -21,48 +21,20 @@ class Assets extends Component{
   constructor(props){
     super(props)
     this.state = {
-      etzBalance: 0
+      etzBalance: 0,
+      navTitle: ''
     }
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
-  onNavigatorEvent (event) {
-    if (event.type == 'NavBarButtonPress') {
-      if (event.id == 'right_drawer') {
-        // this.props.navigator.toggleDrawer({
-        //   side: 'right', 
-        //   animated: true,
-        //   to: 'open'
-        // })
-        this._drawer.open()
-      }
-      if (event.id == 'left_drawer') {
-        this.props.navigator.push({
-          screen:'msg_center_list',
-          title:'MessageCenter',
-          navigatorStyle: DetailNavigatorStyle,
-          navigatorButtons: {
-            rightButtons: [
-              {
-                  title:'Readed All',
-                  id: 'readed_all'
-              }
-            ],
-          },
-        })
-      }
-    }
-    
-  }
+
   componentWillMount(){
 
     const { accountInfo } = this.props.accountManageReducer
     accountInfo.map((val,index) => {
       // console.log('val1111111111111',val)
       if(val.is_selected === 1){
-
-        this.props.navigator.setTitle({
-          title: val.account_name
+        this.setState({
+          navTitle: val.account_name
         })
 
         web3.eth.getBalance(`0x${val.address}`).then((res,rej)=>{
@@ -203,6 +175,25 @@ class Assets extends Component{
   onCloseDrawer = () => {
     this._drawer.close()
   }
+  onLeftDrawer = () => {
+    this.props.navigator.push({
+      screen:'msg_center_list',
+      title:'MessageCenter',
+      navigatorStyle: DetailNavigatorStyle,
+      navigatorButtons: {
+        rightButtons: [
+          {
+              title:'Readed All',
+              id: 'readed_all'
+          }
+        ],
+      },
+    })
+  }
+
+  onRightDrawer = () => {
+    this._drawer.open()
+  }
   render(){
 
     return(
@@ -227,7 +218,19 @@ class Assets extends Component{
           onCloseStart={this.onDrawerCloseStart}
           onOpenStart={this.onDrawerOpenStart}
         >
-
+          <View style={[styles.navbarStyle,pubS.rowCenterJus,{paddingLeft: scaleSize(24),paddingRight: scaleSize(24)}]}>
+            {
+              // <TouchableOpacity activeOpacity={.6} onPress={this.onLeftDrawer}>
+              //   <Image source={require('../../images/xhdpi/nav_ico_home_message_def.png')}style={styles.navImgStyle}/>
+              // </TouchableOpacity>
+              
+            }
+            <View style={styles.navImgStyle}/>
+            <Text style={pubS.font30_1}>{this.state.navTitle}</Text>
+            <TouchableOpacity activeOpacity={.6} onPress={this.onRightDrawer}>
+              <Image source={require('../../images/xhdpi/nav_ico_home_more_def.png')} style={styles.navImgStyle}/>
+            </TouchableOpacity>
+          </View>
           <View>
             <View style={[styles.assetsTotalView,pubS.center]}>
                 <Text style={pubS.font72_1}>≈0</Text>
@@ -275,6 +278,14 @@ class Assets extends Component{
 }
 
 const styles = StyleSheet.create({
+  navImgStyle: {
+    width:scaleSize(40),
+    height: scaleSize(40)
+  },
+  navbarStyle:{
+    height: scaleSize(87),
+    backgroundColor: '#144396',
+  },
   addBtnStyle:{
     borderStyle:'dashed',
     borderColor:'#B1CBFF',

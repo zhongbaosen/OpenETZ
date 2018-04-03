@@ -10,7 +10,7 @@ import {
   TextInput,
   BackHandler,
   Clipboard,
-  ToastAndroid
+  ToastAndroid,
 } from 'react-native'
 import { Navigation } from 'react-native-navigation'
 import { pubS,DetailNavigatorStyle } from '../../styles/'
@@ -20,6 +20,7 @@ import { Btn } from '../../components/'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
 import UserSQLite from '../../utils/accountDB'
+import { deleteAccountAction,resetDeleteStatusAction,updateBackupStatusAction } from '../../actions/accountManageAction'
 const Wallet = require('ethereumjs-wallet')
 
 const sqLite = new UserSQLite();  
@@ -38,6 +39,7 @@ class BackUpAccount extends Component{
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
   componentWillMount(){
+    this.props.dispatch(resetDeleteStatusAction())
     if(!db){  
         db = sqLite.open();  
     }  
@@ -54,12 +56,18 @@ class BackUpAccount extends Component{
       console.error(error)
     }); 
   }
+
+  // componentWillReceiveProps(nextProps){
+  //   if(this.props.accountManageReducer.deleteFinished !== nextProps.accountManageReducer.deleteFinished && nextProps.accountManageReducer.deleteFinished){
+
+  //   }
+  // }
+
   compennetDidUnmount(){  
     sqLite.close();  
   } 
   onNavigatorEvent(event){
     if (event.type == 'NavBarButtonPress') {
-      console.log('event.id===',event.id)
       switch(event.id){
         case 'save_back_up_info':
           alert('save')
@@ -79,22 +87,11 @@ class BackUpAccount extends Component{
   }
 
   deleteAccount = () => {
-      if(!db){  
-        db = sqLite.open();  
-      } 
-      db.transaction((tx)=>{  
-        tx.executeSql("delete from account where address= " + "?", [this.props.address],(tx,results)=>{  
-          alert('delete successful~')
-          // var len = results.rows.length;  
-
-          // for(let i=0; i<len; i++){  
-          //   var u = results.rows.item(i);
-          //   console.log('iuuuuuuuuuuuuu',u)  
-          // }  
-          });  
-        },(error)=>{
-          console.error(error)
-      }); 
+    this.props.dispatch(deleteAccountAction(this.props.b_id))
+    setTimeout(() => {
+      ToastAndroid.show('delete successful~',3000)
+      this.props.navigator.pop()
+    },100)
   }
   backUpBtn = () => {
       this.setState({
@@ -118,17 +115,7 @@ class BackUpAccount extends Component{
       privKey: '',
     })
 
-   
-    db.transaction((tx)=>{  
-      tx.executeSql("update account set backup_status = 1 where address= " + "?", [this.props.address],(tx,results)=>{  
-        console.log('更新成功')  
-      });  
-    },(error)=>{
-      console.log('更新失败',error)
-    }); 
-
-
-
+    this.props.dispatch(updateBackupStatusAction(this.props.address))
   }
 
   onConfirm = () => {
@@ -172,14 +159,17 @@ class BackUpAccount extends Component{
         this.onHide()
       });  
     },(error)=>{
-      alert('Password error!')
+      Alert.alert(
+        '',
+        'password error',
+        [
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ],
+      )
       this.setState({
         psdVal: ''
       })
     }); 
-
-
-
   }
 
 
@@ -191,7 +181,6 @@ class BackUpAccount extends Component{
   }
   render(){
     const { iptPsdVisible,psdVal,pKeyVisible,privKey,backuped } = this.state
-    const { address, privateKey, userName, psd, prompt} = this.props.createAccountReducer
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
         <Image source={require('../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
@@ -219,7 +208,6 @@ class BackUpAccount extends Component{
           isVisible={iptPsdVisible}
           onBackButtonPress={this.onHide}
           onBackdropPress={this.onHide}
-          // style={styles.modalView}
           backdropOpacity={.8}
         >
           <View style={styles.modalView}>
@@ -347,6 +335,6 @@ const styles = StyleSheet.create({
 })
 export default connect(
   state => ({
-    createAccountReducer: state.createAccountReducer
+    accountManageReducer: state.accountManageReducer
   })
 )(BackUpAccount)

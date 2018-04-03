@@ -9,13 +9,6 @@ const sqLite = new UserSQLite();
 let db;  
 const initState = {
 	isLoading: true,
-	mnemonicWord: '',
-	address: '',
-	privateKey: '',
-	userName: '',
-	psd: '',
-	prompt: '',
-	
 }
 
 export default function createAccountReducer(state = initState,action){
@@ -122,10 +115,5 @@ const onCreate = (state,action) => {
 	return {
 		...state,
 		isLoading: false,
-		// address: address1,
-		// privateKey: pKey,
-		// userName: userNameVal,
-		// psd: psdVal,
-		// prompt: promptVal,
 	}
 }

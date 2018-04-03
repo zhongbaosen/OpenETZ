@@ -11,13 +11,13 @@ import ImportAccount from '../views/login/ImportAccount'
 import TermsOfService from '../views/login/TermsOfService'
 import CreateAccountSuccess from '../views/login/CreateAccountSuccess'
 
-import BackUpAccount from '../views/backup/BackUpAccount'
 
 
 import Personal from '../views/personal/'
 import ContactService from '../views/personal/ContactService'
 import HelpCenter from '../views/personal/HelpCenter'
 import AccountManage from '../views/personal/AccountManage'
+import BackUpAccount from '../views/personal/BackUpAccount'
 
 
 import Assets from '../views/home/Assets'
