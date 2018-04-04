@@ -11,7 +11,7 @@ import {
 import { pubS } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import ScrollableTabView, { DefaultTabBar, ScrollableTabBar } from 'react-native-scrollable-tab-view'
-import { TextInputComponent,Btn } from '../../components/'
+import { TextInputComponent,Btn,Loading } from '../../components/'
 import { toSplash } from '../../root'
 import { importAccountAction } from '../../actions/accountManageAction'
 import { connect } from 'react-redux'
@@ -20,7 +20,7 @@ class PrivateKey extends Component{
   constructor(props){
     super(props)
     this.state = {
-      privKeyVal: '',
+      privKeyVal: 'f35510189927bd15f2a9235df439945ef10c715dfde44c19615bd2d01028ad84',
       psdVal: '',
       repeadPsdVal: '',
       promptVal: '',
@@ -29,10 +29,14 @@ class PrivateKey extends Component{
       rePsdWarning: '',
       userNameVal: '',
       userNameWarning: '',
+      visible: false,
     }
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
+      this.setState({
+        visible: false
+      })
       toSplash()
     }
   }
@@ -94,13 +98,16 @@ class PrivateKey extends Component{
   onImport = () => {
     // let k = '2ac64a6227001d48f128ba5948b132c90e312e7156760748a5b349d236cf1526'
     const { privKeyVal, psdVal,userNameVal } = this.state
-    
-
-    this.props.dispatch(importAccountAction({
-      privKey: privKeyVal,
-      password: psdVal,
-      userName: userNameVal
-    }))
+    this.setState({
+      visible: true
+    })    
+    setTimeout(() => {
+      this.props.dispatch(importAccountAction({
+        privKey: privKeyVal,
+        password: psdVal,
+        userName: userNameVal
+      }))
+    },1000)
   }
   onChangeUseNameText = (val) => {
     this.setState({
@@ -153,6 +160,7 @@ class PrivateKey extends Component{
           btnPress={this.onPressImport}
           btnText={'import'}
         />
+        <Loading loadingVisible={this.state.visible} loadingText={'importing account'}/>
       </View>
     )
   }

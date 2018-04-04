@@ -17,6 +17,18 @@ import { connect } from 'react-redux'
 import { onSwitchDrawerAction } from '../../actions/onSwitchDrawerAction'
 import SwitchWallet from './SwitchWallet'
 import { switchDrawer } from '../../utils/switchDrawer'
+
+const DATA = [
+  {
+    short_name: 'ETZ',
+    full_name: 'EtherZero',
+    logo: '',
+    price: '',
+    coin_number: '',
+    is_add: '',
+  }
+]
+
 class Assets extends Component{
   constructor(props){
     super(props)
@@ -48,32 +60,7 @@ class Assets extends Component{
 
   }
 
-  // renderItem = (item) => {
-  //   // let res = item.item
-  //     return(
-  //       <TouchableOpacity style={[styles.listItemView,styles.whStyle]} activeOpacity={.7} onPress={this.toAssetsDetail}>
-  //         <Image source={require('../../images/xhdpi/etz_logo.png')} style={{width: scaleSize(44),height:scaleSize(44),marginTop: scaleSize(22)}}/>
-  //         <View style={[styles.listItemTextView]}>
-  //           <View style={pubS.rowCenterJus}>
-  //             <Text style={pubS.font36_2}>ETZ</Text>
-  //             <Text style={pubS.font36_2}>1,234</Text>
-  //           </View>
-  //           <View style={pubS.rowCenterJus}>
-  //             <Text style={pubS.font24_2}>Bitcoin</Text>
-  //             <Text style={pubS.font24_2}>≈ ¥ 123,456,789,0</Text>
-  //           </View>
-  //         </View>
-  //       </TouchableOpacity>
-  //     )
-  // }
 
-  // ListFooterComponent = () => {
-  //   return(
-  //     <TouchableOpacity style={[styles.whStyle,styles.addBtnStyle,pubS.center]} activeOpacity={.7} onPress={this.addAssetsBtn}>
-  //       <Text style={pubS.font24_3}>+添加资产</Text>
-  //     </TouchableOpacity>
-  //   )
-  // }
   toAssetsDetail = () => {
     this.props.navigator.push({
       screen: 'asset_detail_list',
@@ -129,39 +116,13 @@ class Assets extends Component{
       // }
     })
   }
-  // ListHeaderComponent = () => {
-  //   return(
-  //     <View>
-  //       <View style={[styles.assetsTotalView,pubS.center]}>
-  //           <Text style={pubS.font72_1}>≈110,110,110</Text>
-  //           <Text style={pubS.font26_3}>Total Assets(￥)</Text>
-  //       </View>
-
-  //       <View style={[styles.optionView,pubS.center]}>
-  //           <View style={[pubS.rowCenterJus,{width: scaleSize(650)}]}>
-  //             <TouchableOpacity activeOpacity={.7} onPress={this.onScan} style={[styles.optionItem]}>
-  //               <Image source={require('../../images/xhdpi/btn_ico_home_scan_def.png')} style={styles.itemImageStyle}/>
-  //               <Text style={[pubS.font24_2,]}>Scan</Text>
-  //             </TouchableOpacity>
-  //             <TouchableOpacity activeOpacity={.7} onPress={this.onPay} style={[styles.optionItem]}>
-  //               <Image source={require('../../images/xhdpi/btn_ico_home_payment_def.png')} style={styles.itemImageStyle}/>
-  //               <Text style={[pubS.font24_2,]}>Payment</Text>
-  //             </TouchableOpacity>
-  //             <TouchableOpacity activeOpacity={.7} onPress={this.onCollection} style={[styles.optionItem]}>
-  //               <Image source={require('../../images/xhdpi/btn_ico_home_collection_def.png')} style={styles.itemImageStyle}/>
-  //               <Text style={[pubS.font24_2,]}>Receive</Text>
-  //             </TouchableOpacity>
-  //             <TouchableOpacity activeOpacity={.7} onPress={this.onTradingRecord} style={[styles.optionItem]}>
-  //               <Image source={require('../../images/xhdpi/btn_ico_home_transactionrecords_def.png')} style={styles.itemImageStyle}/>
-  //               <Text style={[pubS.font24_2,]}>Records</Text>
-  //             </TouchableOpacity>
-  //           </View>
-  //       </View>
-  //     </View>
-  //   )
-  // }
+  
   addAssetsBtn = () => {
-    alert('add')
+    this.props.navigator.push({
+      screen: 'add_assets',
+      title:'Add Assets',
+      navigatorStyle: DetailNavigatorStyle,
+    })
   }
 
   onDrawerCloseStart = () => {
@@ -194,31 +155,36 @@ class Assets extends Component{
   onRightDrawer = () => {
     this._drawer.open()
   }
-  render(){
-
+  renderItem = (item) => {
     return(
-      <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
-        {
-          // <FlatList
-          //   data={DATA}
-          //   renderItem={this.renderItem}
-          //   keyExtractor = {(item, index) => index}
-          //   // ListFooterComponent={this.ListFooterComponent}
-          //   ListHeaderComponent={this.ListHeaderComponent}
-          // />
-        }
-        <Drawer
-          ref={(ref) => this._drawer = ref}
-          type="overlay"
-          openDrawerOffset={0.4}
-          side={'right'}
-          tapToClose={true}
-          ref={(ref) => this._drawer = ref}
-          content={<SwitchWallet thisPorps={this} onCloseSwitchDrawer={this.onCloseDrawer}/>}
-          onCloseStart={this.onDrawerCloseStart}
-          onOpenStart={this.onDrawerOpenStart}
-        >
-          <View style={[styles.navbarStyle,pubS.rowCenterJus,{paddingLeft: scaleSize(24),paddingRight: scaleSize(24)}]}>
+      <TouchableOpacity style={[styles.listItemView,styles.whStyle]} activeOpacity={.7} onPress={this.toAssetsDetail}>
+        <Image source={require('../../images/xhdpi/etz_logo.png')} style={{width: scaleSize(44),height:scaleSize(44),marginTop: scaleSize(22)}}/>
+        <View style={[styles.listItemTextView]}>
+          <View style={pubS.rowCenterJus}>
+            <Text style={pubS.font36_2}>ETZ</Text>
+            <Text style={pubS.font36_2}>{this.state.etzBalance}</Text>
+          </View>
+          <View style={pubS.rowCenterJus}>
+            <Text style={pubS.font24_2}>EtherZero</Text>
+            <Text style={pubS.font24_2}>≈ ¥ 0</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
+  ListFooterComponent = () => {
+    return(
+
+      <TouchableOpacity style={[styles.whStyle,styles.addBtnStyle,pubS.center]} activeOpacity={.7} onPress={this.addAssetsBtn}>
+        <Text style={pubS.font24_3}>+添加资产</Text>
+      </TouchableOpacity>
+    )
+  }
+  ListHeaderComponent = () => {
+    return(
+      <View>
+        <View style={[styles.navbarStyle,pubS.rowCenterJus,{paddingLeft: scaleSize(24),paddingRight: scaleSize(24)}]}>
             {
               // <TouchableOpacity activeOpacity={.6} onPress={this.onLeftDrawer}>
               //   <Image source={require('../../images/xhdpi/nav_ico_home_message_def.png')}style={styles.navImgStyle}/>
@@ -258,20 +224,34 @@ class Assets extends Component{
                 </View>
             </View>
           </View>
-          <TouchableOpacity style={[styles.listItemView,styles.whStyle]} activeOpacity={.7} onPress={this.toAssetsDetail}>
-            <Image source={require('../../images/xhdpi/etz_logo.png')} style={{width: scaleSize(44),height:scaleSize(44),marginTop: scaleSize(22)}}/>
-            <View style={[styles.listItemTextView]}>
-              <View style={pubS.rowCenterJus}>
-                <Text style={pubS.font36_2}>ETZ</Text>
-                <Text style={pubS.font36_2}>{this.state.etzBalance}</Text>
-              </View>
-              <View style={pubS.rowCenterJus}>
-                <Text style={pubS.font24_2}>EtherZero</Text>
-                <Text style={pubS.font24_2}>≈ ¥ 0</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+      </View>
+    )
+  }
+  render(){
+
+    return(
+      <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
+        <Drawer
+          ref={(ref) => this._drawer = ref}
+          type="overlay"
+          openDrawerOffset={0.4}
+          side={'right'}
+          tapToClose={true}
+          ref={(ref) => this._drawer = ref}
+          content={<SwitchWallet thisPorps={this} onCloseSwitchDrawer={this.onCloseDrawer}/>}
+          onCloseStart={this.onDrawerCloseStart}
+          onOpenStart={this.onDrawerOpenStart}
+        >
+          <FlatList
+            data={DATA}
+            renderItem={this.renderItem}
+            keyExtractor = {(item, index) => index}
+            ListFooterComponent={this.ListFooterComponent}
+            ListHeaderComponent={this.ListHeaderComponent}
+          />
         </Drawer>
+          
+        
       </View>
     )
   }

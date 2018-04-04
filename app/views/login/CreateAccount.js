@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  Alert
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
@@ -28,8 +29,16 @@ class CreateAccount extends Component{
         rePsdWarning: '',
 
         visible: false,
+
+
+        mnemonicValue: '',
+        seedVal: '',
+        keyStoreAddress: '',
+        second: 0
       }
   }
+
+
   componentWillReceiveProps(nextProps){
     if(this.props.createAccountReducer.isLoading !== nextProps.createAccountReducer.isLoading && !nextProps.createAccountReducer.isLoading){
       this.setState({
@@ -43,10 +52,11 @@ class CreateAccount extends Component{
     }
   }
 
+
   componentWillUnmount(){
-    this.setState({
-      visible: true
-    })
+    // this.setState({
+    //   visible: true
+    // })
   }
   onChangeUseNameText = (val) => {
     this.setState({
@@ -54,6 +64,8 @@ class CreateAccount extends Component{
       userNameWarning: '',
     })
   }
+
+
   onPressBtn = () => {
     const { userNameVal, psdVal, repeadPsdVal, promptVal, } = this.state
     let reg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/ //(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}
@@ -86,18 +98,14 @@ class CreateAccount extends Component{
     this.setState({
       visible: true
     })
-    this.props.navigator.push({
-      screen: 'create_account_success',
-      navigatorStyle: DetailNavigatorStyle,
-    })
-    // setTimeout(() => {
+    setTimeout(() => {
       this.props.dispatch(createAccountAction({
         userNameVal,
         psdVal,
         promptVal,
         fromLogin: this.props.from === 'login_create' ? true : false
       }))
-    // },100)
+    },1000)
     
     
   }
@@ -163,7 +171,7 @@ class CreateAccount extends Component{
             btnText={'Create'}
           />
         </View>
-        <Loading loadingVisible={false}/>
+        <Loading loadingVisible={visible} loadingText={'creating account'}/>
       </View>
     )
   }

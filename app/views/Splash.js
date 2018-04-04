@@ -43,7 +43,6 @@ class Splash extends Component{
       // tSqLite.deleteData()    
 
     // toHome()
-
     setTimeout(() => {
       if(!db){  
         db = sqLite.open();  

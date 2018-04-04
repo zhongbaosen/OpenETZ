@@ -30,6 +30,7 @@ import AssetDetailList from '../views/home/AssetDetailList'
 import TradingRecordDetail from '../views/home/TradingRecordDetail'
 import TxWebView from '../views/home/TxWebView'
 import SwitchWallet from '../views/home/SwitchWallet'
+import AddAssets from '../views/home/AddAssets'
 
 export function registerScreens() {
   Navigation.registerComponent('splash', () => Splash,store,Provider)
@@ -53,6 +54,7 @@ export function registerScreens() {
   Navigation.registerComponent('account_manage', () => AccountManage,store,Provider)
   Navigation.registerComponent('tx_web_view', () => TxWebView,store,Provider)
   Navigation.registerComponent('switch_wallet', () => SwitchWallet,store,Provider)
+  Navigation.registerComponent('add_assets', () => AddAssets,store,Provider)
 
 }
 
