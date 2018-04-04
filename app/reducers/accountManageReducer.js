@@ -135,7 +135,7 @@ const onImport = (state,action) => {
 
 	let w = wallet.fromPrivateKey(buf)
     // let w = hdWallet.getWallet()
-    let keyStore = w.toV3(password)
+    let keyStore = w.toV3(password,{c:8192,n:8192})
 
     console.log('import keyStore====',keyStore)
 

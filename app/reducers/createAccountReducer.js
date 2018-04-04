@@ -42,7 +42,7 @@ const onCreate = (state,action) => {
 
 
     let w = hdWallet.getWallet()
-    let keyStore = w.toV3(psdVal)
+    let keyStore = w.toV3(psdVal,{c:8192,n:8192})
 
     console.log('keyStore==',keyStore)
 
