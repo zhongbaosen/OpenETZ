@@ -13,14 +13,14 @@ import {
   ToastAndroid,
 } from 'react-native'
 import { Navigation } from 'react-native-navigation'
-import { pubS,DetailNavigatorStyle } from '../../styles/'
-import { setScaleText, scaleSize } from '../../utils/adapter'
-import { sliceAddress } from '../../utils/splitNumber'
-import { Btn } from '../../components/'
+import { pubS,DetailNavigatorStyle } from '../../../styles/'
+import { setScaleText, scaleSize } from '../../../utils/adapter'
+import { sliceAddress } from '../../../utils/splitNumber'
+import { Btn } from '../../../components/'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
-import UserSQLite from '../../utils/accountDB'
-import { deleteAccountAction,resetDeleteStatusAction,updateBackupStatusAction } from '../../actions/accountManageAction'
+import UserSQLite from '../../../utils/accountDB'
+import { deleteAccountAction,resetDeleteStatusAction,updateBackupStatusAction } from '../../../actions/accountManageAction'
 const Wallet = require('ethereumjs-wallet')
 
 const sqLite = new UserSQLite();  
@@ -179,23 +179,46 @@ class BackUpAccount extends Component{
     Clipboard.setString(this.state.privKey)
     ToastAndroid.show('copy successful~',3000)
   }
+  backupMne = () => {
+    this.props.navigator.push({
+      screen: 'write_mnemonic',
+      title: '',
+      navigatorStyle: DetailNavigatorStyle,
+    })
+  }
   render(){
     const { iptPsdVisible,psdVal,pKeyVisible,privKey,backuped } = this.state
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
-        <Image source={require('../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
+        <Image source={require('../../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
         <Text style={pubS.font26_5}>{sliceAddress(this.props.address,10)}</Text>
         <View style={[styles.userNameViewStyle,pubS.rowCenterJus,pubS.bottomStyle]}>
           <Text style={pubS.font26_4}>wallet name</Text>
           <Text style={pubS.font26_4}>{this.props.userName}</Text>
         </View>
+        <Btn
+          btnPress={ this.backupMne }
+          bgColor={backuped ? '#BDC0C6' : '#2B8AFF'}
+          opacity={backuped ? 1 : .7}
+          btnText={'backup mnemonic'}
+          btnMarginTop={scaleSize(150)}
+        />
+        
+        <Btn
+          btnPress={backuped ? () => {return} : () => this.backUpBtn() }
+          bgColor={backuped ? '#BDC0C6' : '#2B8AFF'}
+          opacity={backuped ? 1 : .7}
+          btnText={'backup keystore'}
+          btnMarginTop={scaleSize(20)}
+        />
+        
 
         <Btn
           btnPress={backuped ? () => {return} : () => this.backUpBtn() }
           bgColor={backuped ? '#BDC0C6' : '#2B8AFF'}
           opacity={backuped ? 1 : .7}
           btnText={'backup private key'}
-          btnMarginTop={scaleSize(317)}
+          btnMarginTop={scaleSize(20)}
         />
         <Btn
           btnPress={this.deleteAccount}
@@ -242,7 +265,7 @@ class BackUpAccount extends Component{
             <View style={[{height: scaleSize(90),backgroundColor:'#2B8AFF',width: '100%'},pubS.center]}>
               <Text style={[pubS.font36_4,{fontWeight: 'bold'}]}>backup private key</Text>
               <TouchableOpacity activeOpacity={.7} onPress={this.onPKeyHide} style={styles.iconStyle}>
-                <Image source={require('../../images/xhdpi/btn_ico_collectionnobackup_close_def.png')} style={{height: scaleSize(30),width: scaleSize(30)}}/>
+                <Image source={require('../../../images/xhdpi/btn_ico_collectionnobackup_close_def.png')} style={{height: scaleSize(30),width: scaleSize(30)}}/>
               </TouchableOpacity>
             </View>
             <View style={{backgroundColor:'#FFE186',paddingLeft: scaleSize(28),paddingRight: scaleSize(28),paddingTop: scaleSize(13),paddingBottom: scaleSize(13)}}>

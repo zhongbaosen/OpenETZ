@@ -11,6 +11,7 @@ import { connect } from 'react-redux'
 import UserSQLite from '../utils/accountDB'
 import TradingSQLite from '../utils/tradingDB'
 import { getAccountInfoAction } from '../actions/accountManageAction'
+import { DetailNavigatorStyle} from '../styles/'
 const sqLite = new UserSQLite();  
 let db;  
 const tSqLite = new TradingSQLite()
@@ -43,28 +44,54 @@ class Splash extends Component{
       // tSqLite.deleteData()    
 
     // toHome()
-    setTimeout(() => {
-      if(!db){  
-        db = sqLite.open();  
-      }  
-      db.transaction((tx) => {
-        tx.executeSql("select * from account ", [], (tx,results) => {
+    // this.props.navigator.push({
+    //   screen: 'import_account',
+    //   title:'import',
+    //   navigatorStyle: DetailNavigatorStyle,
+    // })
 
-          let len = results.rows.length 
-          let allAccounts = [] 
-          for(let i=0; i<len; i++){  
-            let u = results.rows.item(i)
-            allAccounts.push(u)
-            this.updateAssetsTotal(u)
-          } 
-          this.props.dispatch(getAccountInfoAction(allAccounts))
-          toHome()
-        },(error) => {
-          toLogin()
-        })
-      })
+    this.props.navigator.push({
+      screen: 'back_up_account',
+      title: 'name',
+      navigatorStyle: DetailNavigatorStyle,
+      passProps: {
+        userName: 'name',
+        address: 'address',
+        b_id: 'id',
+      },
+      // navigatorButtons: {
+      //   rightButtons: [
+      //     {
+      //       title: 'save',
+      //       id: 'save_back_up_info'
+      //     }
+      //   ]
+      // }
+    })
 
-    },2000)
+
+    // setTimeout(() => {
+    //   if(!db){  
+    //     db = sqLite.open();  
+    //   }  
+    //   db.transaction((tx) => {
+    //     tx.executeSql("select * from account ", [], (tx,results) => {
+
+    //       let len = results.rows.length 
+    //       let allAccounts = [] 
+    //       for(let i=0; i<len; i++){  
+    //         let u = results.rows.item(i)
+    //         allAccounts.push(u)
+    //         this.updateAssetsTotal(u)
+    //       } 
+    //       this.props.dispatch(getAccountInfoAction(allAccounts))
+    //       toHome()
+    //     },(error) => {
+    //       toLogin()
+    //     })
+    //   })
+
+    // },2000)
   } 
 
 

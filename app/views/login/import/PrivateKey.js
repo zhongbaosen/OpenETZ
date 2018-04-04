@@ -8,19 +8,19 @@ import {
   ScrollView,
 } from 'react-native'
 
-import { pubS } from '../../styles/'
-import { setScaleText, scaleSize } from '../../utils/adapter'
+import { pubS } from '../../../styles/'
+import { setScaleText, scaleSize } from '../../../utils/adapter'
 import ScrollableTabView, { DefaultTabBar, ScrollableTabBar } from 'react-native-scrollable-tab-view'
-import { TextInputComponent,Btn,Loading } from '../../components/'
-import { toSplash } from '../../root'
-import { importAccountAction } from '../../actions/accountManageAction'
+import { TextInputComponent,Btn,Loading } from '../../../components/'
+import { toSplash } from '../../../root'
+import { importAccountAction } from '../../../actions/accountManageAction'
 import { connect } from 'react-redux'
 import { Navigation } from 'react-native-navigation'
 class PrivateKey extends Component{
   constructor(props){
     super(props)
     this.state = {
-      privKeyVal: 'f35510189927bd15f2a9235df439945ef10c715dfde44c19615bd2d01028ad84',
+      privKeyVal: '',
       psdVal: '',
       repeadPsdVal: '',
       promptVal: '',

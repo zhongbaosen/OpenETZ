@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import Splash from '../views/Splash'
 import Login from '../views/login/'
 import CreateAccount from '../views/login/CreateAccount'
-import ImportAccount from '../views/login/ImportAccount'
+import ImportAccount from '../views/login/import/'
 import TermsOfService from '../views/login/TermsOfService'
 import CreateAccountSuccess from '../views/login/CreateAccountSuccess'
 
@@ -17,7 +17,9 @@ import Personal from '../views/personal/'
 import ContactService from '../views/personal/ContactService'
 import HelpCenter from '../views/personal/HelpCenter'
 import AccountManage from '../views/personal/AccountManage'
-import BackUpAccount from '../views/personal/BackUpAccount'
+import BackUpAccount from '../views/personal/backup/BackUpAccount'
+import WriteMnemonic from '../views/personal/backup/WriteMnemonic'
+import VerifyMnemonic from '../views/personal/backup/VerifyMnemonic'
 
 
 import Assets from '../views/home/Assets'
@@ -40,6 +42,8 @@ export function registerScreens() {
   Navigation.registerComponent('terms_of_service', () => TermsOfService,store,Provider)
   Navigation.registerComponent('create_account_success', () => CreateAccountSuccess,store,Provider)
   Navigation.registerComponent('back_up_account', () => BackUpAccount,store,Provider)
+  Navigation.registerComponent('write_mnemonic', () => WriteMnemonic,store,Provider)
+  Navigation.registerComponent('verify_mnemonic', () => VerifyMnemonic,store,Provider)
   Navigation.registerComponent('home_assets', () => Assets,store,Provider)
   Navigation.registerComponent('home_personal', () => Personal,store,Provider)
   Navigation.registerComponent('msg_center_list', () => MsgCenterList,store,Provider)

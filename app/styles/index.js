@@ -142,6 +142,10 @@ const pubS = {
     paddingLeft: scaleSize(40),
     paddingRight: scaleSize(40)
   },
+  paddingRow35:{
+    paddingLeft: scaleSize(35),
+    paddingRight: scaleSize(35)
+  },
   padding50:{
     paddingLeft: scaleSize(50),
     paddingRight: scaleSize(50)
@@ -286,6 +290,10 @@ const pubS = {
   },
   font28_4:{
       color:'#fff',
+      fontSize: setScaleText(28)
+  },
+  font28_5:{
+      color:'##FEFEFE',
       fontSize: setScaleText(28)
   },
   font30_1:{
