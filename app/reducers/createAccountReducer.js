@@ -1,14 +1,15 @@
-import { CREATE_ACCOUNT } from '../constants/createAccountConstant'
+import { CREATE_ACCOUNT,SUCCESS_INSTER_DATA } from '../constants/createAccountConstant'
 const bip39 = require('bip39')
 const hdkey = require('ethereumjs-wallet/hdkey')
 const util = require('ethereumjs-util')
 const randomBytes = require('randombytes')
 import UserSQLite from '../utils/accountDB'
 
-const sqLite = new UserSQLite();  
-let db;  
+const sqLite = new UserSQLite()
+let db
 const initState = {
 	isLoading: true,
+  accountUserName: '',
 }
 
 export default function createAccountReducer(state = initState,action){
@@ -16,7 +17,7 @@ export default function createAccountReducer(state = initState,action){
 		case 'CREATE_ACCOUNT':
 			return onCreate(state,action)
 			break
-		
+
 		default:
 			return state
 			break
@@ -29,7 +30,7 @@ const onCreate = (state,action) => {
     let selected = 0 
 	  const { userNameVal, psdVal, promptVal,fromLogin } = action.payload
 	  let mnemonic = bip39.generateMnemonic();
-    // console.log('mnemonic==',mnemonic)
+    console.log('创建时生成的mnemonic==',mnemonic)
     
     let seed = bip39.mnemonicToSeed(mnemonic)
     // console.log('seed==',seed)
@@ -64,6 +65,7 @@ const onCreate = (state,action) => {
 
     let userData = [],  
         user = {};  
+    user.mnemonic = mnemonic;
     user.account_name = userNameVal;  
     user.backup_status = 0;  
     user.assets_total = '0';
@@ -115,5 +117,6 @@ const onCreate = (state,action) => {
 	return {
 		...state,
 		isLoading: false,
+    accountUserName: userNameVal
 	}
 }

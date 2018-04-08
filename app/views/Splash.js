@@ -40,8 +40,8 @@ class Splash extends Component{
   }
   componentDidMount(){
 
-      // tSqLite.dropTable()
-      // tSqLite.deleteData()    
+      // sqLite.dropTable()
+      // sqLite.deleteData()    
 
     // toHome()
     // this.props.navigator.push({
@@ -50,48 +50,53 @@ class Splash extends Component{
     //   navigatorStyle: DetailNavigatorStyle,
     // })
 
-    this.props.navigator.push({
-      screen: 'back_up_account',
-      title: 'name',
-      navigatorStyle: DetailNavigatorStyle,
-      passProps: {
-        userName: 'name',
-        address: 'address',
-        b_id: 'id',
-      },
-      // navigatorButtons: {
-      //   rightButtons: [
-      //     {
-      //       title: 'save',
-      //       id: 'save_back_up_info'
-      //     }
-      //   ]
-      // }
-    })
+    // this.props.navigator.push({
+    //   screen: 'back_up_account',
+    //   title: 'name',
+    //   navigatorStyle: DetailNavigatorStyle,
+    //   passProps: {
+    //     userName: 'name',
+    //     address: 'address',
+    //     b_id: 'id',
+    //   },
+    //   navigatorButtons: {
+    //     rightButtons: [
+    //       {
+    //         title: 'save',
+    //         id: 'save_back_up_info'
+    //       }
+    //     ]
+    //   }
+    // })
 
+    // this.props.navigator.push({
+    //   screen: 'write_mnemonic',
+    //   title: '',
+    //   navigatorStyle: DetailNavigatorStyle,
+    // })
 
-    // setTimeout(() => {
-    //   if(!db){  
-    //     db = sqLite.open();  
-    //   }  
-    //   db.transaction((tx) => {
-    //     tx.executeSql("select * from account ", [], (tx,results) => {
+    setTimeout(() => {
+      if(!db){  
+        db = sqLite.open();  
+      }  
+      db.transaction((tx) => {
+        tx.executeSql("select * from account ", [], (tx,results) => {
 
-    //       let len = results.rows.length 
-    //       let allAccounts = [] 
-    //       for(let i=0; i<len; i++){  
-    //         let u = results.rows.item(i)
-    //         allAccounts.push(u)
-    //         this.updateAssetsTotal(u)
-    //       } 
-    //       this.props.dispatch(getAccountInfoAction(allAccounts))
-    //       toHome()
-    //     },(error) => {
-    //       toLogin()
-    //     })
-    //   })
+          let len = results.rows.length 
+          let allAccounts = [] 
+          for(let i=0; i<len; i++){  
+            let u = results.rows.item(i)
+            allAccounts.push(u)
+            this.updateAssetsTotal(u)
+          } 
+          this.props.dispatch(getAccountInfoAction(allAccounts))
+          toHome()
+        },(error) => {
+          toLogin()
+        })
+      })
 
-    // },2000)
+    },2000)
   } 
 
 

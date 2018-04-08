@@ -56,7 +56,7 @@ class Personal extends Component{
   render(){
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB',}]}>
-          <Image source={require('../../images/xhdpi/bg_personalcenter.png')} style={{height: scaleSize(300),width: scaleSize(750)}}/>
+          <Image source={require('../../images/xhdpi/bg_personalcenter.png')} style={{height: scaleSize(387),width: scaleSize(750)}}/>
           <ArrowToDetail
             arrowText={'Manage wallets'}
             arrowIcon={require('../../images/xhdpi/ico_personalcenter_accountmanagement_def.png')}

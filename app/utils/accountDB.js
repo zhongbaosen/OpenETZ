@@ -1,6 +1,7 @@
 import React,{Component} from 'react';  
 import{  
-  ToastAndroid,  
+  ToastAndroid, 
+  View,
 } from 'react-native';  
 import SQLiteStorage from 'react-native-sqlite-storage';  
 SQLiteStorage.DEBUG(true);  
@@ -9,13 +10,14 @@ var database_version = "1.0";//版本号
 var database_displayname = "MySQLite";  
 var database_size = -1;//-1应该是表示无限制  
 var db;  
+
 export default class  UserSQLite extends Component{  
     componentWillUnmount(){  
     if(db){  
-        this._successCB('close');  
+        // this._successCB('close');  
         db.close();  
     }else {  
-        console.log("SQLiteStorage not open");  
+        // console.log("SQLiteStorage not open");  
     }  
   }  
   open(){  
@@ -41,6 +43,7 @@ export default class  UserSQLite extends Component{
       tx.executeSql('CREATE TABLE IF NOT EXISTS ACCOUNT(' +  
           'id INTEGER PRIMARY KEY  AUTOINCREMENT,' +  
           'account_name VARCHAR,'+  
+          'mnemonic VARCHAR,'+
           'is_selected INTEGER,' + 
           'assets_total VARCHAR,' + 
           'backup_status INTEGER,' +    
@@ -63,9 +66,9 @@ export default class  UserSQLite extends Component{
               this._errorCB('executeSql', err);  
         });  
     }, (err)=> {
-        this._errorCB('transaction', err);  
+        // this._errorCB('transaction', err);  
     }, ()=> {  
-        this._successCB('transaction');  
+        // this._successCB('transaction');  
     })  
     }  
   deleteData(){  
@@ -79,14 +82,17 @@ export default class  UserSQLite extends Component{
     });  
   }  
   dropTable(){  
+    if (!db) {  
+        this.open();  
+    }  
     db.transaction((tx)=>{  
       tx.executeSql('drop table account',[],()=>{  
   
       });  
     },(err)=>{  
-      this._errorCB('transaction', err);  
+      // this._errorCB('transaction', err);  
     },()=>{  
-      this._successCB('transaction');  
+      // this._successCB('transaction');  
     });  
   }  
   insertUserData(userData){  
@@ -102,6 +108,7 @@ export default class  UserSQLite extends Component{
        for(let i=0; i<len; i++){  
         var user = userData[i];  
         let account_name= user.account_name;  
+        let mnemonic = user.mnemonic;
         let is_selected = user.is_selected;
         let assets_total = user.assets_total;
         let backup_status= user.backup_status;  
@@ -119,9 +126,9 @@ export default class  UserSQLite extends Component{
         let p= user.p;  
         let iv= user.iv;  
 
-        let sql = "INSERT INTO account(account_name,is_selected,assets_total,backup_status,address,kid,version,cipher,ciphertext,kdf,mac,dklen,salt,n,r,p,iv)"+  
-        "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";  
-        tx.executeSql(sql,[account_name,is_selected,assets_total,backup_status,address,kid,version,cipher,ciphertext,kdf,mac,dklen,salt,n,r,p,iv],()=>{  
+        let sql = "INSERT INTO account(account_name,mnemonic,is_selected,assets_total,backup_status,address,kid,version,cipher,ciphertext,kdf,mac,dklen,salt,n,r,p,iv)"+  
+        "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";  
+        tx.executeSql(sql,[account_name,mnemonic,is_selected,assets_total,backup_status,address,kid,version,cipher,ciphertext,kdf,mac,dklen,salt,n,r,p,iv],()=>{  
             
           },(err)=>{  
             console.log(err);  
@@ -129,11 +136,13 @@ export default class  UserSQLite extends Component{
         );  
       }  
     },(error)=>{  
-      this._errorCB('transaction', error);  
-      console.log('数据插入失败')
+      // this._errorCB('transaction', error);  
+      // console.log('数据插入失败')
+      this.successInsertData(false)
     },()=>{  
-      this._successCB('transaction insert data');  
+      // this._successCB('transaction insert data');  
       console.log("成功插入 "+len+" 条用户数据")
+      this.successInsertData(true)
     });  
   }  
   close(){  
@@ -141,18 +150,23 @@ export default class  UserSQLite extends Component{
           this._successCB('close');  
           db.close();  
       }else {  
-          console.log("SQLiteStorage not open");  
+          // console.log("SQLiteStorage not open");  
       }  
       db = null;  
+  }
+  successInsertData(status){
+
   }  
   _successCB(name){  
-    console.log("SQLiteStorage "+name+" success");  
+    // console.log("SQLiteStorage "+name+" success");  
   }  
+
   _errorCB(name, err){  
-    console.log("SQLiteStorage "+name);  
-    console.log(err);  
+    // console.log("SQLiteStorage "+name);  
+    // console.log(err);  
   }  
     render(){  
-        return null;  
+        return null
     }  
-};  
+}
+

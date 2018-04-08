@@ -11,6 +11,7 @@ import {
   BackHandler,
   Clipboard,
   ToastAndroid,
+  Share,
 } from 'react-native'
 import { Navigation } from 'react-native-navigation'
 import { pubS,DetailNavigatorStyle } from '../../../styles/'
@@ -34,7 +35,10 @@ class BackUpAccount extends Component{
       pKeyVisible: false,
       psdVal: '',
       privKey: '',
-      backuped: false
+      privBackuped: false,
+      backupMnemonic: false,
+      mncBackuped: false,
+      keyStore: {}
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
@@ -43,25 +47,53 @@ class BackUpAccount extends Component{
     if(!db){  
         db = sqLite.open();  
     }  
+    let keyStore = {}
     db.transaction((tx)=>{  
       tx.executeSql("select * from account where address= ? ", [this.props.address],(tx,results)=>{  
         let res = results.rows.item(0)
         if(res.backup_status === 1){
           this.setState({
-            backuped: true
+            privBackuped: true
           })
         }
+
+        if(res.mnemonic.length === 0){
+          this.setState({
+            mncBackuped: true
+          })
+        }
+
+        keyStore = {
+          "version":res.version,
+          "id":res.id,
+          "address":res.address,
+          "crypto":{
+            "ciphertext":res.ciphertext,
+            "cipherparams":{
+                "iv":res.iv
+            },
+            "cipher":res.cipher,
+            "kdf":res.kdf,
+            "kdfparams":{
+              "dklen":res.dklen,
+              "salt":res.salt,
+              "n":res.n,
+              "r":res.r,
+              "p":res.p
+            },
+            "mac":res.mac
+          }
+        }
+
+        this.setState({
+          keyStore,
+        })
       });  
     },(error)=>{
       console.error(error)
     }); 
   }
 
-  // componentWillReceiveProps(nextProps){
-  //   if(this.props.accountManageReducer.deleteFinished !== nextProps.accountManageReducer.deleteFinished && nextProps.accountManageReducer.deleteFinished){
-
-  //   }
-  // }
 
   compennetDidUnmount(){  
     sqLite.close();  
@@ -93,7 +125,7 @@ class BackUpAccount extends Component{
       this.props.navigator.pop()
     },100)
   }
-  backUpBtn = () => {
+  backUpPrivBtn = () => {
       this.setState({
         iptPsdVisible: true
       })
@@ -102,6 +134,7 @@ class BackUpAccount extends Component{
     this.setState({
       iptPsdVisible: false,
       psdVal: '',
+      backupMnemonic: false
     })
   }
   onChangePsdText = (val) => {
@@ -120,56 +153,33 @@ class BackUpAccount extends Component{
 
   onConfirm = () => {
     //当前账号的keystore  生成 private key
-    const { psdVal } = this.state
-  
-    let keyStore = {}
-    db.transaction((tx)=>{  
-      tx.executeSql(" select * from account where address = ? ", [this.props.address],(tx,results)=>{  
-        let res = results.rows.item(0)
-        keyStore = {
-          "version":res.version,
-          "id":res.id,
-          "address":res.address,
-          "crypto":{
-            "ciphertext":res.ciphertext,
-            "cipherparams":{
-                "iv":res.iv
-            },
-            "cipher":res.cipher,
-            "kdf":res.kdf,
-            "kdfparams":{
-              "dklen":res.dklen,
-              "salt":res.salt,
-              "n":res.n,
-              "r":res.r,
-              "p":res.p
-            },
-            "mac":res.mac
+    const { psdVal,backupMnemonic,keyStore } = this.state
+      
+    try {
+      const newWallet = Wallet.fromV3(keyStore,psdVal)
+      let priv = newWallet._privKey.toString('hex')
+      if(backupMnemonic){
+        this.props.navigator.push({
+          screen: 'write_mnemonic',
+          title: '',
+          navigatorStyle: DetailNavigatorStyle,
+          passProps: {
+            currentAddress: this.props.address
           }
-        }
-
-        // console.log('keyStore=============',keyStore)
-        const newWallet = Wallet.fromV3(keyStore,psdVal)
-        let priv = newWallet._privKey.toString('hex')
-        // console.log('priv======',priv)
+        })
+      }else{
         this.setState({
           privKey: priv,
           pKeyVisible: true
         })
-        this.onHide()
-      });  
-    },(error)=>{
-      Alert.alert(
-        '',
-        'password error',
-        [
-          {text: 'OK', onPress: () => console.log('OK Pressed')},
-        ],
-      )
+      }
+      this.onHide()
+    } catch (err) {
+      alert('password is wrong')
       this.setState({
         psdVal: ''
       })
-    }); 
+    }
   }
 
 
@@ -179,15 +189,44 @@ class BackUpAccount extends Component{
     Clipboard.setString(this.state.privKey)
     ToastAndroid.show('copy successful~',3000)
   }
-  backupMne = () => {
-    this.props.navigator.push({
-      screen: 'write_mnemonic',
-      title: '',
-      navigatorStyle: DetailNavigatorStyle,
+  backupMnemonicBtn = () => {
+    this.setState({
+      iptPsdVisible: true,
+      backupMnemonic: true
     })
+
   }
+  backUpKeyStoreBtn = () => {
+    const { keyStore } = this.state
+    let k = JSON.stringify(keyStore)
+    Share.share({
+      message: k,
+      title: 'Backup Keystore'
+    }, {
+      dialogTitle: 'Share your keystore',
+      // excludedActivityTypes: [
+      //   'com.apple.UIKit.activity.PostToTwitter'
+      // ],
+      // tintColor: 'green'
+    })
+    .then(this._showResult)
+    .catch((error) => ToastAndroid.show('system error'))
+  }
+  _showResult = (result) => {
+    if (result.action === Share.sharedAction) {
+      if (result.activityType) {
+        // this.setState({result: 'shared with an activityType: ' + result.activityType});
+      } else {
+        // ToastAndroid.show('shared successful',3000)
+        // this.setState({result: 'shared'});
+      }
+    } else if (result.action === Share.dismissedAction) {
+      ToastAndroid.show('shared dismissed',3000)
+    }
+  }
+
   render(){
-    const { iptPsdVisible,psdVal,pKeyVisible,privKey,backuped } = this.state
+    const { iptPsdVisible,psdVal,pKeyVisible,privKey,privBackuped,mncBackuped } = this.state
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
         <Image source={require('../../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
@@ -197,26 +236,23 @@ class BackUpAccount extends Component{
           <Text style={pubS.font26_4}>{this.props.userName}</Text>
         </View>
         <Btn
-          btnPress={ this.backupMne }
-          bgColor={backuped ? '#BDC0C6' : '#2B8AFF'}
-          opacity={backuped ? 1 : .7}
+          btnPress={ mncBackuped ? () => {return} : () => this.backupMnemonicBtn() }
+          bgColor={mncBackuped ? '#BDC0C6' : '#2B8AFF'}
+          opacity={mncBackuped ? 1 : .7}
           btnText={'backup mnemonic'}
           btnMarginTop={scaleSize(150)}
         />
-        
         <Btn
-          btnPress={backuped ? () => {return} : () => this.backUpBtn() }
-          bgColor={backuped ? '#BDC0C6' : '#2B8AFF'}
-          opacity={backuped ? 1 : .7}
+          btnPress={() => this.backUpKeyStoreBtn() }
+          bgColor={'#2B8AFF'}
+          opacity={.7}
           btnText={'backup keystore'}
           btnMarginTop={scaleSize(20)}
         />
-        
-
         <Btn
-          btnPress={backuped ? () => {return} : () => this.backUpBtn() }
-          bgColor={backuped ? '#BDC0C6' : '#2B8AFF'}
-          opacity={backuped ? 1 : .7}
+          btnPress={privBackuped ? () => {return} : () => this.backUpPrivBtn() }
+          bgColor={privBackuped ? '#BDC0C6' : '#2B8AFF'}
+          opacity={privBackuped ? 1 : .7}
           btnText={'backup private key'}
           btnMarginTop={scaleSize(20)}
         />

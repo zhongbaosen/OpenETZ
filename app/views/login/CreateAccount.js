@@ -14,7 +14,10 @@ import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn,Loading } from '../../components/'
 import { connect } from 'react-redux'
 import { createAccountAction } from '../../actions/createAccountAction'
+import UserSQLite from '../../utils/accountDB'
 
+const sqLite = new UserSQLite()
+let db
 class CreateAccount extends Component{
   constructor(props){
       super(props)
@@ -40,6 +43,7 @@ class CreateAccount extends Component{
 
 
   componentWillReceiveProps(nextProps){
+  
     if(this.props.createAccountReducer.isLoading !== nextProps.createAccountReducer.isLoading && !nextProps.createAccountReducer.isLoading){
       this.setState({
         visible: false
@@ -48,6 +52,9 @@ class CreateAccount extends Component{
         screen: 'create_account_success',
         navigatorStyle: DetailNavigatorStyle,
         overrideBackPress: true,
+        passProps: {
+          // userName: nextProps.createAccountReducer.accountUserName
+        }
       })
     }
   }
@@ -58,7 +65,7 @@ class CreateAccount extends Component{
     //   visible: true
     // })
   }
-  onChangeUseNameText = (val) => {
+  onChangeUserNameText = (val) => {
     this.setState({
       userNameVal: val,
       userNameWarning: '',
@@ -105,7 +112,7 @@ class CreateAccount extends Component{
         promptVal,
         fromLogin: this.props.from === 'login_create' ? true : false
       }))
-    },1000)
+    },100)
     
     
   }
@@ -143,7 +150,7 @@ class CreateAccount extends Component{
           <TextInputComponent
             placeholder={'wallet name'}
             value={userNameVal}
-            onChangeText={this.onChangeUseNameText}
+            onChangeText={this.onChangeUserNameText}
             warningText={userNameWarning}//
           />
           <TextInputComponent
