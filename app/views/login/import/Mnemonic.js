@@ -11,24 +11,37 @@ import {
 import { pubS,DetailNavigatorStyle } from '../../../styles/'
 import { setScaleText, scaleSize } from '../../../utils/adapter'
 import { TextInputComponent,Btn,Loading } from '../../../components/'
+import { importAccountAction } from '../../../actions/accountManageAction'
+import { connect } from 'react-redux'
+import { toSplash } from '../../../root'
 class Mnemonic extends Component{
   constructor(props){
     super(props)
     this.state={
       visible: false,
+      // mnemonicVal: 'rhythm example taxi leader divorce prosper arm add tower snake domain still',
       mnemonicVal: '',
-      privKeyWarning: '',
+      mnemonicValWarning: '',
       passwordVal: '',
       passwordWarning: '',
       repeadPsdVal: '',
       rePsdWarning: '',
+      userNameVal: '',
+      userNameWarning: '',
     }
   }
-
+  componentWillReceiveProps(nextProps){
+    if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
+      this.setState({
+        visible: false
+      })
+      toSplash()
+    }
+  }
   onChangeMemonic = (val) => {
     this.setState({
       mnemonicVal: val,
-      privKeyWarning: ''
+      mnemonicValWarning: ''
     })
   }
   onChangPassword = (val) => {
@@ -43,19 +56,72 @@ class Mnemonic extends Component{
       rePsdWarning: ''
     })
   }
+  onChangeUseNameText = (val) => {
+    this.setState({
+      userNameVal: val,
+      userNameWarning: ''
+    })
+  }
   onPressImport = () => {
-    
+   const { mnemonicVal, mnemonicValWarning, passwordVal, passwordWarning, repeadPsdVal, rePsdWarning,userNameVal } = this.state
+   let psdReg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/
+   if(userNameVal.length === 0){
+      this.setState({
+        userNameWarning: 'please enter the account name'
+      })
+    }else{
+      if(mnemonicVal.length === 0){
+        this.setState({
+          mnemonicValWarning: 'please enter the mnemonic'
+        })
+      }else{
+        if(!psdReg.test(passwordVal)){
+          this.setState({
+            passwordWarning: 'password needs to contain both letters and Numbers, and at least 8 digits.'
+          })
+        }else{
+          if(passwordVal !== repeadPsdVal){
+            this.setState({
+              rePsdWarning: 'two passwords are different'
+            })
+          }else{
+            this.onImport()
+          }
+        }
+      }
+    }
+  }
+
+  onImport = () => {
+    const { mnemonicVal, passwordVal, userNameVal} = this.state
+    this.setState({
+      visible: true
+    })    
+    setTimeout(() => {
+      this.props.dispatch(importAccountAction({
+        mnemonicVal,
+        mnemonicPsd: passwordVal,
+        mnemonicUserName: userNameVal,
+        type: 'mnemonic',
+      }))
+    },100)
   }
   render(){
-    const { mnemonicVal, privKeyWarning, passwordVal, passwordWarning, repeadPsdVal, rePsdWarning, } = this.state
+    const { mnemonicVal, mnemonicValWarning, passwordVal, passwordWarning, repeadPsdVal, rePsdWarning,userNameVal, userNameWarning } = this.state
     return(
       <View style={pubS.container}>
+        <TextInputComponent
+          placeholder={'wallet name'}
+          value={userNameVal}
+          onChangeText={this.onChangeUseNameText}
+          warningText={userNameWarning}//
+        />
         <TextInputComponent
           isMultiline={true}
           placeholder={'mnemonic'}
           value={mnemonicVal}
           onChangeText={this.onChangeMemonic}
-          warningText={privKeyWarning}
+          warningText={mnemonicValWarning}
           iptMarginTop={scaleSize(60)}
         />
         <TextInputComponent
@@ -84,4 +150,8 @@ class Mnemonic extends Component{
     )
   }
 }
-export default Mnemonic
+export default connect(
+  state => ({
+    accountManageReducer: state.accountManageReducer
+  })
+)(Mnemonic)

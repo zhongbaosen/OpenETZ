@@ -31,9 +31,15 @@ const importAccountAction = (data) => {
 		return {
 			type: types.ON_IMPORT_ACCOUNT,
 			payload: {
-				privKey: data.privKey,
-				password: data.password,
-				userName: data.userName,
+				privateKey: data.privateKey,
+				privatePassword: data.privatePassword,
+				privateUserName: data.privateUserName,
+				type: data.type,
+				mnemonicVal: data.mnemonicVal,
+				mnemonicPsd: data.mnemonicPsd,
+				mnemonicUserName: data.mnemonicUserName,
+				keystoreVal: data.keystoreVal,
+				keystoreUserName: data.keystoreUserName,
 			}
 		}
 	}
@@ -86,5 +92,4 @@ export {
 	deleteAccountAction,
 	resetDeleteStatusAction,
 	updateBackupStatusAction,
-
 }

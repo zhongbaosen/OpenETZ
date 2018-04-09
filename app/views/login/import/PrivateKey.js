@@ -83,7 +83,7 @@ class PrivateKey extends Component{
             psdWarning: 'password needs to contain both letters and Numbers, and at least 8 digits.'
           })
         }else{
-          if(psdWarning !== rePsdWarning){
+          if(psdVal !== repeadPsdVal){
             this.setState({
               rePsdWarning: 'two passwords are different'
             })
@@ -103,11 +103,12 @@ class PrivateKey extends Component{
     })    
     setTimeout(() => {
       this.props.dispatch(importAccountAction({
-        privKey: privKeyVal,
-        password: psdVal,
-        userName: userNameVal
+        privateKey: privKeyVal,
+        privatePassword: psdVal,
+        privateUserName: userNameVal,
+        type: 'private'
       }))
-    },1000)
+    },100)
   }
   onChangeUseNameText = (val) => {
     this.setState({
