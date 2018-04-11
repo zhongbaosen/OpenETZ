@@ -21,7 +21,7 @@ class RecordListItem extends Component{
     onPressListItem: undefined,
   }
   render(){
-    const { payFail,moneyTextColor,listIcon,style,listIconStyle, onPressListItem, receiverAddress, receiverTime, receiverVal} = this.props
+    const { payFail,moneyTextColor,listIcon,style,listIconStyle, onPressListItem, receiverAddress, receiverTime, receiverVal,unit} = this.props
     return(
       <TouchableOpacity style={[styles.container,pubS.rowCenterJus,pubS.padding50,style]} activeOpacity={ onPressListItem ? .7 : 1 } onPress={onPressListItem}>
         <Image source={listIcon} style={listIconStyle}/>
@@ -32,7 +32,7 @@ class RecordListItem extends Component{
           </View>
 
           <View style={[{height:'100%',justifyContent:'space-between',alignItems:'flex-end'},pubS.paddingCloumn20,payFail ? null : pubS.center]}>
-            <Text style={{fontSize: setScaleText(28),color:moneyTextColor}}>{`${receiverVal}ETZ`}</Text>
+            <Text style={{fontSize: setScaleText(28),color:moneyTextColor}}>{`${receiverVal} ${unit}`}</Text>
             {
               payFail ?
               <Text style={pubS.font24_1}>Pay Fail</Text>

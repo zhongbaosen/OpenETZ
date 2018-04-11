@@ -12,11 +12,14 @@ import UserSQLite from '../utils/accountDB'
 import TradingSQLite from '../utils/tradingDB'
 import { getAccountInfoAction } from '../actions/accountManageAction'
 import { DetailNavigatorStyle} from '../styles/'
-const sqLite = new UserSQLite();  
-let db;  
+const sqLite = new UserSQLite()  
+let db  
 const tSqLite = new TradingSQLite()
 let t_db
+import TokenSQLite from '../utils/tokenDB'
 
+const tkSqLite = new TokenSQLite()
+let tk_db
 class Splash extends Component{
   constructor(props){
     super(props)
@@ -39,9 +42,10 @@ class Splash extends Component{
     // })
   }
   componentDidMount(){
-
-      // sqLite.dropTable()
-      // sqLite.deleteData()    
+    // tkSqLite.deleteData()
+    // tkSqLite.dropTable()
+    //   sqLite.dropTable()
+    //   sqLite.deleteData()    
 
     // toHome()
     // this.props.navigator.push({
@@ -69,11 +73,6 @@ class Splash extends Component{
     //   }
     // })
 
-    // this.props.navigator.push({
-    //   screen: 'write_mnemonic',
-    //   title: '',
-    //   navigatorStyle: DetailNavigatorStyle,
-    // })
 
     setTimeout(() => {
       if(!db){  

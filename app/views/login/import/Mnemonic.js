@@ -31,12 +31,12 @@ class Mnemonic extends Component{
     }
   }
   componentWillReceiveProps(nextProps){
-    if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
-      this.setState({
-        visible: false
-      })
-      toSplash()
-    }
+    // if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
+    //   this.setState({
+    //     visible: false
+    //   })
+    //   toSplash()
+    // }
   }
   onChangeMemonic = (val) => {
     this.setState({

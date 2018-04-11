@@ -47,23 +47,10 @@ class BackUpAccount extends Component{
     if(!db){  
         db = sqLite.open();  
     }  
-    let keyStore = {}
     db.transaction((tx)=>{  
       tx.executeSql("select * from account where address= ? ", [this.props.address],(tx,results)=>{  
         let res = results.rows.item(0)
-        if(res.backup_status === 1){
-          this.setState({
-            privBackuped: true
-          })
-        }
-
-        if(res.mnemonic.length === 0){
-          this.setState({
-            mncBackuped: true
-          })
-        }
-
-        keyStore = {
+        let keyStore = {
           "version":res.version,
           "id":res.id,
           "address":res.address,
@@ -84,10 +71,21 @@ class BackUpAccount extends Component{
             "mac":res.mac
           }
         }
-
         this.setState({
-          keyStore,
+          keyStore
         })
+        if(res.backup_status === 1){
+          this.setState({
+            privBackuped: true
+          })
+        }
+
+        if(res.mnemonic.length === 0){
+          this.setState({
+            mncBackuped: true
+          })
+        }
+
       });  
     },(error)=>{
       console.error(error)
@@ -226,7 +224,7 @@ class BackUpAccount extends Component{
   }
 
   render(){
-    const { iptPsdVisible,psdVal,pKeyVisible,privKey,privBackuped,mncBackuped } = this.state
+    const { iptPsdVisible,psdVal,pKeyVisible,privKey,privBackuped,mncBackuped,keyStore } = this.state
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
         <Image source={require('../../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>

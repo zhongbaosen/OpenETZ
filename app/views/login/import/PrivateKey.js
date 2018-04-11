@@ -32,14 +32,7 @@ class PrivateKey extends Component{
       visible: false,
     }
   }
-  componentWillReceiveProps(nextProps){
-    if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
-      this.setState({
-        visible: false
-      })
-      toSplash()
-    }
-  }
+
   onChangePrivateText = (val) => {
     this.setState({
       privKeyVal: val,
@@ -96,19 +89,16 @@ class PrivateKey extends Component{
   }
 
   onImport = () => {
-    // let k = '2ac64a6227001d48f128ba5948b132c90e312e7156760748a5b349d236cf1526'
     const { privKeyVal, psdVal,userNameVal } = this.state
     this.setState({
       visible: true
     })    
-    setTimeout(() => {
-      this.props.dispatch(importAccountAction({
-        privateKey: privKeyVal,
-        privatePassword: psdVal,
-        privateUserName: userNameVal,
-        type: 'private'
-      }))
-    },100)
+    this.props.dispatch(importAccountAction({
+      privateKey: privKeyVal,
+      privatePassword: psdVal,
+      privateUserName: userNameVal,
+      type: 'private'
+    }))
   }
   onChangeUseNameText = (val) => {
     this.setState({
@@ -128,7 +118,7 @@ class PrivateKey extends Component{
         />
         <TextInputComponent
           isMultiline={true}
-          placeholder={'Import Private Key'}
+          placeholder={'import private key'}
           value={privKeyVal}
           onChangeText={this.onChangePrivateText}
           warningText={privKeyWarning}

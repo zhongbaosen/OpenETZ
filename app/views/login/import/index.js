@@ -3,6 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
+  ToastAndroid
 } from 'react-native'
 
 import { pubS } from '../../../styles/'
@@ -11,8 +12,17 @@ import ScrollableTabView, { DefaultTabBar, ScrollableTabBar } from 'react-native
 import  PrivateKey from './PrivateKey'
 import KeyStore from './KeyStore'
 import Mnemonic from './Mnemonic'
+import { connect } from 'react-redux'
+import { toSplash } from '../../../root'
+import { resetDeleteStatusAction } from '../../../actions/accountManageAction'
+class ImportAccount extends Component{
+  componentWillReceiveProps(nextProps){
+    if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
+      toSplash()
+      this.props.dispatch(resetDeleteStatusAction())
+    }
+  }
 
-export default class ImportAccount extends Component{
   render(){
     return(
       <View style={pubS.container}>
@@ -51,3 +61,8 @@ const styles = StyleSheet.create({
   }
 })
 
+export default connect(
+  state => ({
+    accountManageReducer: state.accountManageReducer
+  })
+)(ImportAccount)

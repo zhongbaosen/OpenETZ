@@ -105,14 +105,13 @@ class CreateAccount extends Component{
     this.setState({
       visible: true
     })
-    setTimeout(() => {
-      this.props.dispatch(createAccountAction({
-        userNameVal,
-        psdVal,
-        promptVal,
-        fromLogin: this.props.from === 'login_create' ? true : false
-      }))
-    },100)
+    // setTimeout(() => {
+    this.props.dispatch(createAccountAction({
+      userNameVal,
+      psdVal,
+      promptVal,
+    }))
+    // },100)
     
     
   }

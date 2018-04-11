@@ -11,7 +11,11 @@ import { pubS,ScanNavStyle,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { connect } from 'react-redux'
 import { switchAccountAction } from '../../actions/accountManageAction'
+import { insertToTokenAction } from '../../actions/tokenManageAction'
 import { toSplash } from '../../root'
+import TokenSQLite from '../../utils/tokenDB'
+const tkSqLite = new TokenSQLite()
+
 class SwitchWallet extends Component {
 	constructor(props){
 		super(props)
@@ -48,6 +52,9 @@ class SwitchWallet extends Component {
 	    this.props.onCloseSwitchDrawer()
 	}
 	onSwitch = (addr) => {
+		tkSqLite.deleteData()
+    	tkSqLite.dropTable()
+		this.props.dispatch(insertToTokenAction(addr))
 		this.props.dispatch(switchAccountAction(addr))
 		this.props.onCloseSwitchDrawer()
 		toSplash()
@@ -84,8 +91,8 @@ class SwitchWallet extends Component {
 
 const styles = StyleSheet.create({
 	imgStyle: {
-		width: scaleSize(28),
-		height: scaleSize(28),
+		width: scaleSize(56),
+		height: scaleSize(56),
 	}
 })
 

@@ -28,7 +28,7 @@ export default function createAccountReducer(state = initState,action){
 
 const onCreate = (state,action) => {
     let selected = 0 
-	  const { userNameVal, psdVal, promptVal,fromLogin } = action.payload
+	  const { userNameVal, psdVal, promptVal, } = action.payload
 	  let mnemonic = bip39.generateMnemonic();
     console.log('创建时生成的mnemonic==',mnemonic)
     

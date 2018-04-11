@@ -7,7 +7,8 @@ import {
   StyleSheet,
   ScrollView,
   FlatList,
-  Platform
+  Platform,
+  RefreshControl,
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
@@ -17,38 +18,39 @@ import { connect } from 'react-redux'
 import { onSwitchDrawerAction } from '../../actions/onSwitchDrawerAction'
 import SwitchWallet from './SwitchWallet'
 import { switchDrawer } from '../../utils/switchDrawer'
+import TokenSQLite from '../../utils/tokenDB'
 
-const DATA = [
-  {
-    short_name: 'ETZ',
-    full_name: 'EtherZero',
-    logo: '',
-    price: '',
-    coin_number: '',
-    is_add: '',
-  }
-]
+const tkSqLite = new TokenSQLite()
+let tk_db
+import { insertToTokenAction,initSelectedListAction,refreshTokenInfoAction } from '../../actions/tokenManageAction'
 
+let etzTitle = "ETZ"
 class Assets extends Component{
   constructor(props){
     super(props)
     this.state = {
       etzBalance: 0,
-      navTitle: ''
+      navTitle: '',
+      selectedAssetsList: [],
+      isRefreshing: false,
+      curAddr: '',
     }
   }
 
 
   componentWillMount(){
-
     const { accountInfo } = this.props.accountManageReducer
+    this.setState({
+      isRefreshing: true
+    })
     accountInfo.map((val,index) => {
-      // console.log('val1111111111111',val)
       if(val.is_selected === 1){
+        this.onFetch(val.address)
+        
         this.setState({
-          navTitle: val.account_name
+          navTitle: val.account_name,
+          curAddr: val.address
         })
-
         web3.eth.getBalance(`0x${val.address}`).then((res,rej)=>{
           // console.log('res==',res)
           this.setState({
@@ -60,15 +62,58 @@ class Assets extends Component{
 
   }
 
+  onFetch = (addr) => {
+    if(!tk_db){
+        tk_db = tkSqLite.open()
+    }
+    tk_db.transaction((tx) => {
+      tx.executeSql(" select * from token ",[],(tx,results) => {
+        let len = results.rows.length
+        let selArr = []
+        for(let i = 0; i < len; i ++ ){
+          let data = results.rows.item(i)
+          if(data.tk_selected === 1){
+            selArr.push(data)
+          }         
+        }
+        this.setState({
+          selectedAssetsList: selArr
+        })
+        this.props.dispatch(refreshTokenInfoAction(addr))
+        this.props.dispatch(initSelectedListAction(selArr,addr))
+      },(error) => {
+        // console.error(error)
+        this.props.dispatch(insertToTokenAction(addr))
+      })
+    })
+  }
 
-  toAssetsDetail = () => {
+  componentWillReceiveProps(nextProps){
+    const { selectedAssetsList } = this.state //  willmount拉去的数据库中的数据   
+    const { selectedList,refreshEnd } = this.props.tokenManageReducer //选中或取消选中操作后得到的数据
+    if(selectedList !== nextProps.tokenManageReducer.selectedList){
+      this.setState({
+        selectedAssetsList:  nextProps.tokenManageReducer.selectedList
+      })
+    }
+
+
+    if(refreshEnd !== nextProps.tokenManageReducer.refreshEnd && nextProps.tokenManageReducer.refreshEnd){
+      this.setState({
+        isRefreshing: false
+      })
+    }
+  }
+
+  toAssetsDetail = (title,balance,token) => {
     this.props.navigator.push({
       screen: 'asset_detail_list',
-      title:'ETZ',
+      title,
       navigatorStyle: MainThemeNavColor,
       passProps:{
-        etzBalance: this.state.etzBalance,
+        etzBalance: balance,
         etz2rmb: 0,
+        curToken: token,
       }
     })
   }
@@ -122,6 +167,14 @@ class Assets extends Component{
       screen: 'add_assets',
       title:'Add Assets',
       navigatorStyle: DetailNavigatorStyle,
+      navigatorButtons: {
+        rightButtons: [
+          {
+            id: 'search_token',
+            icon: require('../../images/xhdpi/nav_search_addasset_def.png')
+          }
+        ]
+      }
     })
   }
 
@@ -155,79 +208,16 @@ class Assets extends Component{
   onRightDrawer = () => {
     this._drawer.open()
   }
-  renderItem = (item) => {
-    return(
-      <TouchableOpacity style={[styles.listItemView,styles.whStyle]} activeOpacity={.7} onPress={this.toAssetsDetail}>
-        <Image source={require('../../images/xhdpi/etz_logo.png')} style={{width: scaleSize(44),height:scaleSize(44),marginTop: scaleSize(22)}}/>
-        <View style={[styles.listItemTextView]}>
-          <View style={pubS.rowCenterJus}>
-            <Text style={pubS.font36_2}>ETZ</Text>
-            <Text style={pubS.font36_2}>{this.state.etzBalance}</Text>
-          </View>
-          <View style={pubS.rowCenterJus}>
-            <Text style={pubS.font24_2}>EtherZero</Text>
-            <Text style={pubS.font24_2}>≈ ¥ 0</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    )
-  }
 
-  ListFooterComponent = () => {
-    return(
-
-      <TouchableOpacity style={[styles.whStyle,styles.addBtnStyle,pubS.center]} activeOpacity={.7} onPress={this.addAssetsBtn}>
-        <Text style={pubS.font24_3}>+添加资产</Text>
-      </TouchableOpacity>
-    )
-  }
-  ListHeaderComponent = () => {
-    return(
-      <View>
-        <View style={[styles.navbarStyle,pubS.rowCenterJus,{paddingLeft: scaleSize(24),paddingRight: scaleSize(24)}]}>
-            {
-              // <TouchableOpacity activeOpacity={.6} onPress={this.onLeftDrawer}>
-              //   <Image source={require('../../images/xhdpi/nav_ico_home_message_def.png')}style={styles.navImgStyle}/>
-              // </TouchableOpacity>
-              
-            }
-            <View style={styles.navImgStyle}/>
-            <Text style={pubS.font30_1}>{this.state.navTitle}</Text>
-            <TouchableOpacity activeOpacity={.6} onPress={this.onRightDrawer}>
-              <Image source={require('../../images/xhdpi/nav_ico_home_more_def.png')} style={styles.navImgStyle}/>
-            </TouchableOpacity>
-          </View>
-          <View>
-            <View style={[styles.assetsTotalView,pubS.center]}>
-                <Text style={pubS.font72_1}>≈0</Text>
-                <Text style={pubS.font26_3}>Total Assets(￥)</Text>
-            </View>
-
-            <View style={[styles.optionView,pubS.center]}>
-                <View style={[pubS.rowCenterJus,{width: scaleSize(650)}]}>
-                  <TouchableOpacity activeOpacity={.7} onPress={this.onScan} style={[styles.optionItem]}>
-                    <Image source={require('../../images/xhdpi/btn_ico_home_scan_def.png')} style={styles.itemImageStyle}/>
-                    <Text style={[pubS.font24_2,]}>Scan</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity activeOpacity={.7} onPress={this.onPay} style={[styles.optionItem]}>
-                    <Image source={require('../../images/xhdpi/btn_ico_home_payment_def.png')} style={styles.itemImageStyle}/>
-                    <Text style={[pubS.font24_2,]}>Payment</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity activeOpacity={.7} onPress={this.onCollection} style={[styles.optionItem]}>
-                    <Image source={require('../../images/xhdpi/btn_ico_home_collection_def.png')} style={styles.itemImageStyle}/>
-                    <Text style={[pubS.font24_2,]}>Receive</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity activeOpacity={.7} onPress={this.onTradingRecord} style={[styles.optionItem]}>
-                    <Image source={require('../../images/xhdpi/btn_ico_home_transactionrecords_def.png')} style={styles.itemImageStyle}/>
-                    <Text style={[pubS.font24_2,]}>Records</Text>
-                  </TouchableOpacity>
-                </View>
-            </View>
-          </View>
-      </View>
-    )
+  onRefresh = () => {
+    this.setState({
+        isRefreshing: true
+    })
+    this.props.dispatch(refreshTokenInfoAction(this.state.curAddr))
   }
   render(){
+    const { selectedAssetsList,etzBalance, isRefreshing} = this.state
+    
 
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
@@ -242,13 +232,85 @@ class Assets extends Component{
           onCloseStart={this.onDrawerCloseStart}
           onOpenStart={this.onDrawerOpenStart}
         >
-          <FlatList
-            data={DATA}
-            renderItem={this.renderItem}
-            keyExtractor = {(item, index) => index}
-            ListFooterComponent={this.ListFooterComponent}
-            ListHeaderComponent={this.ListHeaderComponent}
-          />
+          <ScrollView 
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={this.onRefresh}
+                tintColor="#144396"
+                title="Loading..."
+                // titleColor="#00ff00"
+                colors={['#fff']}
+                progressBackgroundColor="#1d53a6"
+              />
+            }
+          >
+            <View style={[styles.navbarStyle,pubS.rowCenterJus,{paddingLeft: scaleSize(24),paddingRight: scaleSize(24)}]}>
+              {
+                // <TouchableOpacity activeOpacity={.6} onPress={this.onLeftDrawer}>
+                //   <Image source={require('../../images/xhdpi/nav_ico_home_message_def.png')}style={styles.navImgStyle}/>
+                // </TouchableOpacity>
+                
+              }
+              <View style={styles.navImgStyle}/>
+              <Text style={pubS.font30_1}>{this.state.navTitle}</Text>
+              <TouchableOpacity activeOpacity={.6} onPress={this.onRightDrawer}>
+                <Image source={require('../../images/xhdpi/nav_ico_home_more_def.png')} style={styles.navImgStyle}/>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <View style={[styles.assetsTotalView,pubS.center]}>
+                  <Text style={pubS.font72_1}>≈0</Text>
+                  <Text style={pubS.font26_3}>Total Assets(￥)</Text>
+              </View>
+
+              <View style={[styles.optionView,pubS.center]}>
+                  <View style={[pubS.rowCenterJus,{width: scaleSize(650)}]}>
+                    <TouchableOpacity activeOpacity={.7} onPress={this.onScan} style={[styles.optionItem]}>
+                      <Image source={require('../../images/xhdpi/btn_ico_home_scan_def.png')} style={styles.itemImageStyle}/>
+                      <Text style={[pubS.font24_2,]}>Scan</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity activeOpacity={.7} onPress={this.onPay} style={[styles.optionItem]}>
+                      <Image source={require('../../images/xhdpi/btn_ico_home_payment_def.png')} style={styles.itemImageStyle}/>
+                      <Text style={[pubS.font24_2,]}>Payment</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity activeOpacity={.7} onPress={this.onCollection} style={[styles.optionItem]}>
+                      <Image source={require('../../images/xhdpi/btn_ico_home_collection_def.png')} style={styles.itemImageStyle}/>
+                      <Text style={[pubS.font24_2,]}>Receive</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity activeOpacity={.7} onPress={this.onTradingRecord} style={[styles.optionItem]}>
+                      <Image source={require('../../images/xhdpi/btn_ico_home_transactionrecords_def.png')} style={styles.itemImageStyle}/>
+                      <Text style={[pubS.font24_2,]}>Records</Text>
+                    </TouchableOpacity>
+                  </View>
+              </View>
+            </View>
+            <AssetsItem
+              shortName={etzTitle}
+              fullName={'EtherZero'}
+              coinNumber={etzBalance}
+              price2rmb={0}
+              onPressItem={() => this.toAssetsDetail(etzTitle,this.state.etzBalance,'ETZ')}
+            />
+            {
+              selectedAssetsList.map((res,index) => {
+                return(
+                  <AssetsItem
+                    key={index}
+                    shortName={res.tk_symbol}
+                    fullName={res.tk_name}
+                    coinNumber={res.tk_number}
+                    price2rmb={0}
+                    onPressItem={() => this.toAssetsDetail(res.tk_symbol,res.tk_number,res.tk_symbol)}
+                  />
+                )
+              })
+            }
+            <TouchableOpacity style={[styles.whStyle,styles.addBtnStyle,pubS.center]} activeOpacity={.7} onPress={this.addAssetsBtn}>
+              <Text style={pubS.font24_3}>+添加资产</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </Drawer>
           
         
@@ -257,6 +319,26 @@ class Assets extends Component{
   }
 }
 
+class AssetsItem extends Component {
+  render(){
+    const { shortName, fullName, coinNumber, price2rmb, onPressItem} = this.props
+    return(
+      <TouchableOpacity style={[styles.listItemView,styles.whStyle]} activeOpacity={.7} onPress={onPressItem}>
+        <Image source={require('../../images/xhdpi/etz_logo.png')} style={pubS.logoStyle}/>
+        <View style={[styles.listItemTextView]}>
+          <View style={pubS.rowCenterJus}>
+            <Text style={pubS.font36_2}>{shortName}</Text>
+            <Text style={pubS.font36_2}>{coinNumber}</Text> 
+          </View>
+          <View style={pubS.rowCenterJus}>
+            <Text style={pubS.font24_2}>{fullName}</Text>
+            <Text style={pubS.font24_2}>{`≈ ¥${price2rmb}`}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+}
 const styles = StyleSheet.create({
   navImgStyle: {
     width:scaleSize(40),
@@ -323,6 +405,7 @@ const styles = StyleSheet.create({
 })
 export default connect(
   state => ({
-    accountManageReducer: state.accountManageReducer
+    accountManageReducer: state.accountManageReducer,
+    tokenManageReducer: state.tokenManageReducer
   })
 )(Assets)

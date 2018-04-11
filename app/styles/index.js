@@ -133,6 +133,11 @@ const SingleScreenAppNavigatorStyle = {
 }
 
 const pubS = {
+  logoStyle:{
+    width: scaleSize(44),
+    height:scaleSize(44),
+    marginTop: scaleSize(22)
+  },
 
   paddingCloumn20:{
     paddingTop: scaleSize(20),

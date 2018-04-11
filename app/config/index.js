@@ -17,7 +17,7 @@ import Personal from '../views/personal/'
 import ContactService from '../views/personal/ContactService'
 import HelpCenter from '../views/personal/HelpCenter'
 import AccountManage from '../views/personal/AccountManage'
-import BackUpAccount from '../views/personal/backup/BackUpAccount'
+import BackUpAccount from '../views/personal/backup/'
 import WriteMnemonic from '../views/personal/backup/WriteMnemonic'
 import VerifyMnemonic from '../views/personal/backup/VerifyMnemonic'
 

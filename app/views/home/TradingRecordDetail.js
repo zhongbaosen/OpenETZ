@@ -71,7 +71,7 @@ class TradingRecordDetail extends Component{
         <View style={styles.mainStyle}>
           <View style={[styles.accountStyle,pubS.rowCenter2]}>
             <Text style={pubS.font60_1}>{detailInfo.tx_value}</Text>
-            <Text style={[pubS.font22_3,{marginLeft: scaleSize(18),marginTop: scaleSize(28)}]}>etz</Text>
+            <Text style={[pubS.font22_3,{marginLeft: scaleSize(18),marginTop: scaleSize(28)}]}>{detailInfo.tx_token}</Text>
           </View>
           <TextInstructions
             title={'payer'}

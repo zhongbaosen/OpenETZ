@@ -44,7 +44,9 @@ class AssetDetailList extends Component{
               let list = []
               for(let i=0; i<len; i++){  
                 let u = t_results.rows.item(i)
-                list.push(u)
+                if(u.tx_token === this.props.curToken){
+                  list.push(u)
+                }
               }
               this.setState({
                 listData: list
@@ -82,6 +84,7 @@ class AssetDetailList extends Component{
         receiverAddress={sliceAddress(res.tx_receiver)}
         receiverTime={timeStamp2Date(res.tx_time)}
         receiverVal={res.tx_value}
+        unit={this.props.curToken}
       />
     )
   }
@@ -108,6 +111,13 @@ class AssetDetailList extends Component{
       navigatorStyle: DetailNavigatorStyle,
     })
   }
+  ListEmptyComponent = () => {
+    return(
+      <View style={{marginTop: 10,alignItems:'center'}}>
+        <Text>No Trading Information</Text>
+      </View>
+    )
+  }
   render(){
     console.log('交易列表',this.state.listData)
     return(
@@ -117,6 +127,7 @@ class AssetDetailList extends Component{
           renderItem={this.renderItem}
           keyExtractor = {(item, index) => index}
           ListHeaderComponent={this.ListHeaderComponent}
+          ListEmptyComponent={this.ListEmptyComponent}
         />
         <View style={[styles.bottomBtnStyle,pubS.rowCenter]}>
           <TouchableOpacity activeOpacity={.7} onPress={this.payBtn} style={[styles.btnStyle,{backgroundColor:'#FFAA3B'},pubS.center]}>

@@ -36,10 +36,10 @@ export default class  TradingSQLite extends Component{
     if (!db) {  
         this.open();  
     }  
-    //创建用户表  
     db.transaction((tx)=> {  
       tx.executeSql('CREATE TABLE IF NOT EXISTS TRADING(' +  
           'id INTEGER PRIMARY KEY  AUTOINCREMENT,' +  
+          'tx_token VARCHAR,'+
           'tx_time VARCHAR,'+  
           'tx_result INTEGER,' + 
           'tx_hash VARCHAR,' + 
@@ -94,6 +94,7 @@ export default class  TradingSQLite extends Component{
        for(let i=0; i<len; i++){  
         var tradingTable = insertData[i];  
         let tx_time= tradingTable.tx_time;  
+        let tx_token = tradingTable.tx_token;
         let tx_result = tradingTable.tx_result;
         let tx_hash = tradingTable.tx_hash;
         let tx_value= tradingTable.tx_value;  
@@ -103,9 +104,9 @@ export default class  TradingSQLite extends Component{
         let tx_block_number= tradingTable.tx_block_number;  
         let tx_account_name= tradingTable.tx_account_name;  
 
-        let sql = "INSERT INTO trading(tx_time,tx_account_name,tx_result,tx_hash,tx_value,tx_sender,tx_receiver,tx_note,tx_block_number)"+  
-        "values(?,?,?,?,?,?,?,?,?)";  
-        tx.executeSql(sql,[tx_time,tx_account_name,tx_result,tx_hash,tx_value,tx_sender,tx_receiver,tx_note,tx_block_number],()=>{  
+        let sql = "INSERT INTO trading(tx_time,tx_token,tx_account_name,tx_result,tx_hash,tx_value,tx_sender,tx_receiver,tx_note,tx_block_number)"+  
+        "values(?,?,?,?,?,?,?,?,?,?)";  
+        tx.executeSql(sql,[tx_time,tx_token,tx_account_name,tx_result,tx_hash,tx_value,tx_sender,tx_receiver,tx_note,tx_block_number],()=>{  
             
           },(err)=>{  
             console.log(err);  

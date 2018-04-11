@@ -14,6 +14,7 @@ const initState = {
 	importSucc: false,
 	deleteFinished: false,
 	updateBackupSucc: false,
+	isLoading: false
 }
 export default function accountManageReducer (state = initState,action) {
 	switch(action.type){
@@ -67,6 +68,7 @@ const onReset = (state,action) => {
 		...state,
 		deleteFinished: false,
 		updateBackupSucc: false,
+		importSucc: false,
 	}
 }
 const onDelete = (state,action) => {
@@ -139,6 +141,7 @@ const onImport = (state,action) => {
 
 		let w = wallet.fromPrivateKey(buf)
 	    let p_keystore = w.toV3(privatePassword,{c:8192,n:8192})
+	    console.log('私钥导入p_keystore====',p_keystore)
 	    keyStore = p_keystore
 	    userName = privateUserName
 	    createFinished = true
@@ -200,7 +203,7 @@ const onImport = (state,action) => {
 
 	    setTimeout(() => {
 	        sqLite.insertUserData(userData)
-	    },2000)
+	    },1500)
 
 	    succ = true
 	}

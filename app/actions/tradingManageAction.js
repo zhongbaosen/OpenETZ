@@ -9,6 +9,7 @@ const insert2TradingDBAction = (data) => {
 				tx_sender: data.tx_sender,
 				tx_receiver: data.tx_receiver,
 				tx_note: data.tx_note,
+				tx_token: data.tx_token
 			}
 		}
 	}

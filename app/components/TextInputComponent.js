@@ -50,7 +50,9 @@ export default class TextInputComponent extends Component{
             }
             {
               toMore ?
-              <Image source={require('../images/xhdpi/btn_ico_payment_select_def.png')} style={{width: scaleSize(16),height: scaleSize(30)}}/>
+              <View style={[{width: scaleSize(45),height: scaleSize(43),alignItems:'flex-end'}]}>
+                <Image source={require('../images/xhdpi/btn_ico_payment_select_def.png')} style={{width: scaleSize(16),height: scaleSize(30)}}/>
+              </View>
               : null
             }
             {

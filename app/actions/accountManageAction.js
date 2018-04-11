@@ -85,6 +85,9 @@ const updateBackupStatusAction = (addr) => {
 		dispatch(onUpdate())
 	}
 }
+
+
+
 export {
 	getAccountInfoAction,
 	switchAccountAction,

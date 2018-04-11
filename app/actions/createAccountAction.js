@@ -7,7 +7,6 @@ const createAccountAction = (parames) => {
 				userNameVal: parames.userNameVal,
 				psdVal: parames.psdVal,
 				promptVal: parames.promptVal,
-				fromLogin: parames.fromLogin
 			}
 		}
 	}
