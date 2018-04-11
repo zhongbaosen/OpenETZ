@@ -80,13 +80,13 @@ const insertToDB = (state,action) => {
    		trading.tx_block_number = block	
       trading.tx_token = tx_token
 	    tradingData.push(trading) 
-   	},10)
+   	},1000)
 
 
       // insert 
     setTimeout(() => {
         tradingSqLite.insertTradingData(tradingData)
-    },20)
+    },1500)
 
 
 

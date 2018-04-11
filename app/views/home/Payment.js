@@ -302,7 +302,7 @@ class Payment extends Component{
     .on('transactionHash', function(hash){
        console.log('hash==',hash)
       hashVal = hash
-      this.onPressClose()
+      self.onPressClose()
       self.props.navigator.popToRoot({
         animated: true,
         animationType: 'fade',
@@ -330,7 +330,7 @@ class Payment extends Component{
             tx_note: noteVal,
             tx_token: "ETZ"
           }))
-        },10)
+        },1000)
         ToastAndroid.show('payment succeeful~',3000)
       }
     })
@@ -443,7 +443,7 @@ class Payment extends Component{
       web3.eth.sendSignedTransaction(serializedTx).on('transactionHash', function(hash){
           console.log('transactionHash:', hash)
           hashVal = hash
-          this.onPressClose()
+          self.onPressClose()
           self.props.navigator.popToRoot({
             animated: true,
             animationType: 'fade',
@@ -461,7 +461,7 @@ class Payment extends Component{
                 tx_note: noteVal,
                 tx_token: currentTokenName
               }))
-            },10)
+            },1000)
             ToastAndroid.show('payment succeeful~',3000)
           }
           

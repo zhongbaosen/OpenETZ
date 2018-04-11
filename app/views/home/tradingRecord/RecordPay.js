@@ -30,6 +30,7 @@ class RecordPay extends Component{
         receiverAddress={sliceAddress(res.tx_receiver)}
         receiverTime={timeStamp2Date(res.tx_time)}
         receiverVal={`-${res.tx_value}`}
+        unit={res.tx_token}
       />
     )
   }
