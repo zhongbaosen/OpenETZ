@@ -27,6 +27,7 @@ async function fetchFunc(options){
 
     		tk_db.transaction((tx) => {
     			tx.executeSql(" update token set tk_number = ? where tk_address = ? ",[number,tokenAddr],(tx,results)=>{
+    				console.log('更新tk_number成功',number)
     			},(error) => {
     				console.error(error)
     			})
@@ -45,6 +46,7 @@ async function fetchFunc(options){
 	    			if(data.tk_selected === 1){
 	    				list.push(data)
 	    			}
+	    			console.log('push成功')
 	    		}
 	    		refreshSuccess(list)
 	    	},(error) => {	

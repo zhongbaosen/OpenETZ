@@ -273,7 +273,7 @@ class Assets extends Component{
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={.7} onPress={this.onPay} style={[styles.optionItem]}>
                       <Image source={require('../../images/xhdpi/btn_ico_home_payment_def.png')} style={styles.itemImageStyle}/>
-                      <Text style={[pubS.font24_2,]}>Payment</Text>
+                      <Text style={[pubS.font24_2,]}>Send</Text>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={.7} onPress={this.onCollection} style={[styles.optionItem]}>
                       <Image source={require('../../images/xhdpi/btn_ico_home_collection_def.png')} style={styles.itemImageStyle}/>

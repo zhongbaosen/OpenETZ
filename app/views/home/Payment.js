@@ -67,7 +67,12 @@ class Payment extends Component{
   componentWillMount(){
 
     const { accountInfo } = this.props.accountManageReducer
-
+    if(this.props.curToken){
+      this.setState({
+        currentTokenName: this.props.curToken,
+        isToken: true
+      })
+    }
     if(this.props.receive_address){
       this.setState({
         receiverAddress: this.props.receive_address

@@ -30,7 +30,8 @@ class Collection extends Component{
     this.state={
         visible: false,
         payTotalVal: '',
-        addressText: ''
+        addressText: '',
+        currentAccount: { }
     }
 
   }
@@ -48,9 +49,9 @@ class Collection extends Component{
           
           for(let i=0; i<len; i++){  
             let result = results.rows.item(i)
-            console.log('55555555555555555555555555555',result)
             if(result.is_selected === 1){
               this.setState({
+                currentAccount: result,
                 addressText: `0x${result.address}`
               })
             }
@@ -69,12 +70,14 @@ class Collection extends Component{
   }
 
   componentWillUnmount(){
-    this.getContent()
-
+    // this.getContent()
+    this.setState({
+      visible: false
+    }) 
   }
-  async getContent(){
-    let a= await Clipboard.getString()
-  }
+  // async getContent(){
+  //   let a= await Clipboard.getString()
+  // }
 
   // onChangePayTotal = (val) => {
   //   this.setState({
@@ -93,6 +96,8 @@ class Collection extends Component{
     })
   }
   backupBtn = () => {
+    const { currentAccount } = this.state
+    console.log('currentAccount===',currentAccount)
     this.setState({
       visible: false
     })
@@ -100,6 +105,11 @@ class Collection extends Component{
       screen: 'back_up_account',
       title: 'username',
       navigatorStyle: DetailNavigatorStyle,
+      passProps: {
+        userName: currentAccount.account_name,
+        address: currentAccount.address,
+        b_id: currentAccount.id,
+      },
       navigatorButtons: {
         rightButtons: [
           {

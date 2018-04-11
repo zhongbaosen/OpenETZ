@@ -102,6 +102,9 @@ class AssetDetailList extends Component{
       screen: 'on_payment',
       title:'Payment',
       navigatorStyle: DetailNavigatorStyle,
+      passProps:{
+        curToken: this.props.curToken
+      }
     })
   }
   collectBtn = () => {
@@ -131,7 +134,7 @@ class AssetDetailList extends Component{
         />
         <View style={[styles.bottomBtnStyle,pubS.rowCenter]}>
           <TouchableOpacity activeOpacity={.7} onPress={this.payBtn} style={[styles.btnStyle,{backgroundColor:'#FFAA3B'},pubS.center]}>
-            <Text style={pubS.font30_3}>Payment</Text>
+            <Text style={pubS.font30_3}>Send</Text>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={.7} onPress={this.collectBtn} style={[styles.btnStyle,{backgroundColor:'#FF9844'},pubS.center]}>
             <Text style={pubS.font30_3}>Receive</Text>
