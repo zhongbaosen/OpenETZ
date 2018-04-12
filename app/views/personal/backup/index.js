@@ -17,16 +17,17 @@ import { Navigation } from 'react-native-navigation'
 import { pubS,DetailNavigatorStyle } from '../../../styles/'
 import { setScaleText, scaleSize } from '../../../utils/adapter'
 import { sliceAddress } from '../../../utils/splitNumber'
-import { Btn } from '../../../components/'
+import { Btn,Loading, } from '../../../components/'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
 import UserSQLite from '../../../utils/accountDB'
-import { deleteAccountAction,resetDeleteStatusAction,updateBackupStatusAction } from '../../../actions/accountManageAction'
+
+import { deleteAccountAction,resetDeleteStatusAction,updateBackupStatusAction,passAccountsInfoAction } from '../../../actions/accountManageAction'
 const Wallet = require('ethereumjs-wallet')
 
 const sqLite = new UserSQLite();  
 let db;  
-
+import { toLogin } from '../../../root'
 class BackUpAccount extends Component{
   constructor(props){
     super(props)
@@ -38,6 +39,8 @@ class BackUpAccount extends Component{
       privBackuped: false,
       backupMnemonic: false,
       mncBackuped: false,
+      isDelAccount: false,
+      dVisible: false,
       keyStore: {}
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
@@ -94,8 +97,27 @@ class BackUpAccount extends Component{
 
 
   compennetDidUnmount(){  
-    sqLite.close();  
+    sqLite.close()  
   } 
+
+  componentWillReceiveProps(nextProps){
+    if(this.props.accountManageReducer.deleteSuc !== nextProps.accountManageReducer.deleteSuc && nextProps.accountManageReducer.deleteSuc){
+      ToastAndroid.show('delete successful~',3000)
+      if(this.props.accountsNumber === 1){
+        setTimeout(() => {
+          toLogin()
+        },100)
+        sqLite.dropTable()
+        sqLite.deleteData()  
+      }else{
+        //删除其他账号后 更新accountInfo信息  如果删除的是当前账号  更新accountInfo后还需要将另外的一条信息的is_selected=1
+        this.props.dispatch(passAccountsInfoAction())
+        setTimeout(() => {
+          this.props.navigator.pop()
+        },100)
+      }
+    }
+  }
   onNavigatorEvent(event){
     if (event.type == 'NavBarButtonPress') {
       switch(event.id){
@@ -117,22 +139,36 @@ class BackUpAccount extends Component{
   }
 
   deleteAccount = () => {
-    this.props.dispatch(deleteAccountAction(this.props.b_id))
-    setTimeout(() => {
-      ToastAndroid.show('delete successful~',3000)
-      this.props.navigator.pop()
-    },100)
+    this.setState({
+      iptPsdVisible: true,
+      isDelAccount: true
+    })
+
   }
+
+  onPressCancel = () => {
+    this.setState({
+      dVisible: false
+    })
+  }
+  onPressConfirmDel = () => {
+    this.setState({
+      dVisible: false
+    })
+    this.props.dispatch(deleteAccountAction(this.props.b_id,this.props.accountsNumber,this.props.currentAccountId))   
+  }
+
   backUpPrivBtn = () => {
-      this.setState({
-        iptPsdVisible: true
-      })
+    this.setState({
+      iptPsdVisible: true
+    })
   }
   onHide = () => {
     this.setState({
       iptPsdVisible: false,
       psdVal: '',
-      backupMnemonic: false
+      backupMnemonic: false,
+      isDelAccount: false,
     })
   }
   onChangePsdText = (val) => {
@@ -150,12 +186,12 @@ class BackUpAccount extends Component{
   }
 
   onConfirm = () => {
-    //当前账号的keystore  生成 private key
-    const { psdVal,backupMnemonic,keyStore } = this.state
+    const { psdVal,backupMnemonic,keyStore,isDelAccount,  } = this.state
       
     try {
       const newWallet = Wallet.fromV3(keyStore,psdVal)
       let priv = newWallet._privKey.toString('hex')
+      
       if(backupMnemonic){
         this.props.navigator.push({
           screen: 'write_mnemonic',
@@ -166,10 +202,16 @@ class BackUpAccount extends Component{
           }
         })
       }else{
-        this.setState({
-          privKey: priv,
-          pKeyVisible: true
-        })
+        if(isDelAccount){
+          this.setState({
+            dVisible: true,
+          })
+        }else{
+          this.setState({
+            privKey: priv,
+            pKeyVisible: true
+          })
+        }
       }
       this.onHide()
     } catch (err) {
@@ -224,42 +266,46 @@ class BackUpAccount extends Component{
   }
 
   render(){
-    const { iptPsdVisible,psdVal,pKeyVisible,privKey,privBackuped,mncBackuped,keyStore } = this.state
+    const { iptPsdVisible,psdVal,pKeyVisible,privKey,privBackuped,mncBackuped,keyStore,dVisible } = this.state
+    const { isLoading } = this.props.accountManageReducer
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
+        <Loading loadingVisible={isLoading} loadingText={'deleting account'}/>
         <Image source={require('../../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
         <Text style={pubS.font26_5}>{sliceAddress(this.props.address,10)}</Text>
         <View style={[styles.userNameViewStyle,pubS.rowCenterJus,pubS.bottomStyle]}>
           <Text style={pubS.font26_4}>wallet name</Text>
           <Text style={pubS.font26_4}>{this.props.userName}</Text>
         </View>
-        <Btn
-          btnPress={ mncBackuped ? () => {return} : () => this.backupMnemonicBtn() }
-          bgColor={mncBackuped ? '#BDC0C6' : '#2B8AFF'}
-          opacity={mncBackuped ? 1 : .7}
-          btnText={'backup mnemonic'}
-          btnMarginTop={scaleSize(150)}
-        />
-        <Btn
-          btnPress={() => this.backUpKeyStoreBtn() }
-          bgColor={'#2B8AFF'}
-          opacity={.7}
-          btnText={'backup keystore'}
-          btnMarginTop={scaleSize(20)}
-        />
-        <Btn
-          btnPress={privBackuped ? () => {return} : () => this.backUpPrivBtn() }
-          bgColor={privBackuped ? '#BDC0C6' : '#2B8AFF'}
-          opacity={privBackuped ? 1 : .7}
-          btnText={'backup private key'}
-          btnMarginTop={scaleSize(20)}
-        />
-        <Btn
-          btnPress={this.deleteAccount}
-          btnText={'delete user'}
-          btnMarginTop={scaleSize(20)}
-          bgColor={'#BDC0C6'}
-        />
+        <View style={{position:'absolute',bottom: scaleSize(40)}}>
+          <Btn
+            btnPress={ mncBackuped ? () => {return} : () => this.backupMnemonicBtn() }
+            bgColor={mncBackuped ? '#BDC0C6' : '#2B8AFF'}
+            opacity={mncBackuped ? 1 : .7}
+            btnText={'backup mnemonic'}
+            btnMarginTop={scaleSize(150)}
+          />
+          <Btn
+            btnPress={() => this.backUpKeyStoreBtn() }
+            bgColor={'#2B8AFF'}
+            opacity={.7}
+            btnText={'backup keystore'}
+            btnMarginTop={scaleSize(20)}
+          />
+          <Btn
+            btnPress={privBackuped ? () => {return} : () => this.backUpPrivBtn() }
+            bgColor={privBackuped ? '#BDC0C6' : '#2B8AFF'}
+            opacity={privBackuped ? 1 : .7}
+            btnText={'backup private key'}
+            btnMarginTop={scaleSize(20)}
+          />
+          <Btn
+            btnPress={this.deleteAccount}
+            btnText={'delete user'}
+            btnMarginTop={scaleSize(20)}
+            bgColor={'#BDC0C6'}
+          />
+        </View>
 
         <Modal
           isVisible={iptPsdVisible}
@@ -268,7 +314,7 @@ class BackUpAccount extends Component{
           backdropOpacity={.8}
         >
           <View style={styles.modalView}>
-            <Text style={[pubS.font34_2,{marginTop: scaleSize(50)}]}>please enter receive password </Text>
+            <Text style={[pubS.font34_2,{marginTop: scaleSize(50)}]}>please enter password </Text>
             <TextInput
               placeholder={'Password'}
               value={psdVal}
@@ -280,10 +326,10 @@ class BackUpAccount extends Component{
             />
             <View style={[pubS.rowCenter,pubS.topBorderStyle,{height: scaleSize(88),marginTop: scaleSize(25),width: '100%'}]}>
               <TouchableOpacity activeOpacity={.7} onPress={this.onHide} style={[pubS.center,styles.modalBtnStyle]}>
-                <Text style={pubS.font34_3}>Cancel</Text>
+                <Text style={[pubS.font34_3,{}]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity activeOpacity={.7} onPress={this.onConfirm} style={[pubS.center,{width:'50%',borderBottomRightRadius:scaleSize(26)}]}>
-                <Text style={pubS.font34_3}>Confirm</Text>
+                <Text style={[pubS.font34_3,{fontWeight: 'bold'}]}>Confirm</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -313,11 +359,48 @@ class BackUpAccount extends Component{
             </TouchableOpacity>
           </View>
         </Modal>
+
+       <Modal isVisible={dVisible}>
+          <View style={[styles.confirmModal]}>
+            <Text style={[pubS.font34_3,styles.titleStyle]}>Delete this account?</Text>
+            <View style={[pubS.center,pubS.rowCenter,styles.btnViewStyle]}>
+                  <TouchableOpacity activeOpacity={.6} onPress={this.onPressCancel} style={[pubS.center,styles.btnStyle]}>
+                    <Text style={pubS.font34_3}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity activeOpacity={.6} onPress={this.onPressConfirmDel} style={[pubS.center,styles.btnStyle,{borderRightWidth:StyleSheet.hairlineWidth,borderColor:'#dce4e6'}]}>
+                    <Text style={pubS.font34_3}>Confirm</Text>
+                  </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
       </View>
     )
   }
 }
 const styles = StyleSheet.create({
+  btnViewStyle: {
+    position: 'absolute',
+    bottom:0,
+    borderColor: '#dce4e6',
+      borderTopWidth: StyleSheet.hairlineWidth,  
+  },
+  titleStyle: {
+    marginTop: 40,
+    alignSelf: 'center'
+  },
+  confirmModal:{
+    backgroundColor:'#fff',
+    height: 150,
+    width:280,
+    alignSelf:'center',
+    borderRadius: 5,
+
+  },
+  btnStyle: {
+    height:40,
+    width: 140,
+  },
   copyBtnStyle:{
     width: scaleSize(500),
     height: scaleSize(70),

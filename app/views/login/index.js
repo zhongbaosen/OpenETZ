@@ -25,7 +25,7 @@ class Login extends Component{
 
     this.props.navigator.push({
       screen: 'create_account',
-      title:'create',
+      title:'Create',
       navigatorStyle: DetailNavigatorStyle,
       passProps: { from: 'login_create'}
     })

@@ -10,7 +10,7 @@ import { getLocalDataAction } from '../actions/getLocalDataAction'
 import { connect } from 'react-redux'
 import UserSQLite from '../utils/accountDB'
 import TradingSQLite from '../utils/tradingDB'
-import { getAccountInfoAction } from '../actions/accountManageAction'
+import { passAccountsInfoAction,getAccountInfoAction } from '../actions/accountManageAction'
 import { DetailNavigatorStyle} from '../styles/'
 const sqLite = new UserSQLite()  
 let db  
@@ -30,16 +30,13 @@ class Splash extends Component{
 
   
   componentWillMount(){
-    // if(!db){  
-    //     db = sqLite.open();  
-    //   }
-    // db.transaction((tx) => {
-    //   tx.executeSql(" update account set assets_total = '0' ",[],(tx,results) => {
 
-    //   },(error) => {
-    //     console.log(error)
-    //   })
-    // })
+    // tkSqLite.deleteData()
+    // tkSqLite.dropTable()
+    //   sqLite.dropTable()
+    //   sqLite.deleteData() 
+
+    // this.props.dispatch(passAccountsInfoAction())
   }
   componentDidMount(){
     // tkSqLite.deleteData()
@@ -48,31 +45,10 @@ class Splash extends Component{
     //   sqLite.deleteData()    
 
     // toHome()
-    // this.props.navigator.push({
-    //   screen: 'import_account',
-    //   title:'import',
-    //   navigatorStyle: DetailNavigatorStyle,
-    // })
 
-    // this.props.navigator.push({
-    //   screen: 'back_up_account',
-    //   title: 'name',
-    //   navigatorStyle: DetailNavigatorStyle,
-    //   passProps: {
-    //     userName: 'name',
-    //     address: 'address',
-    //     b_id: 'id',
-    //   },
-    //   navigatorButtons: {
-    //     rightButtons: [
-    //       {
-    //         title: 'save',
-    //         id: 'save_back_up_info'
-    //       }
-    //     ]
-    //   }
-    // })
 
+
+    
 
     setTimeout(() => {
       if(!db){  
@@ -97,7 +73,15 @@ class Splash extends Component{
 
     },2000)
   } 
-
+  componentWillReceiveProps(nextProps){
+    if(nextProps.accountManageReducer.passAccInfoSuc === 'login'){
+      toLogin()
+    }else{
+      if(nextProps.accountManageReducer.passAccInfoSuc === 'home'){
+        toHome()
+      }
+    }
+  }
 
   async updateAssetsTotal(val){
     let res = await web3.eth.getBalance(`0x${val.address}`)
@@ -112,6 +96,7 @@ class Splash extends Component{
       })
     })     
   }
+
   compennetWillUnmount(){  
     sqLite.close();  
   } 
@@ -126,6 +111,6 @@ class Splash extends Component{
 }
 export default connect(
   state => ({
-    // accountManageReducer: state.accountManageReducer
+    accountManageReducer: state.accountManageReducer
   })
 )(Splash)

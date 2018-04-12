@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ToastAndroid
 } from 'react-native'
 
 import { pubS } from '../../../styles/'
@@ -13,7 +14,7 @@ import { setScaleText, scaleSize } from '../../../utils/adapter'
 import ScrollableTabView, { DefaultTabBar, ScrollableTabBar } from 'react-native-scrollable-tab-view'
 import { TextInputComponent,Btn,Loading } from '../../../components/'
 import { toSplash } from '../../../root'
-import { importAccountAction } from '../../../actions/accountManageAction'
+import { importAccountAction,resetDeleteStatusAction } from '../../../actions/accountManageAction'
 import { connect } from 'react-redux'
 import { Navigation } from 'react-native-navigation'
 class PrivateKey extends Component{
@@ -32,7 +33,18 @@ class PrivateKey extends Component{
       visible: false,
     }
   }
-
+  componentWillReceiveProps(nextProps){
+    if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
+      this.setState({
+        visible: false
+      })
+      ToastAndroid.show('import successful',3000)
+      setTimeout(() => {
+        toSplash()
+      },100)
+      this.props.dispatch(resetDeleteStatusAction())
+    }
+  }
   onChangePrivateText = (val) => {
     this.setState({
       privKeyVal: val,
@@ -60,7 +72,8 @@ class PrivateKey extends Component{
     const { privKeyWarning, psdWarning, rePsdWarning, privKeyVal, psdVal, repeadPsdVal,userNameVal, userNameWarning} = this.state
     let privReg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{64}$/
 
-    let psdReg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/
+    // let psdReg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/
+    let psdReg = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{8,}$/
     if(userNameVal.length === 0){
       this.setState({
         userNameWarning: 'please enter the account name'
@@ -73,7 +86,7 @@ class PrivateKey extends Component{
       }else{
         if(!psdReg.test(psdVal)){
           this.setState({
-            psdWarning: 'password needs to contain both letters and Numbers, and at least 8 digits.'
+            psdWarning: 'password needs to contain both letters and numbers, and at least 8 digits.'
           })
         }else{
           if(psdVal !== repeadPsdVal){
@@ -89,16 +102,19 @@ class PrivateKey extends Component{
   }
 
   onImport = () => {
-    const { privKeyVal, psdVal,userNameVal } = this.state
+    const { privKeyVal, psdVal,userNameVal } = this.state  
     this.setState({
       visible: true
-    })    
-    this.props.dispatch(importAccountAction({
-      privateKey: privKeyVal,
-      privatePassword: psdVal,
-      privateUserName: userNameVal,
-      type: 'private'
-    }))
+    })
+
+    setTimeout(() => {
+      this.props.dispatch(importAccountAction({
+        privateKey: privKeyVal,
+        privatePassword: psdVal,
+        privateUserName: userNameVal,
+        type: 'private'
+      }))
+    },500)
   }
   onChangeUseNameText = (val) => {
     this.setState({
@@ -110,6 +126,7 @@ class PrivateKey extends Component{
     const { privKeyVal, psdVal, repeadPsdVal, promptVal, privKeyWarning, psdWarning, rePsdWarning,userNameVal, userNameWarning } = this.state
     return(
       <View>
+        <Loading loadingVisible={this.state.visible} loadingText={'importing account'}/>
         <TextInputComponent
           placeholder={'wallet name'}
           value={userNameVal}
@@ -151,7 +168,6 @@ class PrivateKey extends Component{
           btnPress={this.onPressImport}
           btnText={'import'}
         />
-        <Loading loadingVisible={this.state.visible} loadingText={'importing account'}/>
       </View>
     )
   }

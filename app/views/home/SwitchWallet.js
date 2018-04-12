@@ -46,7 +46,7 @@ class SwitchWallet extends Component {
 	onCreate = () => {
 		this.props.thisPorps.props.navigator.push({
 	      screen: 'create_account',
-	      title:'create',
+	      title:'Create',
 	      navigatorStyle: DetailNavigatorStyle,
 	    })
 	    this.props.onCloseSwitchDrawer()
@@ -63,17 +63,16 @@ class SwitchWallet extends Component {
 		const { accountInfo,currentAddr } = this.props.accountManageReducer
 		return(
 			<View style={{backgroundColor:'#fff',flex:1,width:scaleSize(450),paddingTop: scaleSize(50)}}>
-			
-				{
-					accountInfo.map((val,index) => {
-						return(
-							<TouchableOpacity key={index} style={[pubS.rowCenter,{height: scaleSize(100),backgroundColor: val.is_selected===1 ? '#E9ECF0' : '#fff'}]} activeOpacity={.7} onPress={() => this.onSwitch(val.address)}>
-								<Image source={require('../../images/xhdpi/Penguin.png')} style={{width:scaleSize(55),height: scaleSize(55),marginLeft: scaleSize(33)}}/>
-								<Text style={[pubS.font24_2,{marginLeft: scaleSize(33)}]}>{val.account_name}</Text>
-							</TouchableOpacity>
-						)
-					})
-				}
+					{
+						accountInfo.map((val,index) => {
+							return(
+								<TouchableOpacity key={index} style={[pubS.rowCenter,{height: scaleSize(100),backgroundColor: val.is_selected===1 ? '#E9ECF0' : '#fff'}]} activeOpacity={.7} onPress={() => this.onSwitch(val.address)}>
+									<Image source={require('../../images/xhdpi/Penguin.png')} style={{width:scaleSize(55),height: scaleSize(55),marginLeft: scaleSize(33)}}/>
+									<Text style={[pubS.font24_2,{marginLeft: scaleSize(33)}]}>{val.account_name}</Text>
+								</TouchableOpacity>
+							)
+						})
+					}
 				
 				<View style={{width: '100%',borderWidth: StyleSheet.hairlineWidth,borderColor:'#F2F2F2',marginTop:scaleSize(30),marginBottom: scaleSize(50)}}></View>
 				<TouchableOpacity style={[pubS.rowCenter,{marginLeft: scaleSize(53)}]} activeOpacity={.7} onPress={this.onScan}>

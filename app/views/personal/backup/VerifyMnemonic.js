@@ -149,7 +149,7 @@ class VerifyMnemonic extends Component{
 					 		<Text style={pubS.font34_3}>Ok</Text>
 					 	</TouchableOpacity>
 					 </View>
-			      </Modal>
+			    </Modal>
 
 	        </View>
 	    )

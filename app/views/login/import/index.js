@@ -13,19 +13,26 @@ import  PrivateKey from './PrivateKey'
 import KeyStore from './KeyStore'
 import Mnemonic from './Mnemonic'
 import { connect } from 'react-redux'
-import { toSplash } from '../../../root'
+import { toSplash,toHome } from '../../../root'
 import { resetDeleteStatusAction } from '../../../actions/accountManageAction'
+import { Loading } from '../../../components/' 
 class ImportAccount extends Component{
   componentWillReceiveProps(nextProps){
-    if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
-      toSplash()
-      this.props.dispatch(resetDeleteStatusAction())
-    }
+    // if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
+    //   ToastAndroid.show('import successful',3000)
+    //   toSplash()
+    //   this.props.dispatch(resetDeleteStatusAction())
+    // }
   }
 
   render(){
+    const { importSucc } = this.props.accountManageReducer
     return(
       <View style={pubS.container}>
+        {
+          // <Loading loadingVisible={importSucc} loadingText={'importing account'}/>
+          
+        }
         <ScrollableTabView
           style={{ width: scaleSize(750)}}
           tabBarActiveTextColor={'#2B8AFF'}
@@ -35,8 +42,6 @@ class ImportAccount extends Component{
           renderTabBar={() => (
             <DefaultTabBar
               underlineStyle={[styles.underlineStyle]}
-              // activeTextColor={'#333'}
-              // inactiveTextColor={'#9b9b9b'}
               tabBarBackgroundColor={'#fff'}
               style={{ alignItems: 'center', backgroundColor: '#fff',borderColor:'transparent',marginBottom:-1,}}
               tabStyle={{ paddingTop: 10, height: 45, zIndex: 999, }}

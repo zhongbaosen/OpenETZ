@@ -106,10 +106,14 @@ class TradingRecord extends Component{
           tabBarTextStyle={{fontSize:setScaleText(26)}}
           animationEnabled={false}
           tabBarPosition={'top'}
+
           renderTabBar={() => (
             <ScrollableTabBar
               underlineStyle={[ styles.underlineStyle ]}
               style={{backgroundColor:'#144396',height: scaleSize(84)}}
+              activeTextColor={'#333'}
+              inactiveTextColor={'#9b9b9b'}
+              tabBarBackgroundColor={'#fff'}
             />
           )}
         >

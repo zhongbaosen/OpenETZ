@@ -1,4 +1,5 @@
 import * as types from  '../constants/accountManageConstant'
+import accountDBOpation from '../utils/accountDBOpation'
 const getAccountInfoAction = (info) => {
 	const getInfo = () => {
 		return {
@@ -12,7 +13,39 @@ const getAccountInfoAction = (info) => {
 		dispatch(getInfo())
 	}
 }
+const passAccountsInfoAction = () => {
+	const passStart = () => {
+		return {
+			type: types.PASS_ACCOUNTS_INFO_START,
+			payload:{
 
+			}
+		}
+	} 
+	const passSuc = (data) => {
+		return {
+			type: types.PASS_ACCOUNTS_INFO_SUC,
+			payload:{
+				data
+			}	
+		}
+	}
+	const passFail = (msg) => {
+		return {
+			type: types.PASS_ACCOUNTS_INFO_FAIL,
+			payload:{
+				msg
+			}
+		}
+	}
+	return(dispatch,getState) => {
+		dispatch(passStart())
+		accountDBOpation.passAccountsInfo({
+			passAccInfoSuc: (data) => {dispatch(passSuc(data))},
+			passAccInfoFail: (msg) => {dispatch(passFail(msg))},
+		})
+	}
+}
 const switchAccountAction = (addr) => {
 	const getInfo = () => {
 		return {
@@ -27,10 +60,41 @@ const switchAccountAction = (addr) => {
 	}
 }
 const importAccountAction = (data) => {
-	const getInfo = () => {
+	// const getInfo = () => {
+	// 	return {
+	// 		type: types.ON_IMPORT_ACCOUNT,
+	// 		payload: {
+	// 		}
+	// 	}
+	// }
+	const importStart = () => {
 		return {
-			type: types.ON_IMPORT_ACCOUNT,
+			type: types.IMPORT_ACCOUNT_START,
 			payload: {
+
+			}
+		}
+	}
+	const importSuc = (data) => {
+		return {
+			type: types.IMPORT_ACCOUNT_SUC,
+			payload: {
+				data
+			}
+		}
+	}
+	const importFail = (msg) => {
+		return {
+			type: types.IMPORT_ACCOUNT_FAIL,
+			payload: {
+				msg
+			}
+		}
+	}
+	return(dispatch,getState) => {
+		dispatch(importStart())
+		accountDBOpation.importAccount({
+			parames: {
 				privateKey: data.privateKey,
 				privatePassword: data.privatePassword,
 				privateUserName: data.privateUserName,
@@ -40,25 +104,59 @@ const importAccountAction = (data) => {
 				mnemonicUserName: data.mnemonicUserName,
 				keystoreVal: data.keystoreVal,
 				keystoreUserName: data.keystoreUserName,
-			}
-		}
-	}
-	return(dispatch,getState) => {
-		dispatch(getInfo())
+			},
+			importSuccess: (data) => {dispatch(importSuc(data))},
+			importFailure: (msg) => {dispatch(importFail(msg))}
+		})
 	}
 }
 
-const deleteAccountAction = (deleteId) => {
-	const onDelete = () => {
+const deleteAccountAction = (deleteId,accountsNum,curId) => {
+	// const onDelete = () => {
+	// 	return {
+	// 		type: types.ON_DELETE_ACCOUNT,
+	// 		payload: {
+	// 			deleteId
+	// 		}
+	// 	}
+	// }
+	const onDelStart = () => {
 		return {
-			type: types.ON_DELETE_ACCOUNT,
+			type: types.ON_DELETE_ACCOUNT_START,
 			payload: {
-				deleteId
+
+			}
+		}
+	}
+	const delSuc = (data) => {
+		return {
+			type: types.ON_DELETE_ACCOUNT_SUC,
+			payload: {
+				data
+			}
+		}
+	}
+	const delFail = (msg) => {
+		return {
+			type: types.ON_DELETE_ACCOUNT_FAIL,
+			payload: {
+				msg
 			}
 		}
 	}
 	return(dispatch,getState) => {
-		dispatch(onDelete())
+		// dispatch(onDelete())
+
+		dispatch(onDelStart())
+		accountDBOpation.deleteAccount({
+			parames: {
+				deleteId,
+				accountsNum,
+				curId,
+			},
+			delSuccess: (data) => {dispatch(delSuc(data))},
+			delFailure: (msg) => {dispatch(delFail(msg))}
+		})
 	}
 }
 
@@ -87,6 +185,45 @@ const updateBackupStatusAction = (addr) => {
 }
 
 
+const createAccountAction = (par) => {
+	const onStart = () => {
+		return {
+			type: types.CREATE_ACCOUNT_START,
+			payload: {
+				
+			}
+		}
+	}
+	const createSucc = (data) => {
+		return {
+			type: types.CREATE_ACCOUNT_SUC,
+			payload: {
+				data
+			}
+		}
+	}
+	const createFail = (msg) => {
+		return {
+			type: types.CREATE_ACCOUNT_FAIL,
+			payload: {
+				msg
+			}
+		}
+	}
+	return(dispatch,getState) => {
+		dispatch(onStart())
+		accountDBOpation.createAccount({
+			parames: {
+				userNameVal: par.userNameVal,
+				psdVal: par.psdVal,
+				promptVal: par.promptVal,
+			},
+			createSuccess: (data) => {dispatch(createSucc(data))},
+			createFailure: (msg) => {dispatch(createFail(msg))}
+		})
+	}
+}
+
 
 export {
 	getAccountInfoAction,
@@ -95,4 +232,6 @@ export {
 	deleteAccountAction,
 	resetDeleteStatusAction,
 	updateBackupStatusAction,
+	passAccountsInfoAction,
+	createAccountAction,
 }

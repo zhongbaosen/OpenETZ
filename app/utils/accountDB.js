@@ -140,7 +140,7 @@ export default class  UserSQLite extends Component{
       // console.log('数据插入失败')
       this.successInsertData(false)
     },()=>{  
-      // this._successCB('transaction insert data');  
+      // this._successCB('transaction insert data'); 
       console.log("成功插入 "+len+" 条用户数据")
       this.successInsertData(true)
     });  
@@ -154,8 +154,9 @@ export default class  UserSQLite extends Component{
       }  
       db = null;  
   }
-  successInsertData(status){
-
+  async successInsertData(status){
+    let s = await status
+    return s
   }  
   _successCB(name){  
     // console.log("SQLiteStorage "+name+" success");  

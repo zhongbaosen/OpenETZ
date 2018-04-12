@@ -151,7 +151,7 @@ class Payment extends Component{
     })
   }
   componentWillUnmount(){
-    this.onPressClose()
+    // this.onPressClose()
     Picker.hide()
   }
   onChangePayAddrText = (val) => {
@@ -308,10 +308,12 @@ class Payment extends Component{
        console.log('hash==',hash)
       hashVal = hash
       self.onPressClose()
-      self.props.navigator.popToRoot({
-        animated: true,
-        animationType: 'fade',
-      })
+      setTimeout(() => {
+        self.props.navigator.popToRoot({
+          animated: true,
+          animationType: 'fade',
+        })
+      },100)
 
     })
     .on('receipt', function(receipt){
@@ -449,10 +451,12 @@ class Payment extends Component{
           console.log('transactionHash:', hash)
           hashVal = hash
           self.onPressClose()
-          self.props.navigator.popToRoot({
-            animated: true,
-            animationType: 'fade',
-          })
+          setTimeout(() => {
+            self.props.navigator.popToRoot({
+              animated: true,
+              animationType: 'fade',
+            })
+          },100)
 
       }).on('confirmation', function(confirmationNumber, receipt){
           console.log('confirmation:', confirmationNumber)
@@ -501,14 +505,14 @@ class Payment extends Component{
           onPressIptRight={this.toScan}
         />
         <TextInputComponent
-          placeholder={'payment amount'}
+          placeholder={'amount'}
           value={payTotalVal}
           onChangeText={this.onChangePaTotalText}
           warningText={payTotalWarning}
           keyboardType={'numeric'}
         />
         <TextInputComponent
-          placeholder={'backup'}
+          placeholder={'note(optional)'}
           value={noteVal}
           onChangeText={this.onChangeNoteText}
         />

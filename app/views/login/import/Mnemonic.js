@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ToastAndroid
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../../styles/'
 import { setScaleText, scaleSize } from '../../../utils/adapter'
 import { TextInputComponent,Btn,Loading } from '../../../components/'
-import { importAccountAction } from '../../../actions/accountManageAction'
+import { importAccountAction,resetDeleteStatusAction } from '../../../actions/accountManageAction'
 import { connect } from 'react-redux'
 import { toSplash } from '../../../root'
 class Mnemonic extends Component{
@@ -30,14 +31,20 @@ class Mnemonic extends Component{
       userNameWarning: '',
     }
   }
+
   componentWillReceiveProps(nextProps){
-    // if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
-    //   this.setState({
-    //     visible: false
-    //   })
-    //   toSplash()
-    // }
+    if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
+      this.setState({
+        visible: false
+      })
+      ToastAndroid.show('import successful',3000)
+      setTimeout(() => {
+        toSplash()
+      },100)
+      this.props.dispatch(resetDeleteStatusAction())
+    }
   }
+
   onChangeMemonic = (val) => {
     this.setState({
       mnemonicVal: val,
@@ -64,7 +71,8 @@ class Mnemonic extends Component{
   }
   onPressImport = () => {
    const { mnemonicVal, mnemonicValWarning, passwordVal, passwordWarning, repeadPsdVal, rePsdWarning,userNameVal } = this.state
-   let psdReg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/
+   // let psdReg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/ 
+   let psdReg = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{8,}$/
    if(userNameVal.length === 0){
       this.setState({
         userNameWarning: 'please enter the account name'
@@ -93,10 +101,10 @@ class Mnemonic extends Component{
   }
 
   onImport = () => {
-    const { mnemonicVal, passwordVal, userNameVal} = this.state
+    const { mnemonicVal, passwordVal, userNameVal} = this.state  
     this.setState({
       visible: true
-    })    
+    })
     setTimeout(() => {
       this.props.dispatch(importAccountAction({
         mnemonicVal,
@@ -105,11 +113,13 @@ class Mnemonic extends Component{
         type: 'mnemonic',
       }))
     },100)
+    
   }
   render(){
     const { mnemonicVal, mnemonicValWarning, passwordVal, passwordWarning, repeadPsdVal, rePsdWarning,userNameVal, userNameWarning } = this.state
     return(
       <View style={pubS.container}>
+        <Loading loadingVisible={this.state.visible} loadingText={'importing account'}/>
         <TextInputComponent
           placeholder={'wallet name'}
           value={userNameVal}
@@ -145,7 +155,6 @@ class Mnemonic extends Component{
           btnPress={this.onPressImport}
           btnText={'import'}
         />
-        <Loading loadingVisible={this.state.visible} loadingText={'importing account'}/>
       </View>
     )
   }

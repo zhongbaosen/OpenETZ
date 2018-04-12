@@ -19,12 +19,13 @@ import { onSwitchDrawerAction } from '../../actions/onSwitchDrawerAction'
 import SwitchWallet from './SwitchWallet'
 import { switchDrawer } from '../../utils/switchDrawer'
 import TokenSQLite from '../../utils/tokenDB'
-
+import { toSplash } from '../../root'
 const tkSqLite = new TokenSQLite()
 let tk_db
 import { insertToTokenAction,initSelectedListAction,refreshTokenInfoAction } from '../../actions/tokenManageAction'
-
 let etzTitle = "ETZ"
+
+// import { passAccountsInfoAction } from '../../actions/accountManageAction' 
 class Assets extends Component{
   constructor(props){
     super(props)
@@ -36,10 +37,15 @@ class Assets extends Component{
       curAddr: '',
     }
   }
-
-
   componentWillMount(){
+    // this.props.dispatch(passAccountsInfoAction())
+  }
+
+  componentDidMount(){
     const { accountInfo } = this.props.accountManageReducer
+
+    console.log('accountInfo  Assets111', accountInfo)
+
     this.setState({
       isRefreshing: true
     })
@@ -103,6 +109,14 @@ class Assets extends Component{
         isRefreshing: false
       })
     }
+
+
+    if(this.props.accountManageReducer.accountInfo !== nextProps.accountManageReducer.accountInfo){
+      toSplash()
+    }
+
+
+
   }
 
   toAssetsDetail = (title,balance,token) => {
@@ -134,7 +148,7 @@ class Assets extends Component{
   onPay = () => {
     this.props.navigator.push({
       screen: 'on_payment',
-      title:'Payment',
+      title:'Send',
       navigatorStyle: DetailNavigatorStyle,
       
     })
@@ -262,7 +276,7 @@ class Assets extends Component{
             <View>
               <View style={[styles.assetsTotalView,pubS.center]}>
                   <Text style={pubS.font72_1}>≈0</Text>
-                  <Text style={pubS.font26_3}>Total Assets(￥)</Text>
+                  <Text style={pubS.font26_3}>Total Assets(¥)</Text>
               </View>
 
               <View style={[styles.optionView,pubS.center]}>
@@ -308,7 +322,7 @@ class Assets extends Component{
               })
             }
             <TouchableOpacity style={[styles.whStyle,styles.addBtnStyle,pubS.center]} activeOpacity={.7} onPress={this.addAssetsBtn}>
-              <Text style={pubS.font24_3}>+添加资产</Text>
+              <Text style={pubS.font24_3}>+Add Assets</Text>
             </TouchableOpacity>
           </ScrollView>
         </Drawer>

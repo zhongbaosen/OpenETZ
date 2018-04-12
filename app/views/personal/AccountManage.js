@@ -55,7 +55,8 @@ class AccountManage extends Component{
   constructor(props){
     super(props)
     this.state = {
-      cardItems: []
+      cardItems: [],
+      currentAccountId: -1
     } 
   }
 
@@ -68,7 +69,7 @@ class AccountManage extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    if(this.props.accountManageReducer.deleteFinished !== nextProps.accountManageReducer.deleteFinished && nextProps.accountManageReducer.deleteFinished){
+    if(this.props.accountManageReducer.deleteSuc !== nextProps.accountManageReducer.deleteSuc && nextProps.accountManageReducer.deleteSuc){
       this.searchAccountList()
     }
     if(this.props.accountManageReducer.updateBackupSucc !== nextProps.accountManageReducer.updateBackupSucc && nextProps.accountManageReducer.updateBackupSucc){
@@ -90,6 +91,12 @@ class AccountManage extends Component{
           this.setState({
             cardItems: empty
           })
+
+          if(u.is_selected === 1){
+            this.setState({
+              currentAccountId: u.id
+            })
+          }
         }  
       })  
     },(error)=>{
@@ -105,6 +112,8 @@ class AccountManage extends Component{
         userName: name,
         address: address,
         b_id: id,
+        accountsNumber: this.state.cardItems.length,
+        currentAccountId: this.state.currentAccountId
       },
       // navigatorButtons: {
       //   rightButtons: [
@@ -120,7 +129,7 @@ class AccountManage extends Component{
   createAccountBtn = () => {
     this.props.navigator.push({
       screen: 'create_account',
-      title:'create',
+      title:'Create',
       navigatorStyle: DetailNavigatorStyle,
     })
   }

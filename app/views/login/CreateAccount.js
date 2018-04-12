@@ -6,14 +6,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Alert
+  Alert,
+  ToastAndroid
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn,Loading } from '../../components/'
 import { connect } from 'react-redux'
-import { createAccountAction } from '../../actions/createAccountAction'
+import { createAccountAction } from '../../actions/accountManageAction'
 import UserSQLite from '../../utils/accountDB'
 
 const sqLite = new UserSQLite()
@@ -43,27 +44,22 @@ class CreateAccount extends Component{
 
 
   componentWillReceiveProps(nextProps){
-  
-    if(this.props.createAccountReducer.isLoading !== nextProps.createAccountReducer.isLoading && !nextProps.createAccountReducer.isLoading){
+    if(this.props.accountManageReducer.createSucc !== nextProps.accountManageReducer.createSucc && nextProps.accountManageReducer.createSucc){
       this.setState({
         visible: false
       })
+      ToastAndroid.show('create account successful',3000)
       this.props.navigator.push({
         screen: 'create_account_success',
         navigatorStyle: DetailNavigatorStyle,
         overrideBackPress: true,
-        passProps: {
-          // userName: nextProps.createAccountReducer.accountUserName
-        }
       })
     }
   }
 
 
   componentWillUnmount(){
-    // this.setState({
-    //   visible: true
-    // })
+    
   }
   onChangeUserNameText = (val) => {
     this.setState({
@@ -75,7 +71,8 @@ class CreateAccount extends Component{
 
   onPressBtn = () => {
     const { userNameVal, psdVal, repeadPsdVal, promptVal, } = this.state
-    let reg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/ //(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}
+    // let reg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/
+    let reg = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{8,}$/
     if(userNameVal.length === 0){
       this.setState({
         userNameWarning: 'please enter the account name'
@@ -84,7 +81,7 @@ class CreateAccount extends Component{
     }else{
       if(!reg.test(psdVal)){
         this.setState({
-          psdWarning: 'password needs to contain both letters and Numbers, and at least 8 digits.'
+          psdWarning: 'password needs to contain both letters and numbers, and at least 8 digits.'
         })
         return
       }else{
@@ -105,14 +102,14 @@ class CreateAccount extends Component{
     this.setState({
       visible: true
     })
-    // setTimeout(() => {
-    this.props.dispatch(createAccountAction({
-      userNameVal,
-      psdVal,
-      promptVal,
-    }))
-    // },100)
-    
+
+    setTimeout(() => {
+      this.props.dispatch(createAccountAction({
+        userNameVal,
+        psdVal,
+        promptVal,
+      }))
+    },100)
     
   }
   onChangPsdText = (val) => {
@@ -134,14 +131,16 @@ class CreateAccount extends Component{
   }
   render(){
     const { userNameVal, psdVal, repeadPsdVal, promptVal, userNameWarning, psdWarning, rePsdWarning,visible } = this.state
+    const { isLoading } = this.props.accountManageReducer
 
-    const { isLoading } = this.props.createAccountReducer
+    console.log('isLoading============',isLoading)  
     return(
       <View style={pubS.container}>
+        <Loading loadingVisible={this.state.visible} loadingText={'creating account'}/>
         <View style={[styles.warningView,pubS.paddingRow_24]}>
           <Text style={pubS.font22_1}>
             If you don't store user password, you cannot use retrieving or reset function,
-            The password must be backed up by yourself. the password is to protect the private key,
+            the password must be backed up by yourself. the password is to protect the private key,
             so it would be better if it is more complicated.
           </Text>
         </View>
@@ -167,7 +166,7 @@ class CreateAccount extends Component{
             warningText={rePsdWarning}//
           />
           <TextInputComponent
-            placeholder={'password hint (Optional)'}
+            placeholder={'password hint (optional)'}
             value={promptVal}
             onChangeText={this.onChangePromptText}
           />
@@ -177,7 +176,7 @@ class CreateAccount extends Component{
             btnText={'Create'}
           />
         </View>
-        <Loading loadingVisible={visible} loadingText={'creating account'}/>
+        
       </View>
     )
   }
@@ -193,6 +192,6 @@ const styles = StyleSheet.create({
 })
 export default connect(
   state => ({
-    createAccountReducer: state.createAccountReducer
+    accountManageReducer: state.accountManageReducer
   })
 )(CreateAccount)
