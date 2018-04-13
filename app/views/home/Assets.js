@@ -181,14 +181,14 @@ class Assets extends Component{
       screen: 'add_assets',
       title:'Add Assets',
       navigatorStyle: DetailNavigatorStyle,
-      navigatorButtons: {
-        rightButtons: [
-          {
-            id: 'search_token',
-            icon: require('../../images/xhdpi/nav_search_addasset_def.png')
-          }
-        ]
-      }
+      // navigatorButtons: {
+      //   rightButtons: [
+      //     {
+      //       id: 'search_token',
+      //       icon: require('../../images/xhdpi/nav_search_addasset_def.png')
+      //     }
+      //   ]
+      // }
     })
   }
 

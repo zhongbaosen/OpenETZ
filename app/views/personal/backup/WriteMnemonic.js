@@ -10,6 +10,7 @@ import {
 
 import { pubS,DetailNavigatorStyle } from '../../../styles/'
 import { setScaleText, scaleSize } from '../../../utils/adapter'
+import { connect } from 'react-redux'
 import { Btn } from '../../../components/'
 import UserSQLite from '../../../utils/accountDB'
 const sqLite = new UserSQLite()  
@@ -18,7 +19,8 @@ class WriteMnemonic extends Component{
 	constructor(props){
 		super(props)
 		this.state={
-			mnemonicText: []
+			mnemonicText: [],
+			touchable: true
 		}
 	}
 	componentWillMount(){
@@ -36,7 +38,13 @@ class WriteMnemonic extends Component{
 	      console.error(error)
 	    })
 	}
-
+	componentWillReceiveProps(nextProps){
+		if(this.props.accountManageReducer.delMnemonicSuc !== nextProps.accountManageReducer.delMnemonicSuc && nextProps.accountManageReducer.delMnemonicSuc){
+	      this.setState({
+	        touchable: false
+	      })
+	    }
+	}
 	onNextStep = () => {
 		const { mnemonicText } = this.state
 		this.props.navigator.push({
@@ -50,6 +58,7 @@ class WriteMnemonic extends Component{
 	    })
 	}
     render(){
+    	const { touchable } = this.state
 	    return(
 	      <View style={[{flex:1,backgroundColor:'#F5F7FB',alignItems:'center'},pubS.paddingRow35]}>
 	      	<Text style={[pubS.font34_1,{marginTop: scaleSize(60)}]}>Write down your account mnemonic</Text>
@@ -69,7 +78,9 @@ class WriteMnemonic extends Component{
 	      	</View>
 	      	<Btn
 	      		btnMarginTop={scaleSize(80)}
-		        btnPress={this.onNextStep}
+		        btnPress={touchable ? () => this.onNextStep() : () => {return}}
+		        bgColor={touchable ? '#2B8AFF':'#BDC0C6' }
+				opacity={touchable ? .7 : 1}
 		        btnText={'Next'}
 	      	/>
 	      </View>
@@ -85,4 +96,8 @@ const styles = StyleSheet.create({
 		marginTop: scaleSize(40),
 	}
 })
-export default WriteMnemonic
+export default connect(
+	state => ({
+		accountManageReducer: state.accountManageReducer
+	})
+)(WriteMnemonic)

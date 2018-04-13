@@ -34,7 +34,13 @@ class RecordPay extends Component{
       />
     )
   }
-
+  ListEmptyComponent = () => {
+    return(
+      <View style={{marginTop: 10,alignItems:'center'}}>
+        <Text>No Trading Records</Text>
+      </View>
+    )
+  }
   render(){
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB',paddingTop: scaleSize(10)}]}>
@@ -42,6 +48,7 @@ class RecordPay extends Component{
           data={this.props.list}
           renderItem={this.renderPay}
           keyExtractor = {(item, index) => index}
+          ListEmptyComponent={this.ListEmptyComponent}
         />
       </View>
     )

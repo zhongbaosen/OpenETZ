@@ -47,9 +47,17 @@ class Personal extends Component{
 
   toContactService = () => {
     this.props.navigator.push({
-      screen: 'contact_service',
+      screen: 'support',
       title:'Support',
       navigatorStyle: DetailNavigatorStyle,
+      navigatorButtons: {
+        rightButtons: [
+          {
+            title: 'Send',
+            id: 'send_email'
+          }
+        ]
+      }
     })
   }
 

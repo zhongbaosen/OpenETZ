@@ -17,7 +17,8 @@ const initState = {
 	isLoading: false,
 	deleteSuc: false,
 	passAccInfoSuc: '',
-	createSucc: false
+	createSucc: false,
+	delMnemonicSuc: false,
 }
 export default function accountManageReducer (state = initState,action) {
 	switch(action.type){
@@ -75,13 +76,31 @@ export default function accountManageReducer (state = initState,action) {
 		case types.IMPORT_ACCOUNT_FAIL:
 			return importFail(state,action)
 			break
-
-
-
+		case types.DELETE_MNEMONIC:
+			return onDelMneMonic(state,action)
+			break
 		default:
 			return state
 			break
 
+	}
+}
+
+const onDelMneMonic = (state,action) => {
+	const { addr } = action.payload
+	if(!db){  
+	      db = sqLite.open();  
+	} 
+    db.transaction((tx)=>{  
+      	tx.executeSql("update account set mnemonic = '' where address= ? ", [addr],(tx,results)=>{  
+			
+       	})  
+      	},(error)=>{
+        console.error(error)
+    }) 
+	return {
+		...state,
+		delMnemonicSuc: true
 	}
 }
 const createStart = (state,action) => {
@@ -136,6 +155,7 @@ const onReset = (state,action) => {
 		importSucc: false,
 		deleteSuc: false,
 		createSucc: false,
+		delMnemonicSuc: false,
 	}
 }
 

@@ -110,14 +110,14 @@ class Collection extends Component{
         address: currentAccount.address,
         b_id: currentAccount.id,
       },
-      navigatorButtons: {
-        rightButtons: [
-          {
-            title: 'Save',
-            id: 'save_back_up_info'
-          }
-        ]
-      }
+      // navigatorButtons: {
+      //   rightButtons: [
+      //     {
+      //       title: 'Save',
+      //       id: 'save_back_up_info'
+      //     }
+      //   ]
+      // }
     })
   }
 
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     marginTop: scaleSize(30),
   },
   whileView:{
-      height: scaleSize(390),
+      height: scaleSize(420),
       backgroundColor:'#fff',
       width:'100%',
       alignItems:'center',
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
       borderBottomRightRadius :scaleSize(10),
   },
   blueView: {
-    height: scaleSize(325),
+    height: scaleSize(355),
     backgroundColor:'#2B8AFF',
     width:'100%',
     alignItems:'center',
@@ -217,8 +217,8 @@ const styles = StyleSheet.create({
     marginTop: scaleSize(84)
   },
   modalView:{
-    width: scaleSize(560),
-    height: scaleSize(805),
+    width: scaleSize(620),
+    height: scaleSize(865),
     position: 'absolute',
     top: scaleSize(59),
     alignSelf: 'center',

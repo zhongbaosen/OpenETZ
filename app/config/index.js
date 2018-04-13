@@ -14,7 +14,7 @@ import CreateAccountSuccess from '../views/login/CreateAccountSuccess'
 
 
 import Personal from '../views/personal/'
-import ContactService from '../views/personal/ContactService'
+import Support from '../views/personal/Support'
 import HelpCenter from '../views/personal/HelpCenter'
 import AccountManage from '../views/personal/AccountManage'
 import BackUpAccount from '../views/personal/backup/'
@@ -53,7 +53,7 @@ export function registerScreens() {
   Navigation.registerComponent('scan_qr_code', () => ScanQrCode,store,Provider)
   Navigation.registerComponent('asset_detail_list', () => AssetDetailList,store,Provider)
   Navigation.registerComponent('trading_record_detail', () => TradingRecordDetail,store,Provider)
-  Navigation.registerComponent('contact_service', () => ContactService,store,Provider)
+  Navigation.registerComponent('support', () => Support,store,Provider)
   Navigation.registerComponent('help_center', () => HelpCenter,store,Provider)
   Navigation.registerComponent('account_manage', () => AccountManage,store,Provider)
   Navigation.registerComponent('tx_web_view', () => TxWebView,store,Provider)

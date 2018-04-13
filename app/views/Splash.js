@@ -46,9 +46,25 @@ class Splash extends Component{
 
     // toHome()
 
+    // this.props.navigator.push({
+  //     screen: 'create_account_success',
+  //     navigatorStyle: DetailNavigatorStyle,
+  //     overrideBackPress: true,
+  //   })
 
-
-    
+    // this.props.navigator.push({
+    //   screen: 'support',
+    //   title:'Support',
+    //   navigatorStyle: DetailNavigatorStyle,
+    //   navigatorButtons: {
+    //     rightButtons: [
+    //       {
+    //         title: 'send',
+    //         id: 'send_email'
+    //       }
+    //     ]
+    //   }
+    // })
 
     setTimeout(() => {
       if(!db){  

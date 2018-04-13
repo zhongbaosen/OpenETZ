@@ -34,6 +34,13 @@ class RecordAll extends Component{
       />
     )
   }
+  ListEmptyComponent = () => {
+    return(
+      <View style={{marginTop: 10,alignItems:'center'}}>
+        <Text>No Trading Records</Text>
+      </View>
+    )
+  }
   render(){
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB',paddingTop: scaleSize(10)}]}>
@@ -41,6 +48,7 @@ class RecordAll extends Component{
           data={this.props.list}
           renderItem={this.renderAll}
           keyExtractor = {(item, index) => index}
+          ListEmptyComponent={this.ListEmptyComponent}
         />
       </View>
     )

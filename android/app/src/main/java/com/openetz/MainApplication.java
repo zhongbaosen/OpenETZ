@@ -19,6 +19,7 @@ import com.bitgo.randombytes.RandomBytesPackage;
 import org.reactnative.camera.RNCameraPackage;
 import io.realm.react.RealmReactPackage;
 import org.pgsqlite.SQLitePluginPackage;
+import com.chirag.RNMail.*;
 public class MainApplication extends NavigationApplication {
 
     @Override
@@ -32,7 +33,8 @@ public class MainApplication extends NavigationApplication {
           new RandomBytesPackage(),
           new RNCameraPackage(),
           new RealmReactPackage(),
-          new SQLitePluginPackage()
+          new SQLitePluginPackage(),
+          new RNMail() 
         );
     }
 

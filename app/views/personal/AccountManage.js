@@ -108,6 +108,7 @@ class AccountManage extends Component{
       screen: 'back_up_account',
       title: name,
       navigatorStyle: DetailNavigatorStyle,
+      // overrideBackPress:true,
       passProps: {
         userName: name,
         address: address,
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
   },
   backupBtn:{
     height: scaleSize(34),
-    width:scaleSize(84),
+    width:scaleSize(104),
     borderWidth:1,
     borderColor: '#FF6060',
     borderRadius: scaleSize(6),

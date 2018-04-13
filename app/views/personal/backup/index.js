@@ -84,8 +84,7 @@ class BackUpAccount extends Component{
             privBackuped: true
           })
         }
-
-        if(res.mnemonic.length === 0){
+        if(!res.mnemonic){
           this.setState({
             mncBackuped: true
           })
@@ -127,8 +126,21 @@ class BackUpAccount extends Component{
         },1000)
       }
     }
+
+    if(this.props.accountManageReducer.delMnemonicSuc !== nextProps.accountManageReducer.delMnemonicSuc && nextProps.accountManageReducer.delMnemonicSuc){
+      this.setState({
+        mncBackuped: true
+      })
+    }
+
   }
   onNavigatorEvent(event){
+
+     if (event.type == 'DeepLink') {
+        ToastAndroid.show('回到这个页面',3000)      
+     }
+
+
     if (event.type == 'NavBarButtonPress') {
       switch(event.id){
         case 'save_back_up_info':
@@ -140,8 +152,8 @@ class BackUpAccount extends Component{
         //     title:'Manage wallets',
         //     overrideBackPress: true,
         //     navigatorStyle: DetailNavigatorStyle,
-        //   })
-        //   break
+        // })
+          break
         default:
           break
       }
@@ -337,7 +349,7 @@ class BackUpAccount extends Component{
           <View style={styles.modalView}>
             <Text style={[pubS.font34_2,{marginTop: scaleSize(50)}]}>please enter password </Text>
             <TextInput
-              placeholder={'Password'}
+              placeholder={'password'}
               value={psdVal}
               onChangeText={ this.onChangePsdText}
               underlineColorAndroid={'transparent'}
@@ -385,12 +397,12 @@ class BackUpAccount extends Component{
           <View style={[styles.confirmModal]}>
             <Text style={[pubS.font34_3,styles.titleStyle]}>Delete this account?</Text>
             <View style={[pubS.center,pubS.rowCenter,styles.btnViewStyle]}>
-                  <TouchableOpacity activeOpacity={.6} onPress={this.onPressCancel} style={[pubS.center,styles.btnStyle]}>
-                    <Text style={pubS.font34_3}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity activeOpacity={.6} onPress={this.onPressConfirmDel} style={[pubS.center,styles.btnStyle,{borderRightWidth:StyleSheet.hairlineWidth,borderColor:'#dce4e6'}]}>
-                    <Text style={pubS.font34_3}>Confirm</Text>
-                  </TouchableOpacity>
+              <TouchableOpacity activeOpacity={.6} onPress={this.onPressCancel} style={[pubS.center,styles.btnStyle]}>
+                <Text style={pubS.font34_3}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity activeOpacity={.6} onPress={this.onPressConfirmDel} style={[pubS.center,styles.btnStyle,{borderRightWidth:StyleSheet.hairlineWidth,borderColor:'#dce4e6'}]}>
+                <Text style={pubS.font34_3}>Confirm</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>

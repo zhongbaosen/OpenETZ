@@ -224,6 +224,19 @@ const createAccountAction = (par) => {
 	}
 }
 
+const deleteMnemonicAction = (addr) => {
+	const delMne = () => {
+		return {
+			type: types.DELETE_MNEMONIC,
+			payload: {
+				addr
+			}
+		}
+	}
+	return(dispatch,getState) => {
+		dispatch(delMne())
+	}
+}
 
 export {
 	getAccountInfoAction,
@@ -234,4 +247,5 @@ export {
 	updateBackupStatusAction,
 	passAccountsInfoAction,
 	createAccountAction,
+	deleteMnemonicAction
 }

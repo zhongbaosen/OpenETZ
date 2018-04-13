@@ -5,13 +5,16 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  Alert
+  Alert,
+  ToastAndroid,
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../../styles/'
 import { setScaleText, scaleSize } from '../../../utils/adapter'
 import { Btn } from '../../../components/'
+import { deleteMnemonicAction, resetDeleteStatusAction } from '../../../actions/accountManageAction'
 import Modal from 'react-native-modal'
+import { connect } from 'react-redux'
 import UserSQLite from '../../../utils/accountDB'
 const sqLite = new UserSQLite()  
 let db  
@@ -34,6 +37,17 @@ class VerifyMnemonic extends Component{
 			mnemonicArr: this.props.mnemonicText
 		})
 	}
+
+	componentWillReceiveProps(nextProps){
+		if(this.props.accountManageReducer.delMnemonicSuc !== nextProps.accountManageReducer.delMnemonicSuc && nextProps.accountManageReducer.delMnemonicSuc){
+			// ToastAndroid.show("delMnemonicSuc=true",3000)
+			// this.props.navigator.handleDeepLink({
+			//   link: 'back_up_account'
+			// });
+			this.props.dispatch(resetDeleteStatusAction())
+			this.props.navigator.pop()
+		}
+	}
 	onSelectItem = (val,selected) => {
 		const { selectContentArr } = this.state
 		if(selected){
@@ -54,6 +68,7 @@ class VerifyMnemonic extends Component{
 
 	onConfirm = () => {
 		const { mnemonicArr, selectContentArr } = this.state
+
 		if(mnemonicArr.toString() === selectContentArr.toString()){
 				// Alert.alert(
 				// 	'',
@@ -88,16 +103,11 @@ class VerifyMnemonic extends Component{
 	onModalBtn = () => {
 		this.onHide()
 
-		if(!db){  
-	      db = sqLite.open();  
-	    } 
-	    db.transaction((tx)=>{  
-	      	tx.executeSql("update account set mnemonic = '' where address= ? ", [this.props.currentAddress],(tx,results)=>{  
-				this.props.navigator.pop()
-	       	})  
-	      	},(error)=>{
-	        console.error(error)
-	    })
+		setTimeout(() => {
+			this.props.dispatch(deleteMnemonicAction(this.props.currentAddress))
+		},1000)
+
+		
 
 	}
     render(){
@@ -143,8 +153,8 @@ class VerifyMnemonic extends Component{
 			        backdropOpacity={.8}
 			      >
 					 <View style={[{backgroundColor:'#fff',},pubS.center,styles.modalView]}>
-					 	<Text style={[pubS.font34_4,{marginTop: -50}]}>Operation successful</Text>
-					 	<Text style={[pubS.font26_6,{marginTop: 10}]}>please keep the mnemonic words properly</Text>
+					 	<Text style={[pubS.font34_4,{marginTop: -50,textAlign:'center'}]}>Operation successful</Text>
+					 	<Text style={[pubS.font26_6,{marginTop: 10,textAlign:'center'}]}>please keep the mnemonic words properly</Text>
 					 	<TouchableOpacity activeOpacity={.7} style={[styles.modalBtnStyle,pubS.center]} onPress={this.onModalBtn}> 
 					 		<Text style={pubS.font34_3}>Ok</Text>
 					 	</TouchableOpacity>
@@ -188,4 +198,8 @@ const styles = StyleSheet.create({
 
 	},
 })
-export default VerifyMnemonic
+export default connect(
+	state => ({
+		accountManageReducer: state.accountManageReducer
+	})
+)(VerifyMnemonic)
