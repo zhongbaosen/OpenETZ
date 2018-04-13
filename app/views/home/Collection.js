@@ -87,7 +87,7 @@ class Collection extends Component{
 
   onPressCopyBtn = () => {
       Clipboard.setString(this.state.addressText)
-      ToastAndroid.show('copy successful~',3000)
+      ToastAndroid.show('copy successfully~',3000)
   }
 
   onHide = () => {

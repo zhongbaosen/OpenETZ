@@ -112,7 +112,7 @@ class Mnemonic extends Component{
         mnemonicUserName: userNameVal,
         type: 'mnemonic',
       }))
-    },100)
+    },1000)
     
   }
   render(){

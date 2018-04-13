@@ -48,7 +48,7 @@ class CreateAccount extends Component{
       this.setState({
         visible: false
       })
-      ToastAndroid.show('create account successful',3000)
+      ToastAndroid.show('create account successfully',3000)
       this.props.navigator.push({
         screen: 'create_account_success',
         navigatorStyle: DetailNavigatorStyle,

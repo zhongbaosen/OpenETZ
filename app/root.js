@@ -15,6 +15,19 @@ registerScreenVisibilityListener()
 getPixelRatio()
 
 
+if (!__DEV__) {
+  global.console = {
+    info: () => {
+    },
+    log: () => {
+    },
+    warn: () => {
+    },
+    error: () => {
+    }
+  }
+}
+
 
 const bottomTabStyle = {
   top: 6,

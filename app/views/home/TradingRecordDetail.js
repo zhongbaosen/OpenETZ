@@ -57,7 +57,7 @@ class TradingRecordDetail extends Component{
   }
   onCopyBtn = () => {
     Clipboard.setString(this.props.detailInfo.tx_receiver)
-    ToastAndroid.show('copy succeeful',3000)
+    ToastAndroid.show('copy succeefully',3000)
   }
 
   

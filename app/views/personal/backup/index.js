@@ -107,7 +107,7 @@ class BackUpAccount extends Component{
         visible: false,
         loadingText: ''
       })
-      ToastAndroid.show('delete successful~',3000)
+      ToastAndroid.show('delete successfully~',3000)
       if(this.props.accountsNumber === 1){
         setTimeout(() => {
           toLogin()
@@ -135,12 +135,6 @@ class BackUpAccount extends Component{
 
   }
   onNavigatorEvent(event){
-
-     if (event.type == 'DeepLink') {
-        ToastAndroid.show('回到这个页面',3000)      
-     }
-
-
     if (event.type == 'NavBarButtonPress') {
       switch(event.id){
         case 'save_back_up_info':
@@ -260,7 +254,7 @@ class BackUpAccount extends Component{
 
   onCopyBtn = () => {
     Clipboard.setString(this.state.privKey)
-    ToastAndroid.show('copy successful~',3000)
+    ToastAndroid.show('copy successfully~',3000)
   }
   backupMnemonicBtn = () => {
     this.setState({
@@ -290,7 +284,7 @@ class BackUpAccount extends Component{
       if (result.activityType) {
         // this.setState({result: 'shared with an activityType: ' + result.activityType});
       } else {
-        // ToastAndroid.show('shared successful',3000)
+        // ToastAndroid.show('shared successfully',3000)
         // this.setState({result: 'shared'});
       }
     } else if (result.action === Share.dismissedAction) {

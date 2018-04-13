@@ -36,9 +36,11 @@ class Assets extends Component{
       isRefreshing: false,
       curAddr: '',
     }
+    // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
   componentWillMount(){
     // this.props.dispatch(passAccountsInfoAction())
+
   }
 
   componentDidMount(){
@@ -108,6 +110,13 @@ class Assets extends Component{
       this.setState({
         isRefreshing: false
       })
+
+      web3.eth.getBalance(`0x${this.state.curAddr}`).then((res,rej)=>{
+        this.setState({
+          etzBalance: web3.utils.fromWei(res,'ether')
+        })
+      })
+
     }
 
 

@@ -31,7 +31,7 @@ class KeyStore extends Component{
       this.setState({
         visible: false
       })
-      ToastAndroid.show('import successful',3000)
+      ToastAndroid.show('import successfully',3000)
       setTimeout(() => {
         toSplash()
       },100)
@@ -80,7 +80,7 @@ class KeyStore extends Component{
         keystoreUserName: userNameVal,
         type: 'keystore',
       }))
-    },100)
+    },1000)
   }
   render(){
     const { keystoreVal, keystoreWarning,userNameVal,userNameWarning } = this.state

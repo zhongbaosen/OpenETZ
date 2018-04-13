@@ -25,16 +25,23 @@ class VerifyMnemonic extends Component{
 			mnemonicArr: [],
 			isEmpty: true,
 			selectContentArr: [],
-			visible: false
+			visible: false,
+			originArr: []
 		}
 	}
-	componentDidMount(){
 
-		// this.props.mnemonicText.sort(function() {
-		//     return .5 - Math.random()
-		// })
+	componentDidMount(){
+		// let newMnemonic = this.props.mnemonicText.sort(() => Math.random() > .5)
+		let arr = []
+		arr = this.props.mnemonicText.split(" ")
 		this.setState({
-			mnemonicArr: this.props.mnemonicText
+			originArr: arr
+		})
+		console.log('arr==',arr)
+		let newMnemonic = arr.sort(() => Math.random() > .5)
+		console.log('newMnemonic==',newMnemonic)
+		this.setState({
+			mnemonicArr: newMnemonic
 		})
 	}
 
@@ -67,9 +74,8 @@ class VerifyMnemonic extends Component{
 	}
 
 	onConfirm = () => {
-		const { mnemonicArr, selectContentArr } = this.state
-
-		if(mnemonicArr.toString() === selectContentArr.toString()){
+		const { selectContentArr, } = this.state
+		if(this.props.mnemonicText.split(" ").toString() === selectContentArr.toString()){
 				// Alert.alert(
 				// 	'',
 				// 	'',

@@ -32,7 +32,7 @@ class Payment extends Component{
   constructor(props){
     super(props)
     this.state={
-      receiverAddress: '',//0xec80a9fe89b05e337efa9c801c07c8444d9cb32e
+      receiverAddress: '',
       payTotalVal: '',
       noteVal: '',
       payAddressWarning: '',
@@ -296,75 +296,83 @@ class Payment extends Component{
     console.log('this.state.keyStore===',this.state.keyStore)
     const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal } = this.state
     console.log('senderAddress==',senderAddress)
-    let newWallet = await Wallet.fromV3(this.state.keyStore,payPsdVal)
-    let privKey = await newWallet._privKey.toString('hex')
-    console.log('privKey==',privKey)
-    let bufPrivKey = new Buffer(privKey, 'hex')
-    // console.log('bufPrivKey==',bufPrivKey)
-    let nonceNumber = await web3.eth.getTransactionCount(senderAddress)
+    try{  
+      let newWallet = await Wallet.fromV3(this.state.keyStore,payPsdVal)
+      let privKey = await newWallet._privKey.toString('hex')
+      console.log('privKey==',privKey)
+      let bufPrivKey = new Buffer(privKey, 'hex')
+      // console.log('bufPrivKey==',bufPrivKey)
+      let nonceNumber = await web3.eth.getTransactionCount(senderAddress)
 
-    console.log('payTotalVal==',payTotalVal)
-    let totalValue = web3.utils.toWei(payTotalVal,'ether')
-    let hex16 = parseInt(totalValue).toString(16)
-    const txParams = {
-        nonce: `0x${nonceNumber.toString(16)}`,
-        gasPrice: '0x09184e72a000', 
-        gasLimit: '0x2710',
-        to: receiverAddress,
-        value: `0x${hex16}`,
-        data: '',
-        chainId: 88
-    }
-    console.log('txParams====',txParams)
-    const tx = new EthereumTx(txParams)
-    tx.sign(bufPrivKey)
-    const serializedTx = tx.serialize()
-    console.log('serializedTx==',serializedTx)
-
-    
-    let hashVal = ''
-    web3.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`)
-    .on('transactionHash', function(hash){
-       console.log('hash==',hash)
-      hashVal = hash
-      self.onPressClose()
-      setTimeout(() => {
-        self.props.navigator.popToRoot({
-          animated: true,
-          animationType: 'fade',
-        })
-      },100)
-
-    })
-    .on('receipt', function(receipt){
-        console.log('receipt==',receipt)
-        // if(receipt.status==="0x1"){//"0x1" succ "0x0" fail
-         
-        // }else{
-        //   
-        //   this.props.navigator.pop()
-        // }
-    })
-    .on('confirmation', function(confirmationNumber, receipt){ 
-      console.log('confirmationNumber==',confirmationNumber)
-      if(confirmationNumber === 24){
-        setTimeout(() => {
-          self.props.dispatch(insert2TradingDBAction({
-            tx_hash: hashVal,
-            tx_value: payTotalVal,
-            tx_sender: senderAddress,
-            tx_receiver: receiverAddress,
-            tx_note: noteVal,
-            tx_token: "ETZ"
-          }))
-        },1000)
-        ToastAndroid.show('payment succeeful~',3000)
+      console.log('payTotalVal==',payTotalVal)
+      let totalValue = web3.utils.toWei(payTotalVal,'ether')
+      let hex16 = parseInt(totalValue).toString(16)
+      const txParams = {
+          nonce: `0x${nonceNumber.toString(16)}`,
+          gasPrice: '0x09184e72a000', 
+          gasLimit: '0x2710',
+          to: receiverAddress,
+          value: `0x${hex16}`,
+          data: '',
+          chainId: 88
       }
-    })
-    .on('error', (error) => {
-      console.log('error==',error)
-      ToastAndroid.show('payment fail~',3000)
-    })
+      console.log('txParams====',txParams)
+      const tx = new EthereumTx(txParams)
+      tx.sign(bufPrivKey)
+      const serializedTx = tx.serialize()
+      console.log('serializedTx==',serializedTx)
+
+      
+      let hashVal = ''
+      web3.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`)
+      .on('transactionHash', function(hash){
+         console.log('hash==',hash)
+        hashVal = hash
+        self.onPressClose()
+        setTimeout(() => {
+          self.props.navigator.popToRoot({
+            animated: true,
+            animationType: 'fade',
+          })
+        },100)
+
+      })
+      .on('receipt', function(receipt){
+          console.log('receipt==',receipt)
+          // if(receipt.status==="0x1"){//"0x1" succ "0x0" fail
+           
+          // }else{
+          //   self.onPressClose()
+          //   ToastAndroid.show('payment fail111111~',3000)
+          //   // this.props.navigator.pop()
+          // }
+      })
+      .on('confirmation', function(confirmationNumber, receipt){ 
+        console.log('confirmationNumber==',confirmationNumber)
+        if(confirmationNumber === 24){
+          setTimeout(() => {
+            self.props.dispatch(insert2TradingDBAction({
+              tx_hash: hashVal,
+              tx_value: payTotalVal,
+              tx_sender: senderAddress,
+              tx_receiver: receiverAddress,
+              tx_note: noteVal,
+              tx_token: "ETZ"
+            }))
+          },1000)
+          ToastAndroid.show('payment succeeful~',3000)
+        }
+      })
+      .on('error', (error) => {
+        console.log('error==',error)
+        self.onPressClose()
+        self.props.navigator.pop()
+        alert(error)
+      })
+    }catch(error){
+      this.onPressClose()
+      ToastAndroid.show('password is wrong',3000)
+    }
   }
   async makeTransactByToken(){
     
@@ -410,94 +418,108 @@ class Payment extends Component{
 
     const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal,currentTokenName,currentTokenDecimals } = this.state
     const { selectedList } = this.props.tokenManageReducer 
-    let newWallet = await Wallet.fromV3(this.state.keyStore,payPsdVal)
-    let privKey = await newWallet._privKey.toString('hex')
-    let contractAddr = ''
-    console.log('当前token====',currentTokenName)
 
-    for(let i = 0; i < selectedList.length; i++){
-      if(selectedList[i].tk_symbol === currentTokenName){
-        contractAddr = selectedList[i].tk_address
+    try{
+      let newWallet = await Wallet.fromV3(this.state.keyStore,payPsdVal)
+      let privKey = await newWallet._privKey.toString('hex')
+      let contractAddr = ''
+      console.log('当前token====',currentTokenName)
+
+      for(let i = 0; i < selectedList.length; i++){
+        if(selectedList[i].tk_symbol === currentTokenName){
+          contractAddr = selectedList[i].tk_address
+        }
       }
-    }
-    // var from = addr;
-    // var target = "0x4d038714c0797744eee243d85abb9c4048e019ae";
-    // var value = "0x0a";
-    console.log('合约地址',contractAddr)
-    var myContract = new web3.eth.Contract(contractAbi, contractAddr)
+      // var from = addr;
+      // var target = "0x4d038714c0797744eee243d85abb9c4048e019ae";
+      // var value = "0x0a";
+      console.log('合约地址',contractAddr)
+      var myContract = new web3.eth.Contract(contractAbi, contractAddr)
 
-    // myContract.methods.decimals().call(function(error, result){
-    //   console.log("decimals====", result)
-    // })
-    // let totalValue = web3.utils.toWei(payTotalVal,'ether')
-    let txNumber = payTotalVal *  Math.pow(10,currentTokenDecimals)
-    let hex16 = parseInt(txNumber).toString(16)
+      // myContract.methods.decimals().call(function(error, result){
+      //   console.log("decimals====", result)
+      // })
+      // let totalValue = web3.utils.toWei(payTotalVal,'ether')
+      let txNumber = payTotalVal *  Math.pow(10,currentTokenDecimals)
+      let hex16 = parseInt(txNumber).toString(16)
 
-    console.log('转币数量',hex16)
-    
-    var data = myContract.methods.transfer(receiverAddress, `0x${hex16}`).encodeABI()
-    
-
-    web3.eth.getTransactionCount(senderAddress, function(error, nonce) {
-
-      const txParams = {
-          nonce: web3.utils.toHex(nonce),
-          gasPrice:"0x098bca5a00",
-          gasLimit: '0x7a120',
-          to: contractAddr,
-          value :"0x0",
-          data: data,
-          chainId: "0x58"
-      }
-
-      console.log('txParams====',txParams)
-
-      const tx = new EthereumTx(txParams)
-      // 通过明文私钥初始化钱包对象key
-      const privateKey = Buffer.from(privKey, 'hex')
-
-      let key = Wallet.fromPrivateKey(privateKey)
-
+      console.log('转币数量',hex16)
       
-      tx.sign(key.getPrivateKey())
-
-      var serializedTx = '0x' + tx.serialize().toString('hex')
-
-      console.log("serializedTx: ", serializedTx)
+      var data = myContract.methods.transfer(receiverAddress, `0x${hex16}`).encodeABI()
       
-      console.log("txParams:", txParams)
-      let hashVal = ''
-      web3.eth.sendSignedTransaction(serializedTx).on('transactionHash', function(hash){
-          console.log('transactionHash:', hash)
-          hashVal = hash
-          self.onPressClose()
-          setTimeout(() => {
-            self.props.navigator.popToRoot({
-              animated: true,
-              animationType: 'fade',
-            })
-          },100)
 
-      }).on('confirmation', function(confirmationNumber, receipt){
-          console.log('confirmation:', confirmationNumber)
-          if(confirmationNumber === 24){
+      web3.eth.getTransactionCount(senderAddress, function(error, nonce) {
+
+        const txParams = {
+            nonce: web3.utils.toHex(nonce),
+            gasPrice:"0x098bca5a00",
+            gasLimit: '0x7a120',
+            to: contractAddr,
+            value :"0x0",
+            data: data,
+            chainId: "0x58"
+        }
+
+        console.log('txParams====',txParams)
+
+        const tx = new EthereumTx(txParams)
+        // 通过明文私钥初始化钱包对象key
+        const privateKey = Buffer.from(privKey, 'hex')
+
+        let key = Wallet.fromPrivateKey(privateKey)
+
+        
+        tx.sign(key.getPrivateKey())
+
+        var serializedTx = '0x' + tx.serialize().toString('hex')
+
+        console.log("serializedTx: ", serializedTx)
+        
+        console.log("txParams:", txParams)
+        let hashVal = ''
+        web3.eth.sendSignedTransaction(serializedTx).on('transactionHash', function(hash){
+            console.log('transactionHash:', hash)
+            hashVal = hash
+            self.onPressClose()
             setTimeout(() => {
-              self.props.dispatch(insert2TradingDBAction({
-                tx_hash: hashVal,
-                tx_value: payTotalVal,
-                tx_sender: senderAddress,
-                tx_receiver: receiverAddress,
-                tx_note: noteVal,
-                tx_token: currentTokenName
-              }))
-            },1000)
-            ToastAndroid.show('payment succeeful~',3000)
-          }
-          
-      }).on('receipt', function(receipt){
-          console.log('receipt:', receipt)
-      }).on('error', console.error);
-    })
+              self.props.navigator.popToRoot({
+                animated: true,
+                animationType: 'fade',
+              })
+            },100)
+
+        }).on('confirmation', function(confirmationNumber, receipt){
+            console.log('confirmation:', confirmationNumber)
+            if(confirmationNumber === 24){
+              setTimeout(() => {
+                self.props.dispatch(insert2TradingDBAction({
+                  tx_hash: hashVal,
+                  tx_value: payTotalVal,
+                  tx_sender: senderAddress,
+                  tx_receiver: receiverAddress,
+                  tx_note: noteVal,
+                  tx_token: currentTokenName
+                }))
+              },1000)
+              ToastAndroid.show('payment succeeful~',3000)
+            }
+            
+        }).on('receipt', function(receipt){
+            console.log('receipt:', receipt)
+        }).on('error', (error) => {
+          console.error(error)
+          self.onPressClose()
+          self.props.navigator.pop()
+          ToastAndroid.show(error,3000)
+          // alert(error)
+        });
+      })
+
+    }catch (error) {
+      this.onPressClose()
+      ToastAndroid.show('password is wrong',3000)
+    }
+
   }
   onChangePayPsdText = (val) => {
     this.setState({

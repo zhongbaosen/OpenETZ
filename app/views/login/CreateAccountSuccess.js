@@ -56,7 +56,7 @@ class CreateAccountSuccess extends Component{
       <View style={pubS.container}>
         <View style={{alignItems:'center'}}>
           <Image source={require('../../images/xhdpi/ico_createaccount_succeed.png')} style={styles.imgStyle}/>
-          <Text style={[pubS.font36_1,{marginTop: scaleSize(70),textAlign:'center',}]}>New account has been created successfully </Text>
+          <Text style={[pubS.font36_1,{marginTop: scaleSize(70),textAlign:'center',}]}>New account has been created successfullyly </Text>
           <Text style={[pubS.font26_2,{width:'90%',marginTop: scaleSize(27),textAlign:'center',lineHeight:25,}]}>It is highly recommended that you make backup before use, export mnemonic phrase or keystore and then stored them in a safe place.</Text>
           <Btn
             btnMarginTop={scaleSize(97)}

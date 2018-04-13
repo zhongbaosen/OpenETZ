@@ -20,7 +20,8 @@ class WriteMnemonic extends Component{
 		super(props)
 		this.state={
 			mnemonicText: [],
-			touchable: true
+			touchable: true,
+			originMneStr: ''
 		}
 	}
 	componentWillMount(){
@@ -31,7 +32,8 @@ class WriteMnemonic extends Component{
 	      tx.executeSql("select * from account where address = ? ", [this.props.currentAddress],(tx,results)=>{  
 	        let res = results.rows.item(0)
 	        this.setState({
-	        	mnemonicText: res.mnemonic.split(" ")
+	        	mnemonicText: res.mnemonic.split(" "),
+	        	originMneStr: res.mnemonic
 	        })
 	      });  
 	    },(error)=>{
@@ -46,13 +48,13 @@ class WriteMnemonic extends Component{
 	    }
 	}
 	onNextStep = () => {
-		const { mnemonicText } = this.state
+		const { mnemonicText,originMneStr } = this.state
 		this.props.navigator.push({
 	      screen: 'verify_mnemonic',
 	      title: 'Verify Mnemonic',
 	      navigatorStyle: DetailNavigatorStyle,
 	      passProps: {
-	      	mnemonicText,
+	      	mnemonicText: originMneStr,
 	      	currentAddress: this.props.currentAddress
 	      }
 	    })

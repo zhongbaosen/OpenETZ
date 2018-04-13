@@ -39,10 +39,12 @@ class Splash extends Component{
     // this.props.dispatch(passAccountsInfoAction())
   }
   componentDidMount(){
+    // tSqLite.deleteData()
+    // tSqLite.dropTable()
     // tkSqLite.deleteData()
     // tkSqLite.dropTable()
-    //   sqLite.dropTable()
-    //   sqLite.deleteData()    
+  //   sqLite.dropTable()
+  //   sqLite.deleteData()    
 
     // toHome()
 
@@ -65,6 +67,15 @@ class Splash extends Component{
     //     ]
     //   }
     // })
+
+
+
+    // this.props.navigator.push({
+    //     screen: 'verify_mnemonic',
+    //     title: 'Verify Mnemonic',
+    //     navigatorStyle: DetailNavigatorStyle,
+    // })
+
 
     setTimeout(() => {
       if(!db){  

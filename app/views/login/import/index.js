@@ -19,7 +19,7 @@ import { Loading } from '../../../components/'
 class ImportAccount extends Component{
   componentWillReceiveProps(nextProps){
     // if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
-    //   ToastAndroid.show('import successful',3000)
+    //   ToastAndroid.show('import successfully',3000)
     //   toSplash()
     //   this.props.dispatch(resetDeleteStatusAction())
     // }

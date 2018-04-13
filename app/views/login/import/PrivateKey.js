@@ -38,7 +38,7 @@ class PrivateKey extends Component{
       this.setState({
         visible: false
       })
-      ToastAndroid.show('import successful',3000)
+      ToastAndroid.show('import successfully',3000)
       setTimeout(() => {
         toSplash()
       },100)
@@ -114,7 +114,7 @@ class PrivateKey extends Component{
         privateUserName: userNameVal,
         type: 'private'
       }))
-    },500)
+    },1000)
   }
   onChangeUseNameText = (val) => {
     this.setState({
