@@ -11,7 +11,7 @@ import {
 
 import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
-import { TextInputComponent,Btn } from '../../components/'
+import { TextInputComponent,Btn,Loading, } from '../../components/'
 // import Toast from 'react-native-root-toast'
 import { connect } from 'react-redux'
 import Modal from 'react-native-modal'
@@ -48,6 +48,8 @@ class Payment extends Component{
       currentTokenName: 'ETZ',
       isToken: false,
       currentTokenDecimals: 0,
+      loadingVisible: false,
+      loadingText: '',
     }
     self = this
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
@@ -213,7 +215,9 @@ class Payment extends Component{
     this.setState({
       visible: false,
       modalSetp1: true,
-      payPsdVal: ''
+      payPsdVal: '',
+      loadingText: '',
+      loadingVisible: false,
     })
   }
 
@@ -238,14 +242,24 @@ class Payment extends Component{
   }
   onPressPayBtn = () => {
     
-    const { payPsdVal, payPsdWarning } = this.state
+    const { payPsdVal, payPsdWarning, loadingText,loadingVisible } = this.state
     if(payPsdVal.length === 0){
       this.setState({
-        payPsdWarning: 'please enter the password'
+        payPsdWarning: 'please enter the password',
+        loadingText: '',
+        loadingVisible: false,
       })
       return
     }else{
-      this.validatPsd()
+      this.setState({
+        loadingText: 'paying',
+        loadingVisible: true,
+        visible: false,
+        modalSetp1: true,
+      })
+      setTimeout(() => {
+        this.validatPsd()
+      },1000)
     }
   }
 
@@ -258,10 +272,16 @@ class Payment extends Component{
     } catch(err){
       console.error('psd error',err)
       this.setState({
-        visible: true,
-        modalSetp1: false,
+        // visible: true,
+        // modalSetp1: false,
+
+        //出错时  
+        visible: false,
+        modalSetp1: true,
         payPsdVal: '',
-        payPsdWarning: 'password is error'
+        payPsdWarning: 'password is error',
+        loadingText: '',
+        loadingVisible: false,
       })
     }
   }
@@ -490,11 +510,14 @@ class Payment extends Component{
             modalSetp1,payAddressWarning,payTotalWarning,senderAddress,payPsdWarning,currentTokenName } = this.state
     return(
       <View style={pubS.container}>
+        <Loading loadingVisible={this.state.loadingVisible} loadingText={this.state.loadingText}/>
         <TextInputComponent
           value ={currentTokenName}
           editable={false}
-          onPressIptRight={this.showTokenPicker}
+          // onPressIptRight={this.showTokenPicker}
           toMore={true}
+          touchable={true}
+          onPressTouch={this.showTokenPicker}
         />
         <TextInputComponent
           placeholder={'receiver’s account address'}
@@ -519,7 +542,7 @@ class Payment extends Component{
         <Btn
           btnMarginTop={scaleSize(60)}
           btnPress={this.onNextStep}
-          btnText={'Next step'}
+          btnText={'Next'}
         />
 
         <Modal

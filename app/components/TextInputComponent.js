@@ -21,6 +21,7 @@ export default class TextInputComponent extends Component{
     isScan: false,
     toMore: false,
     coinUnit: '',
+    touchable: false
   }
   componentWillMount(){
     this.setState({
@@ -29,10 +30,10 @@ export default class TextInputComponent extends Component{
   }
 
   render(){
-    const { warningText,iptMarginTop,isScan,onPressIptRight,toMore,coinUnit } = this.props
+    const { warningText,iptMarginTop,isScan,onPressIptRight,toMore,coinUnit,touchable,onPressTouch } = this.props
     const { multiline} = this.state
     return(
-      <View style={[styles.textInputView,{marginTop: iptMarginTop,height: multiline ? scaleSize(190) :scaleSize(109)}]}>
+      <TouchableOpacity activeOpacity={touchable ? .7 : 1} onPress={touchable ? onPressTouch : () => {return}} style={[styles.textInputView,{marginTop: iptMarginTop,height: multiline ? scaleSize(190) :scaleSize(109)}]}>
         <TextInput
           multiline={multiline}
           style={[styles.textIptStyle,{borderColor: multiline ? '#DBDFE6' : 'transparent',borderWidth: multiline ? StyleSheet.hairlineWidth : 0}]}
@@ -42,17 +43,17 @@ export default class TextInputComponent extends Component{
           textAlignVertical={ multiline ? 'top' : 'center'}
           {...this.props}
         />
+        {
+          toMore ?
+          <View style={[{width: scaleSize(45),height: scaleSize(43),alignItems:'flex-end',position:'absolute',right:4,top:scaleSize(32)}]}>
+            <Image source={require('../images/xhdpi/btn_ico_payment_select_def.png')} style={{width: scaleSize(16),height: scaleSize(30)}}/>
+          </View>
+          : null
+        }
         <TouchableOpacity activeOpacity={.7} onPress={onPressIptRight} style={{position:'absolute',right:4,top:scaleSize(32),}}>
             {
               isScan ?
               <Image source={require('../images/xhdpi/btn_ico_payment_scan_def.png')} style={{width: scaleSize(45),height: scaleSize(43)}}/>
-              : null
-            }
-            {
-              toMore ?
-              <View style={[{width: scaleSize(45),height: scaleSize(43),alignItems:'flex-end'}]}>
-                <Image source={require('../images/xhdpi/btn_ico_payment_select_def.png')} style={{width: scaleSize(16),height: scaleSize(30)}}/>
-              </View>
               : null
             }
             {
@@ -62,7 +63,7 @@ export default class TextInputComponent extends Component{
             }
         </TouchableOpacity>
         <Text style={[pubS.font24_1,{marginTop: multiline ? 0 : -8,marginLeft: 4}]}>{warningText}</Text>
-      </View>
+      </TouchableOpacity>
     )
   }
 }

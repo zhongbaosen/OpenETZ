@@ -41,7 +41,9 @@ class BackUpAccount extends Component{
       mncBackuped: false,
       isDelAccount: false,
       dVisible: false,
-      keyStore: {}
+      keyStore: {},
+      loadingText: '',
+      visible: false,
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
@@ -102,19 +104,27 @@ class BackUpAccount extends Component{
 
   componentWillReceiveProps(nextProps){
     if(this.props.accountManageReducer.deleteSuc !== nextProps.accountManageReducer.deleteSuc && nextProps.accountManageReducer.deleteSuc){
+      this.setState({
+        visible: false,
+        loadingText: ''
+      })
       ToastAndroid.show('delete successful~',3000)
       if(this.props.accountsNumber === 1){
         setTimeout(() => {
           toLogin()
-        },100)
+        },1000)
         sqLite.dropTable()
         sqLite.deleteData()  
       }else{
         //删除其他账号后 更新accountInfo信息  如果删除的是当前账号  更新accountInfo后还需要将另外的一条信息的is_selected=1
+        this.setState({
+          visible: false,
+          loadingText: ''
+        })
         this.props.dispatch(passAccountsInfoAction())
         setTimeout(() => {
           this.props.navigator.pop()
-        },100)
+        },1000)
       }
     }
   }
@@ -153,7 +163,9 @@ class BackUpAccount extends Component{
   }
   onPressConfirmDel = () => {
     this.setState({
-      dVisible: false
+      dVisible: false,
+      visible: true,
+      loadingText: 'deleting account'
     })
     this.props.dispatch(deleteAccountAction(this.props.b_id,this.props.accountsNumber,this.props.currentAccountId))   
   }
@@ -169,6 +181,7 @@ class BackUpAccount extends Component{
       psdVal: '',
       backupMnemonic: false,
       isDelAccount: false,
+      visible: false
     })
   }
   onChangePsdText = (val) => {
@@ -187,39 +200,47 @@ class BackUpAccount extends Component{
 
   onConfirm = () => {
     const { psdVal,backupMnemonic,keyStore,isDelAccount,  } = this.state
-      
-    try {
-      const newWallet = Wallet.fromV3(keyStore,psdVal)
-      let priv = newWallet._privKey.toString('hex')
-      
-      if(backupMnemonic){
-        this.props.navigator.push({
-          screen: 'write_mnemonic',
-          title: '',
-          navigatorStyle: DetailNavigatorStyle,
-          passProps: {
-            currentAddress: this.props.address
-          }
-        })
-      }else{
-        if(isDelAccount){
-          this.setState({
-            dVisible: true,
+    this.setState({
+      loadingText: 'unlocking',
+      visible: true,
+      iptPsdVisible: false
+    })  
+    setTimeout(() => {
+      try {
+        const newWallet = Wallet.fromV3(keyStore,psdVal)
+        let priv = newWallet._privKey.toString('hex')
+        
+        if(backupMnemonic){
+          this.props.navigator.push({
+            screen: 'write_mnemonic',
+            title: '',
+            navigatorStyle: DetailNavigatorStyle,
+            passProps: {
+              currentAddress: this.props.address
+            }
           })
         }else{
-          this.setState({
-            privKey: priv,
-            pKeyVisible: true
-          })
+          if(isDelAccount){
+            this.setState({
+              dVisible: true,
+            })
+          }else{
+            this.setState({
+              privKey: priv,
+              pKeyVisible: true
+            })
+          }
         }
+        this.onHide()
+      } catch (err) {
+        ToastAndroid.show('password is wrong',3000)
+        this.setState({
+          psdVal: '',
+          visible: false,
+          loadingText: '',
+        })
       }
-      this.onHide()
-    } catch (err) {
-      alert('password is wrong')
-      this.setState({
-        psdVal: ''
-      })
-    }
+    },1000)
   }
 
 
@@ -270,7 +291,7 @@ class BackUpAccount extends Component{
     const { isLoading } = this.props.accountManageReducer
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
-        <Loading loadingVisible={isLoading} loadingText={'deleting account'}/>
+        <Loading loadingVisible={this.state.visible} loadingText={this.state.loadingText}/>
         <Image source={require('../../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
         <Text style={pubS.font26_5}>{sliceAddress(this.props.address,10)}</Text>
         <View style={[styles.userNameViewStyle,pubS.rowCenterJus,pubS.bottomStyle]}>

@@ -109,7 +109,7 @@ class CreateAccount extends Component{
         psdVal,
         promptVal,
       }))
-    },100)
+    },1000)
     
   }
   onChangPsdText = (val) => {
