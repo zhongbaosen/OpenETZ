@@ -15,6 +15,7 @@ import { TextInputComponent,Btn,Loading } from '../../../components/'
 import { importAccountAction,resetDeleteStatusAction } from '../../../actions/accountManageAction'
 import { connect } from 'react-redux'
 import { toSplash } from '../../../root'
+import I18n from 'react-native-i18n'
 class Mnemonic extends Component{
   constructor(props){
     super(props)
@@ -37,7 +38,7 @@ class Mnemonic extends Component{
       this.setState({
         visible: false
       })
-      ToastAndroid.show('import successful',3000)
+      ToastAndroid.show(I18n.t('import_successful'),3000)
       setTimeout(() => {
         toSplash()
       },100)
@@ -75,22 +76,22 @@ class Mnemonic extends Component{
    let psdReg = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{8,}$/
    if(userNameVal.length === 0){
       this.setState({
-        userNameWarning: 'please enter the account name'
+        userNameWarning: I18n.t('enter_account_name')
       })
     }else{
       if(mnemonicVal.length === 0){
         this.setState({
-          mnemonicValWarning: 'please enter the mnemonic'
+          mnemonicValWarning: I18n.t('mnemonic_phrase_warning')
         })
       }else{
         if(!psdReg.test(passwordVal)){
           this.setState({
-            passwordWarning: 'password needs to contain both letters and Numbers, and at least 8 digits.'
+            passwordWarning: I18n.t('password_verification')
           })
         }else{
           if(passwordVal !== repeadPsdVal){
             this.setState({
-              rePsdWarning: 'two passwords are different'
+              rePsdWarning: I18n.t('passwords_different')
             })
           }else{
             this.onImport()
@@ -119,23 +120,23 @@ class Mnemonic extends Component{
     const { mnemonicVal, mnemonicValWarning, passwordVal, passwordWarning, repeadPsdVal, rePsdWarning,userNameVal, userNameWarning } = this.state
     return(
       <View style={pubS.container}>
-        <Loading loadingVisible={this.state.visible} loadingText={'importing account'}/>
+        <Loading loadingVisible={this.state.visible} loadingText={I18n.t('loading_importing_account')}/>
         <TextInputComponent
-          placeholder={'wallet name'}
+          placeholder={I18n.t('account_name')}
           value={userNameVal}
           onChangeText={this.onChangeUseNameText}
           warningText={userNameWarning}//
         />
         <TextInputComponent
           isMultiline={true}
-          placeholder={'mnemonic'}
+          placeholder={I18n.t('mnemonic_phrase_1')}
           value={mnemonicVal}
           onChangeText={this.onChangeMemonic}
           warningText={mnemonicValWarning}
           iptMarginTop={scaleSize(60)}
         />
         <TextInputComponent
-          placeholder={'password'}
+          placeholder={I18n.t('password')}
           value={passwordVal}
           onChangeText={this.onChangPassword}
           secureTextEntry={true}
@@ -143,7 +144,7 @@ class Mnemonic extends Component{
         />
        
         <TextInputComponent
-          placeholder={'repeat password'}
+          placeholder={I18n.t('repeat_password')}
           value={repeadPsdVal}
           onChangeText={this.onChangeRePassword}
           secureTextEntry={true}
@@ -153,7 +154,7 @@ class Mnemonic extends Component{
         <Btn
           btnMarginTop={scaleSize(60)}
           btnPress={this.onPressImport}
-          btnText={'import'}
+          btnText={I18n.t('import')}
         />
       </View>
     )

@@ -17,7 +17,8 @@ import { sliceAddress } from '../../utils/splitNumber'
 const Wallet = require('ethereumjs-wallet')
 import UserSQLite from '../../utils/accountDB'
 const sqLite = new UserSQLite();  
-let db; 
+let db
+import I18n from 'react-native-i18n'
 class AccountCard extends Component {
   render(){
     const { accountName, accountPsd, accountTotal, accountUnit, accountBackUp, backupState} = this.props
@@ -37,7 +38,7 @@ class AccountCard extends Component {
           {
             backupState===0 ? 
             <View style={[styles.backupBtn,pubS.center]}>
-              <Text style={pubS.font22_5}>backup</Text>
+              <Text style={pubS.font22_5}>{I18n.t('not_yet_backup')}</Text>
             </View>
             : <View/>
           }
@@ -130,14 +131,14 @@ class AccountManage extends Component{
   createAccountBtn = () => {
     this.props.navigator.push({
       screen: 'create_account',
-      title:'Create',
+      title:I18n.t('create'),
       navigatorStyle: DetailNavigatorStyle,
     })
   }
   importAccountBtn = () => {
     this.props.navigator.push({
       screen: 'import_account',
-      title:'import',
+      title:I18n.t('import'),
       navigatorStyle: DetailNavigatorStyle,
     })
   }
@@ -159,7 +160,6 @@ class AccountManage extends Component{
   render(){
     // const { localKeyStore, userName } = this.props.getLocalDataReducer
     const { cardItems } = this.state
-    console.log('cardItems111111111111111',cardItems)
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
         <View style={{marginBottom: scaleSize(96)}}>
@@ -173,10 +173,10 @@ class AccountManage extends Component{
         </View>
         <View style={[{width: '100%',bottom:0,position:'absolute'},pubS.rowCenter]}>
           <TouchableOpacity activeOpacity={.7} onPress={this.createAccountBtn} style={[styles.btnStyle,pubS.center,{backgroundColor:'#2B8AFF'}]}>
-            <Text style={pubS.font30_3}>create</Text>
+            <Text style={pubS.font30_3}>{I18n.t('create')}</Text>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={.7} onPress={this.importAccountBtn} style={[styles.btnStyle,pubS.center,{backgroundColor:'#2B58FF'}]}>
-            <Text style={pubS.font30_3}>import</Text>
+            <Text style={pubS.font30_3}>{I18n.t('import')}</Text>
           </TouchableOpacity>
        </View>
       </View>

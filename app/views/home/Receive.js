@@ -16,15 +16,14 @@ import { TextInputComponent,Btn } from '../../components/'
 import Modal from 'react-native-modal'
 import QRCode from 'react-native-qrcode'
 import { connect } from 'react-redux'
-
+import I18n from 'react-native-i18n'
 import UserSQLite from '../../utils/accountDB'
 import TradingSQLite from '../../utils/tradingDB'
-const sqLite = new UserSQLite();  
-let db;  
 
-
+const sqLite = new UserSQLite()
+let db
 const wallet = require('ethereumjs-wallet')
-class Collection extends Component{
+class Receive extends Component{
   constructor(props){
     super(props)
     this.state={
@@ -87,7 +86,7 @@ class Collection extends Component{
 
   onPressCopyBtn = () => {
       Clipboard.setString(this.state.addressText)
-      ToastAndroid.show('copy successfully~',3000)
+      ToastAndroid.show(I18n.t('copy_successfully'),3000)
   }
 
   onHide = () => {
@@ -103,7 +102,7 @@ class Collection extends Component{
     })
     this.props.navigator.push({
       screen: 'back_up_account',
-      title: 'username',
+      title: currentAccount.account_name,
       navigatorStyle: DetailNavigatorStyle,
       passProps: {
         userName: currentAccount.account_name,
@@ -145,7 +144,7 @@ class Collection extends Component{
         <Text style={[pubS.font24_2,{marginTop: scaleSize(19),alignSelf:'center'}]}>{addressText}</Text>
         <Btn
           btnPress={this.onPressCopyBtn}
-          btnText={'Copy receiving wallet address'}
+          btnText={I18n.t('copy_receive_address')}
           btnMarginTop={scaleSize(100)}
         />
 
@@ -160,20 +159,16 @@ class Collection extends Component{
         <Image source={require('../../images/xhdpi/img_collectionnobackup.png')} style={styles.modalImageStyle}/>
         <View style={[{alignItems:'center'}]}>
             <View style={styles.blueView}>
-                <Text style={[pubS.font36_3,{marginTop: scaleSize(32)}]}>Please backup your account first</Text>
-                <Text style={[pubS.font22_2,{marginTop: scaleSize(13),width: '90%',textAlign:'center'}]}>
-                    Blockchain account is different from traditional website account, it is the account of the decentralized system based on cryptography.
-                    You must keep your account's private key and password in a safe place.
-                    Any accident may result in assets loss. We suggest to do double backup first and then import small amount for test, finally began to use happily.
-                </Text>
+                <Text style={[pubS.font36_3,{marginTop: scaleSize(32)}]}>{I18n.t('backup_first')}</Text>
+                <Text style={[pubS.font22_2,{marginTop: scaleSize(13),width: '90%',textAlign:'center'}]}>{I18n.t('backup_modal_1')}</Text>
             </View>
             <View style={styles.whileView}>
-                <Text style={[pubS.font30_2,{marginTop: scaleSize(25)}]}>{`--  Backup mnemonic words --`}</Text>
-                <Text style={[pubS.font24_2,{textAlign:'center'}]}>When lost account or password, mnemonic words can help to restore account</Text>
-                <Text style={[pubS.font30_2,{marginTop: scaleSize(25)}]}>{`--  Backup Keystore file  --`}</Text>
-                <Text style={[pubS.font24_2,{textAlign:'center'}]}>Official account format, private key file which protected by password.</Text>
+                <Text style={[pubS.font30_2,{marginTop: scaleSize(25)}]}>{`--  ${I18n.t('backup_mnemonic')} --`}</Text>
+                <Text style={[pubS.font24_2,{textAlign:'center'}]}>{I18n.t('backup_modal_2')}</Text>
+                <Text style={[pubS.font30_2,{marginTop: scaleSize(25)}]}>{`--  ${I18n.t('backup_keystore')}  --`}</Text>
+                <Text style={[pubS.font24_2,{textAlign:'center'}]}>{I18n.t('backup_modal_3')}</Text>
                 <TouchableOpacity activeOpacity={.7} onPress={this.backupBtn} style={[styles.backupBtnStyle,pubS.center]}>
-                  <Text style={pubS.font28_2}>backup now</Text>
+                  <Text style={pubS.font28_2}>{I18n.t('backup_now')}</Text>
                 </TouchableOpacity>
             </View>
       </View>
@@ -232,4 +227,4 @@ export default connect(
   state => ({
     accountManageReducer: state.accountManageReducer
   })
-)(Collection)
+)(Receive)

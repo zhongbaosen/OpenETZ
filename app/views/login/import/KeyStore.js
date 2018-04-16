@@ -15,6 +15,7 @@ import { TextInputComponent,Btn,Loading } from '../../../components/'
 import { importAccountAction,resetDeleteStatusAction } from '../../../actions/accountManageAction'
 import { connect } from 'react-redux'
 import { toSplash } from '../../../root'
+import I18n from 'react-native-i18n'
 class KeyStore extends Component{
   constructor(props){
     super(props)
@@ -55,12 +56,12 @@ class KeyStore extends Component{
     const { keystoreVal, keystoreWarning,userNameVal,userNameWarning } = this.state
     if(userNameVal.length === 0){
       this.setState({
-        userNameWarning: 'please enter the account name'
+        userNameWarning: I18n.t('enter_account_name')
       })
     }else{
       if(keystoreVal.length === 0){
         this.setState({
-          keystoreWarning: 'please enter the keystore'
+          keystoreWarning: I18n.t('keystore_warning')
         })
       }else{
         this.onBtn()
@@ -86,16 +87,16 @@ class KeyStore extends Component{
     const { keystoreVal, keystoreWarning,userNameVal,userNameWarning } = this.state
     return(
       <View style={pubS.container}>
-        <Loading loadingVisible={this.state.visible} loadingText={'importing account'}/>
+        <Loading loadingVisible={this.state.visible} loadingText={I18n.t('loading_importing_account')}/>
         <TextInputComponent
-          placeholder={'wallet name'}
+          placeholder={I18n.t('account_name')}
           value={userNameVal}
           onChangeText={this.onChangeUseNameText}
           warningText={userNameWarning}//
         />
         <TextInputComponent
           isMultiline={true}
-          placeholder={'keystore text content'}
+          placeholder={I18n.t('keystore_content')}
           value={keystoreVal}
           onChangeText={this.onChangelKeystore}
           warningText={keystoreWarning}
@@ -113,7 +114,7 @@ class KeyStore extends Component{
         <Btn
           btnMarginTop={scaleSize(60)}
           btnPress={this.onPressImport}
-          btnText={'import'}
+          btnText={I18n.t('import')}
         />
       </View>
     )

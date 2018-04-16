@@ -17,6 +17,8 @@ import Personal from '../views/personal/'
 import Support from '../views/personal/Support'
 import HelpCenter from '../views/personal/HelpCenter'
 import AccountManage from '../views/personal/AccountManage'
+import Setting from '../views/personal/setting/'
+import SwitchLanguage from '../views/personal/setting/SwitchLanguage'
 import BackUpAccount from '../views/personal/backup/'
 import WriteMnemonic from '../views/personal/backup/WriteMnemonic'
 import VerifyMnemonic from '../views/personal/backup/VerifyMnemonic'
@@ -24,7 +26,7 @@ import VerifyMnemonic from '../views/personal/backup/VerifyMnemonic'
 
 import Assets from '../views/home/Assets'
 import MsgCenterList from '../views/home/MsgCenterList'
-import Collection from '../views/home/Collection'
+import Receive from '../views/home/Receive'
 import Payment from '../views/home/Payment'
 import TradingRecord from '../views/home/tradingRecord/'
 import ScanQrCode from '../views/home/ScanQrCode'
@@ -48,7 +50,7 @@ export function registerScreens() {
   Navigation.registerComponent('home_personal', () => Personal,store,Provider)
   Navigation.registerComponent('msg_center_list', () => MsgCenterList,store,Provider)
   Navigation.registerComponent('on_payment', () => Payment,store,Provider)
-  Navigation.registerComponent('on_collection', () => Collection,store,Provider)
+  Navigation.registerComponent('on_receive', () => Receive,store,Provider)
   Navigation.registerComponent('trading_record', () => TradingRecord,store,Provider)
   Navigation.registerComponent('scan_qr_code', () => ScanQrCode,store,Provider)
   Navigation.registerComponent('asset_detail_list', () => AssetDetailList,store,Provider)
@@ -56,6 +58,8 @@ export function registerScreens() {
   Navigation.registerComponent('support', () => Support,store,Provider)
   Navigation.registerComponent('help_center', () => HelpCenter,store,Provider)
   Navigation.registerComponent('account_manage', () => AccountManage,store,Provider)
+  Navigation.registerComponent('setting', () => Setting,store,Provider)
+  Navigation.registerComponent('switch_language', () => SwitchLanguage,store,Provider)
   Navigation.registerComponent('tx_web_view', () => TxWebView,store,Provider)
   Navigation.registerComponent('switch_wallet', () => SwitchWallet,store,Provider)
   Navigation.registerComponent('add_assets', () => AddAssets,store,Provider)

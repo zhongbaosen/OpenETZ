@@ -3,6 +3,15 @@ import { StyleSheet } from 'react-native'
 import { switchDrawer } from '../utils/switchDrawer'
 //main theme color:   #144396
 
+// navigatorButtons: {
+//   rightButtons: [
+//     {
+//       title: 'Save',
+//       id: 'save_back_up_info'
+//     }
+//   ]
+// }
+      
 const ScanNavStyle = Object.assign({},DetailNavigatorStyle,{
         navBarTextColor:'#fff',
         navBarBackgroundColor:'#000',

@@ -14,7 +14,7 @@ import { pubS,DetailNavigatorStyle } from '../../../styles/'
 import { setScaleText, scaleSize } from '../../../utils/adapter'
 import RecordListItem from './RecordListItem'
 import { sliceAddress,timeStamp2Date } from '../../../utils/splitNumber'
-
+import I18n from 'react-native-i18n'
 class RecordPay extends Component{
   constructor(props){
     super(props)
@@ -37,7 +37,7 @@ class RecordPay extends Component{
   ListEmptyComponent = () => {
     return(
       <View style={{marginTop: 10,alignItems:'center'}}>
-        <Text>No Trading Records</Text>
+        <Text>{I18n.t('no_tx_info')}</Text>
       </View>
     )
   }

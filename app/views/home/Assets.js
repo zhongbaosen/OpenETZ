@@ -24,6 +24,7 @@ const tkSqLite = new TokenSQLite()
 let tk_db
 import { insertToTokenAction,initSelectedListAction,refreshTokenInfoAction } from '../../actions/tokenManageAction'
 let etzTitle = "ETZ"
+import I18n from 'react-native-i18n'
 
 // import { passAccountsInfoAction } from '../../actions/accountManageAction' 
 class Assets extends Component{
@@ -40,14 +41,18 @@ class Assets extends Component{
   }
   componentWillMount(){
     // this.props.dispatch(passAccountsInfoAction())
-
+    this.props.navigator.setTabButton({
+      tabIndex: 0,
+      label: I18n.t('assets')
+    })
+    this.props.navigator.setTabButton({
+      tabIndex:1,
+      label: I18n.t('mine')
+    })
   }
 
   componentDidMount(){
     const { accountInfo } = this.props.accountManageReducer
-
-    console.log('accountInfo  Assets111', accountInfo)
-
     this.setState({
       isRefreshing: true
     })
@@ -67,7 +72,6 @@ class Assets extends Component{
         })
       }
     })
-
   }
 
   onFetch = (addr) => {
@@ -144,7 +148,7 @@ class Assets extends Component{
   onScan = () => {
     this.props.navigator.push({
       screen: 'scan_qr_code',
-      title:'Scan',
+      title:I18n.t('scan'),
       navigatorStyle: Object.assign({},DetailNavigatorStyle,{
         navBarTextColor:'#fff',
         navBarBackgroundColor:'#000',
@@ -157,22 +161,22 @@ class Assets extends Component{
   onPay = () => {
     this.props.navigator.push({
       screen: 'on_payment',
-      title:'Send',
+      title:I18n.t('send'),
       navigatorStyle: DetailNavigatorStyle,
       
     })
   }
   onCollection = () => {
     this.props.navigator.push({
-      screen: 'on_collection',
-      title:'Receive',
+      screen: 'on_receive',
+      title:I18n.t('receive'),
       navigatorStyle: DetailNavigatorStyle,
     })
   }
   onTradingRecord = () => {
     this.props.navigator.push({
       screen: 'trading_record',
-      title:'Transaction Records',
+      title:I18n.t('tx_records'),
       navigatorStyle: MainThemeNavColor,
       // navigatorButtons: {
       //   rightButtons: [
@@ -188,7 +192,7 @@ class Assets extends Component{
   addAssetsBtn = () => {
     this.props.navigator.push({
       screen: 'add_assets',
-      title:'Add Assets',
+      title:I18n.t('add_assets'),
       navigatorStyle: DetailNavigatorStyle,
       // navigatorButtons: {
       //   rightButtons: [
@@ -215,7 +219,7 @@ class Assets extends Component{
   onLeftDrawer = () => {
     this.props.navigator.push({
       screen:'msg_center_list',
-      title:'MessageCenter',
+      title:I18n.t('msg_center'),
       navigatorStyle: DetailNavigatorStyle,
       navigatorButtons: {
         rightButtons: [
@@ -261,11 +265,11 @@ class Assets extends Component{
               <RefreshControl
                 refreshing={isRefreshing}
                 onRefresh={this.onRefresh}
-                tintColor="#144396"
-                title="Loading..."
+                tintColor={"#144396"}
+                title={I18n.t('loading')}
                 // titleColor="#00ff00"
                 colors={['#fff']}
-                progressBackgroundColor="#1d53a6"
+                progressBackgroundColor={"#1d53a6"}
               />
             }
           >
@@ -285,26 +289,26 @@ class Assets extends Component{
             <View>
               <View style={[styles.assetsTotalView,pubS.center]}>
                   <Text style={pubS.font72_1}>≈0</Text>
-                  <Text style={pubS.font26_3}>Total Assets(¥)</Text>
+                  <Text style={pubS.font26_3}>{I18n.t('total_assets')}(¥)</Text>
               </View>
 
               <View style={[styles.optionView,pubS.center]}>
                   <View style={[pubS.rowCenterJus,{width: scaleSize(650)}]}>
                     <TouchableOpacity activeOpacity={.7} onPress={this.onScan} style={[styles.optionItem]}>
                       <Image source={require('../../images/xhdpi/btn_ico_home_scan_def.png')} style={styles.itemImageStyle}/>
-                      <Text style={[pubS.font24_2,]}>Scan</Text>
+                      <Text style={[pubS.font24_2,]}>{I18n.t('scan')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={.7} onPress={this.onPay} style={[styles.optionItem]}>
                       <Image source={require('../../images/xhdpi/btn_ico_home_payment_def.png')} style={styles.itemImageStyle}/>
-                      <Text style={[pubS.font24_2,]}>Send</Text>
+                      <Text style={[pubS.font24_2,]}>{I18n.t('send')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={.7} onPress={this.onCollection} style={[styles.optionItem]}>
                       <Image source={require('../../images/xhdpi/btn_ico_home_collection_def.png')} style={styles.itemImageStyle}/>
-                      <Text style={[pubS.font24_2,]}>Receive</Text>
+                      <Text style={[pubS.font24_2,]}>{I18n.t('receive')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={.7} onPress={this.onTradingRecord} style={[styles.optionItem]}>
                       <Image source={require('../../images/xhdpi/btn_ico_home_transactionrecords_def.png')} style={styles.itemImageStyle}/>
-                      <Text style={[pubS.font24_2,]}>Records</Text>
+                      <Text style={[pubS.font24_2,]}>{I18n.t('tx_records')}</Text>
                     </TouchableOpacity>
                   </View>
               </View>
@@ -331,7 +335,7 @@ class Assets extends Component{
               })
             }
             <TouchableOpacity style={[styles.whStyle,styles.addBtnStyle,pubS.center]} activeOpacity={.7} onPress={this.addAssetsBtn}>
-              <Text style={pubS.font24_3}>+Add Assets</Text>
+              <Text style={pubS.font24_3}>{`+ ${I18n.t('add_assets')}`}</Text>
             </TouchableOpacity>
           </ScrollView>
         </Drawer>

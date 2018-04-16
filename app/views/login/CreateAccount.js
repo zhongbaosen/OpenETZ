@@ -16,9 +16,9 @@ import { TextInputComponent,Btn,Loading } from '../../components/'
 import { connect } from 'react-redux'
 import { createAccountAction } from '../../actions/accountManageAction'
 import UserSQLite from '../../utils/accountDB'
-
 const sqLite = new UserSQLite()
 let db
+import I18n from 'react-native-i18n'
 class CreateAccount extends Component{
   constructor(props){
       super(props)
@@ -48,7 +48,7 @@ class CreateAccount extends Component{
       this.setState({
         visible: false
       })
-      ToastAndroid.show('create account successfully',3000)
+      ToastAndroid.show(I18n.t('create_account_successfully'),3000)
       this.props.navigator.push({
         screen: 'create_account_success',
         navigatorStyle: DetailNavigatorStyle,
@@ -57,10 +57,6 @@ class CreateAccount extends Component{
     }
   }
 
-
-  componentWillUnmount(){
-    
-  }
   onChangeUserNameText = (val) => {
     this.setState({
       userNameVal: val,
@@ -75,19 +71,19 @@ class CreateAccount extends Component{
     let reg = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{8,}$/
     if(userNameVal.length === 0){
       this.setState({
-        userNameWarning: 'please enter the account name'
+        userNameWarning: I18n.t('enter_account_name')
       })
       return
     }else{
       if(!reg.test(psdVal)){
         this.setState({
-          psdWarning: 'password needs to contain both letters and numbers, and at least 8 digits.'
+          psdWarning: I18n.t('password_verification')
         })
         return
       }else{
         if(psdVal !== repeadPsdVal){
           this.setState({
-            rePsdWarning: 'two passwords are different'
+            rePsdWarning: I18n.t('passwords_different')
           })
           return
         }else{        
@@ -132,48 +128,42 @@ class CreateAccount extends Component{
   render(){
     const { userNameVal, psdVal, repeadPsdVal, promptVal, userNameWarning, psdWarning, rePsdWarning,visible } = this.state
     const { isLoading } = this.props.accountManageReducer
-
-    console.log('isLoading============',isLoading)  
     return(
       <View style={pubS.container}>
-        <Loading loadingVisible={this.state.visible} loadingText={'creating account'}/>
+        <Loading loadingVisible={this.state.visible} loadingText={I18n.t('creating')}/>
         <View style={[styles.warningView,pubS.paddingRow_24]}>
-          <Text style={pubS.font22_1}>
-            If you don't store user password, you cannot use retrieving or reset function,
-            the password must be backed up by yourself. the password is to protect the private key,
-            so it would be better if it is more complicated.
-          </Text>
+          <Text style={pubS.font22_1}>{I18n.t('create_account_prompt')}</Text>
         </View>
         <View style={{paddingTop:10,}}>
           <TextInputComponent
-            placeholder={'wallet name'}
+            placeholder={I18n.t('account_name')}
             value={userNameVal}
             onChangeText={this.onChangeUserNameText}
             warningText={userNameWarning}//
           />
           <TextInputComponent
-            placeholder={'password'}
+            placeholder={I18n.t('password')}
             value={psdVal}
             onChangeText={this.onChangPsdText}
             secureTextEntry={true}
             warningText={psdWarning}//
           />
           <TextInputComponent
-            placeholder={'repeat password'}
+            placeholder={I18n.t('repeat_password')}
             value={repeadPsdVal}
             onChangeText={this.onChangeRepeatText}
             secureTextEntry={true}
             warningText={rePsdWarning}//
           />
           <TextInputComponent
-            placeholder={'password hint (optional)'}
+            placeholder={I18n.t('password_hint')}
             value={promptVal}
             onChangeText={this.onChangePromptText}
           />
           <Btn
             btnMarginTop={scaleSize(60)}
             btnPress={this.onPressBtn}
-            btnText={'Create'}
+            btnText={I18n.t('create')}
           />
         </View>
         

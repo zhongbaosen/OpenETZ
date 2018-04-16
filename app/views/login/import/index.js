@@ -16,6 +16,7 @@ import { connect } from 'react-redux'
 import { toSplash,toHome } from '../../../root'
 import { resetDeleteStatusAction } from '../../../actions/accountManageAction'
 import { Loading } from '../../../components/' 
+import I18n from 'react-native-i18n'
 class ImportAccount extends Component{
   componentWillReceiveProps(nextProps){
     // if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
@@ -48,9 +49,9 @@ class ImportAccount extends Component{
             />
           )}
         >
-            <Mnemonic key={1} tabLabel={'Mnemonic'} thisProps={this}/>
-            <KeyStore key={2} tabLabel={'Keystore'} thisProps={this}/>
-            <PrivateKey key={3} tabLabel={'Private Key'} thisProps={this}/>
+            <Mnemonic key={1} tabLabel={I18n.t('mnemonic_phrase')} thisProps={this}/>
+            <KeyStore key={2} tabLabel={"Keystore"} thisProps={this}/>
+            <PrivateKey key={3} tabLabel={I18n.t('private_key')} thisProps={this}/>
         </ScrollableTabView>
       </View>
     )

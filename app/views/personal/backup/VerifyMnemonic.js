@@ -18,6 +18,7 @@ import { connect } from 'react-redux'
 import UserSQLite from '../../../utils/accountDB'
 const sqLite = new UserSQLite()  
 let db  
+import I18n from 'react-native-i18n'
 class VerifyMnemonic extends Component{
 	constructor(props){ 
 		super(props)
@@ -26,17 +27,23 @@ class VerifyMnemonic extends Component{
 			isEmpty: true,
 			selectContentArr: [],
 			visible: false,
-			originArr: []
 		}
 	}
 
-	componentDidMount(){
-		// let newMnemonic = this.props.mnemonicText.sort(() => Math.random() > .5)
-		let arr = []
+	componentWillMount(){
+		let arr = [],
+			mneArr = [];
 		arr = this.props.mnemonicText.split(" ")
-		this.setState({
-			originArr: arr
-		})
+		//mnemonicText: 'genius exile genius wet ethics genius tattoo boat lazy dilemma attack stand',
+		// for(let i = 0; i < arr.length; i ++){
+  //              mneArr.push({
+  //                      idx:i,
+  //                      val: arr[i]
+  //              })
+  //       }
+  //       console.log('mneArr================',mneArr)
+  //       let newMnemonic = mneArr.sort(() => Math.random() > .5)
+
 		console.log('arr==',arr)
 		let newMnemonic = arr.sort(() => Math.random() > .5)
 		console.log('newMnemonic==',newMnemonic)
@@ -76,23 +83,15 @@ class VerifyMnemonic extends Component{
 	onConfirm = () => {
 		const { selectContentArr, } = this.state
 		if(this.props.mnemonicText.split(" ").toString() === selectContentArr.toString()){
-				// Alert.alert(
-				// 	'',
-				// 	'',
-				// 	'',
-				// 	[
-			 //          {text: 'OK', onPress:() => this.onOk()},
-			 //        ],
-				// )
 			this.setState({
 				visible: true
 			})
 		}else{
 			 Alert.alert(
 		        '',
-		        'Error,try again',
+		        I18n.t('try_again'),
 		        [
-		          {text: 'OK', onPress:() => {console.log('1')}},
+		          {text: I18n.t('ok'), onPress:() => {console.log('1')}},
 		        ],
 		    )
 			this.setState({
@@ -149,7 +148,7 @@ class VerifyMnemonic extends Component{
 		      	<Btn
 		      		btnMarginTop={scaleSize(60)}
 			        btnPress={this.onConfirm}
-			        btnText={'Confirm'}
+			        btnText={I18n.t('confirm')}
 		      	/>
 		      	<Modal
 			        isVisible={visible}
@@ -159,10 +158,10 @@ class VerifyMnemonic extends Component{
 			        backdropOpacity={.8}
 			      >
 					 <View style={[{backgroundColor:'#fff',},pubS.center,styles.modalView]}>
-					 	<Text style={[pubS.font34_4,{marginTop: -50,textAlign:'center'}]}>Operation successful</Text>
-					 	<Text style={[pubS.font26_6,{marginTop: 10,textAlign:'center'}]}>please keep the mnemonic words properly</Text>
+					 	<Text style={[pubS.font34_4,{marginTop: -50,textAlign:'center'}]}>{I18n.t('operation_successful')}</Text>
+					 	<Text style={[pubS.font26_6,{marginTop: 10,textAlign:'center'}]}>{I18n.t('keep_mnemonic')}</Text>
 					 	<TouchableOpacity activeOpacity={.7} style={[styles.modalBtnStyle,pubS.center]} onPress={this.onModalBtn}> 
-					 		<Text style={pubS.font34_3}>Ok</Text>
+					 		<Text style={pubS.font34_3}>{I18n.t('ok')}</Text>
 					 	</TouchableOpacity>
 					 </View>
 			    </Modal>

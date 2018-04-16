@@ -11,6 +11,7 @@ import {
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import QRCodeScanner from 'react-native-qrcode-scanner'
+import I18n from 'react-native-i18n'
 class ScanQrCode extends Component{
   constructor(props){
     super(props)
@@ -21,7 +22,7 @@ class ScanQrCode extends Component{
   onSuccess = (e) => {
     this.props.navigator.push({
       screen: 'on_payment',
-      title:'Payment',
+      title:I18n.t('send'),
       navigatorStyle: DetailNavigatorStyle,
       overrideBackPress: true,
       passProps: {
@@ -40,7 +41,7 @@ class ScanQrCode extends Component{
             onRead={this.onSuccess}
             bottomContent={(
               <TouchableOpacity activeOpacity={.7} onPress={this.onCancel}>
-                <Text style={pubS.font54_1}>Cancel</Text>
+                <Text style={pubS.font54_1}>{I18n.t('cancel')}</Text>
               </TouchableOpacity>
             )}
             customMarker={(

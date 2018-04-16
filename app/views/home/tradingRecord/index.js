@@ -22,7 +22,7 @@ const tradingSqLite = new TradingSQLite()
 let t_db
 const sqLite = new UserSQLite();  
 let db  
-
+import I18n from 'react-native-i18n'
 
 const PickerData = [
   ['January ','February','March','April','May','June','July','August','September','October','November','December'],
@@ -78,8 +78,8 @@ class TradingRecord extends Component{
   }
   componentDidMount(){
     Picker.init({
-      pickerConfirmBtnText: 'Confirm',
-      pickerCancelBtnText: 'Cancel',
+      pickerConfirmBtnText: I18n.t('confirm'),
+      pickerCancelBtnText: I18n.t('cancel'),
       pickerTitleText: '',
       pickerConfirmBtnColor: [21, 126, 251, 1],
       pickerCancelBtnColor: [21, 126, 251, 1],

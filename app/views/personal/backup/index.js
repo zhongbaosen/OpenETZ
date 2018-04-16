@@ -24,10 +24,10 @@ import UserSQLite from '../../../utils/accountDB'
 
 import { deleteAccountAction,resetDeleteStatusAction,updateBackupStatusAction,passAccountsInfoAction } from '../../../actions/accountManageAction'
 const Wallet = require('ethereumjs-wallet')
-
-const sqLite = new UserSQLite();  
-let db;  
+const sqLite = new UserSQLite()
+let db
 import { toLogin } from '../../../root'
+import I18n from 'react-native-i18n'
 class BackUpAccount extends Component{
   constructor(props){
     super(props)
@@ -57,7 +57,7 @@ class BackUpAccount extends Component{
         let res = results.rows.item(0)
         let keyStore = {
           "version":res.version,
-          "id":res.id,
+          "id":res.kid,
           "address":res.address,
           "crypto":{
             "ciphertext":res.ciphertext,
@@ -107,7 +107,7 @@ class BackUpAccount extends Component{
         visible: false,
         loadingText: ''
       })
-      ToastAndroid.show('delete successfully~',3000)
+      ToastAndroid.show(I18n.t('delete_successfully'),3000)
       if(this.props.accountsNumber === 1){
         setTimeout(() => {
           toLogin()
@@ -171,7 +171,7 @@ class BackUpAccount extends Component{
     this.setState({
       dVisible: false,
       visible: true,
-      loadingText: 'deleting account'
+      loadingText: I18n.t('deleting_account')
     })
     this.props.dispatch(deleteAccountAction(this.props.b_id,this.props.accountsNumber,this.props.currentAccountId))   
   }
@@ -199,6 +199,7 @@ class BackUpAccount extends Component{
     this.setState({
       pKeyVisible: false,
       privKey: '',
+      privBackuped: true,
     })
 
     this.props.dispatch(updateBackupStatusAction(this.props.address))
@@ -207,7 +208,7 @@ class BackUpAccount extends Component{
   onConfirm = () => {
     const { psdVal,backupMnemonic,keyStore,isDelAccount,  } = this.state
     this.setState({
-      loadingText: 'unlocking',
+      loadingText: I18n.t("unlocking"),
       visible: true,
       iptPsdVisible: false
     })  
@@ -239,7 +240,7 @@ class BackUpAccount extends Component{
         }
         this.onHide()
       } catch (err) {
-        ToastAndroid.show('password is wrong',3000)
+        ToastAndroid.show(I18n.t('password_is_wrong'),3000)
         this.setState({
           psdVal: '',
           visible: false,
@@ -254,7 +255,7 @@ class BackUpAccount extends Component{
 
   onCopyBtn = () => {
     Clipboard.setString(this.state.privKey)
-    ToastAndroid.show('copy successfully~',3000)
+    ToastAndroid.show(I18n.t('copy_successfully'),3000)
   }
   backupMnemonicBtn = () => {
     this.setState({
@@ -268,16 +269,12 @@ class BackUpAccount extends Component{
     let k = JSON.stringify(keyStore)
     Share.share({
       message: k,
-      title: 'Backup Keystore'
+      title: I18n.t('backup_keystore_title'),
     }, {
-      dialogTitle: 'Share your keystore',
-      // excludedActivityTypes: [
-      //   'com.apple.UIKit.activity.PostToTwitter'
-      // ],
-      // tintColor: 'green'
+      dialogTitle: I18n.t('share_your_keystore'),
     })
     .then(this._showResult)
-    .catch((error) => ToastAndroid.show('system error'))
+    .catch((error) => ToastAndroid.show(I18n.t('share_error'),3000))
   }
   _showResult = (result) => {
     if (result.action === Share.sharedAction) {
@@ -288,7 +285,7 @@ class BackUpAccount extends Component{
         // this.setState({result: 'shared'});
       }
     } else if (result.action === Share.dismissedAction) {
-      ToastAndroid.show('shared dismissed',3000)
+      ToastAndroid.show(I18n.t('share_error'),3000)
     }
   }
 
@@ -301,7 +298,7 @@ class BackUpAccount extends Component{
         <Image source={require('../../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
         <Text style={pubS.font26_5}>{sliceAddress(this.props.address,10)}</Text>
         <View style={[styles.userNameViewStyle,pubS.rowCenterJus,pubS.bottomStyle]}>
-          <Text style={pubS.font26_4}>wallet name</Text>
+          <Text style={pubS.font26_4}>{I18n.t('account_name')}</Text>
           <Text style={pubS.font26_4}>{this.props.userName}</Text>
         </View>
         <View style={{position:'absolute',bottom: scaleSize(40)}}>
@@ -309,26 +306,26 @@ class BackUpAccount extends Component{
             btnPress={ mncBackuped ? () => {return} : () => this.backupMnemonicBtn() }
             bgColor={mncBackuped ? '#BDC0C6' : '#2B8AFF'}
             opacity={mncBackuped ? 1 : .7}
-            btnText={'backup mnemonic'}
+            btnText={I18n.t('backup_mnemonic_1')}
             btnMarginTop={scaleSize(150)}
           />
           <Btn
             btnPress={() => this.backUpKeyStoreBtn() }
             bgColor={'#2B8AFF'}
             opacity={.7}
-            btnText={'backup keystore'}
+            btnText={I18n.t('backup_keystore_1')}
             btnMarginTop={scaleSize(20)}
           />
           <Btn
             btnPress={privBackuped ? () => {return} : () => this.backUpPrivBtn() }
             bgColor={privBackuped ? '#BDC0C6' : '#2B8AFF'}
             opacity={privBackuped ? 1 : .7}
-            btnText={'backup private key'}
+            btnText={I18n.t('backup_private_key')}
             btnMarginTop={scaleSize(20)}
           />
           <Btn
             btnPress={this.deleteAccount}
-            btnText={'delete user'}
+            btnText={I18n.t('delete')}
             btnMarginTop={scaleSize(20)}
             bgColor={'#BDC0C6'}
           />
@@ -341,9 +338,9 @@ class BackUpAccount extends Component{
           backdropOpacity={.8}
         >
           <View style={styles.modalView}>
-            <Text style={[pubS.font34_2,{marginTop: scaleSize(50)}]}>please enter password </Text>
+            <Text style={[pubS.font34_2,{marginTop: scaleSize(50)}]}>{I18n.t('enter_password')}</Text>
             <TextInput
-              placeholder={'password'}
+              placeholder={I18n.t('password')}
               value={psdVal}
               onChangeText={ this.onChangePsdText}
               underlineColorAndroid={'transparent'}
@@ -353,10 +350,10 @@ class BackUpAccount extends Component{
             />
             <View style={[pubS.rowCenter,pubS.topBorderStyle,{height: scaleSize(88),marginTop: scaleSize(25),width: '100%'}]}>
               <TouchableOpacity activeOpacity={.7} onPress={this.onHide} style={[pubS.center,styles.modalBtnStyle]}>
-                <Text style={[pubS.font34_3,{}]}>Cancel</Text>
+                <Text style={[pubS.font34_3,{}]}>{I18n.t('cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity activeOpacity={.7} onPress={this.onConfirm} style={[pubS.center,{width:'50%',borderBottomRightRadius:scaleSize(26)}]}>
-                <Text style={[pubS.font34_3,{fontWeight: 'bold'}]}>Confirm</Text>
+                <Text style={[pubS.font34_3,{fontWeight: 'bold'}]}>{I18n.t('confirm')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -369,33 +366,33 @@ class BackUpAccount extends Component{
           backdropOpacity={.8}
         >
           <View style={styles.pkViewStyle}>
-            <View style={[{height: scaleSize(90),backgroundColor:'#2B8AFF',width: '100%'},pubS.center]}>
-              <Text style={[pubS.font36_4,{fontWeight: 'bold'}]}>backup private key</Text>
+            <View style={[{height: scaleSize(90),backgroundColor:'#2B8AFF',width: '100%',borderTopLeftRadius: scaleSize(10),borderTopRightRadius: scaleSize(10),},pubS.center]}>
+              <Text style={[pubS.font36_4,{fontWeight: 'bold'}]}>{I18n.t('backup_private_key')}</Text>
               <TouchableOpacity activeOpacity={.7} onPress={this.onPKeyHide} style={styles.iconStyle}>
                 <Image source={require('../../../images/xhdpi/btn_ico_collectionnobackup_close_def.png')} style={{height: scaleSize(30),width: scaleSize(30)}}/>
               </TouchableOpacity>
             </View>
             <View style={{backgroundColor:'#FFE186',paddingLeft: scaleSize(28),paddingRight: scaleSize(28),paddingTop: scaleSize(13),paddingBottom: scaleSize(13)}}>
-              <Text style={pubS.font22_1}>Security warning: the private key is not encrypted, export private key would be risky, so it is recommended to use mnemonic words and Keystore to backup.</Text>
+              <Text style={pubS.font22_1}>{I18n.t('private_key_modal')}</Text>
             </View>
             <View style={[styles.pkStyle,pubS.center]}>
               <Text style={pubS.font24_3}>{privKey}</Text>
             </View>
             <TouchableOpacity onPress={this.onCopyBtn} activeOpacity={.7} style={[styles.copyBtnStyle,pubS.center]}>
-              <Text style={pubS.font28_4}>copy</Text>
+              <Text style={pubS.font28_4}>{I18n.t('copy')}</Text>
             </TouchableOpacity>
           </View>
         </Modal>
 
        <Modal isVisible={dVisible}>
           <View style={[styles.confirmModal]}>
-            <Text style={[pubS.font34_3,styles.titleStyle]}>Delete this account?</Text>
+            <Text style={[pubS.font34_3,styles.titleStyle]}>{I18n.t('delete_account')}</Text>
             <View style={[pubS.center,pubS.rowCenter,styles.btnViewStyle]}>
               <TouchableOpacity activeOpacity={.6} onPress={this.onPressCancel} style={[pubS.center,styles.btnStyle]}>
-                <Text style={pubS.font34_3}>Cancel</Text>
+                <Text style={pubS.font34_3}>{I18n.t('cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity activeOpacity={.6} onPress={this.onPressConfirmDel} style={[pubS.center,styles.btnStyle,{borderRightWidth:StyleSheet.hairlineWidth,borderColor:'#dce4e6'}]}>
-                <Text style={pubS.font34_3}>Confirm</Text>
+                <Text style={pubS.font34_3}>{I18n.t('confirm')}</Text>
               </TouchableOpacity>
             </View>
           </View>

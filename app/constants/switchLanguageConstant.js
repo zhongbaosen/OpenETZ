@@ -1,0 +1,5 @@
+const SWITCH_LANGUAGE = 'SWITCH_LANGUAGE'
+
+export { 
+	SWITCH_LANGUAGE
+}

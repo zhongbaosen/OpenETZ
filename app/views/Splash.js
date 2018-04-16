@@ -11,6 +11,7 @@ import { connect } from 'react-redux'
 import UserSQLite from '../utils/accountDB'
 import TradingSQLite from '../utils/tradingDB'
 import { passAccountsInfoAction,getAccountInfoAction } from '../actions/accountManageAction'
+import { switchLanguageAction } from '../actions/switchLanguageAction'
 import { DetailNavigatorStyle} from '../styles/'
 const sqLite = new UserSQLite()  
 let db  
@@ -37,6 +38,30 @@ class Splash extends Component{
     //   sqLite.deleteData() 
 
     // this.props.dispatch(passAccountsInfoAction())
+
+    // localStorage.remove({
+    //   key: 'lang'
+    // })
+
+    localStorage.load({
+      key: 'lang',
+      autoSync: true,
+    }).then( ret => {
+      this.props.dispatch(switchLanguageAction(ret.selectedLan))
+    }).catch (err => {
+      this.setDefaultLang()
+      console.error(err)
+    })
+    
+  }
+  setDefaultLang(){
+    localStorage.save({
+      key: 'lang',
+      expires: null,
+      data:{
+        selectedLan: 'en-US'
+      }
+    })
   }
   componentDidMount(){
     // tSqLite.deleteData()
@@ -75,6 +100,28 @@ class Splash extends Component{
     //     title: 'Verify Mnemonic',
     //     navigatorStyle: DetailNavigatorStyle,
     // })
+
+    // this.props.navigator.push({
+    //   screen: 'switch_language',
+    //   title: 'SwitchLanguage',
+    //   navigatorStyle: DetailNavigatorStyle,
+    //   navigatorButtons: {
+    //     rightButtons: [
+    //       {
+    //         title: 'Save',
+    //         id: 'save_switch_language'
+    //       }
+    //     ]
+    //   }
+    // })
+    
+
+
+
+
+    
+
+
 
 
     setTimeout(() => {

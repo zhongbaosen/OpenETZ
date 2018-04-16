@@ -19,6 +19,7 @@ import Picker from 'react-native-picker'
 import { insert2TradingDBAction } from '../../actions/tradingManageAction'
 import UserSQLite from '../../utils/accountDB'
 import { contractAbi } from '../../utils/contractAbi'
+import I18n from 'react-native-i18n'
 const EthUtil = require('ethereumjs-util')
 const Wallet = require('ethereumjs-wallet')
 const EthereumTx = require('ethereumjs-tx')
@@ -40,7 +41,7 @@ class Payment extends Component{
       payPsdWarning: '',
       payPsdVal: '',
       visible: false,
-      modalTitleText:'Payment details',
+      modalTitleText:I18n.t('send_detail'),
       modalTitleIcon: require('../../images/xhdpi/nav_ico_paymentdetails_close_def.png'),
       modalSetp1: true,
       senderAddress: '',
@@ -119,8 +120,8 @@ class Payment extends Component{
       tokenPickerData.push(val.tk_symbol)
     })
     Picker.init({
-      pickerConfirmBtnText: 'Confirm',
-      pickerCancelBtnText: 'Cancel',
+      pickerConfirmBtnText: I18n.t('confirm'),
+      pickerCancelBtnText: I18n.t('cancel'),
       pickerTitleText: '',
       pickerConfirmBtnColor: [21, 126, 251, 1],
       pickerCancelBtnColor: [21, 126, 251, 1],
@@ -179,13 +180,13 @@ class Payment extends Component{
     let addressReg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{42}$/
     if(!addressReg.test(receiverAddress)){
       this.setState({
-        payAddressWarning: 'please enter the account address',
+        payAddressWarning: I18n.t('input_receive_address'),
       })
       return
     }else{
       if(payTotalVal.length === 0){
         this.setState({
-          payTotalWarning: 'please enter the payment amount'
+          payTotalWarning: I18n.t('input_send_account')
         })
         return
       }else{
@@ -227,7 +228,7 @@ class Payment extends Component{
     }else{
       this.setState({
         modalSetp1: true,
-        modalTitleText:'Payment details',
+        modalTitleText:I18n.t('send_detail'),
         modalTitleIcon: require('../../images/xhdpi/nav_ico_paymentdetails_close_def.png'),
       })
     }
@@ -235,7 +236,7 @@ class Payment extends Component{
 
   onPressOrderModalBtn = () => {
     this.setState({
-      modalTitleText: 'Payment password',
+      modalTitleText: I18n.t('send_psd'),
       modalTitleIcon: require('../../images/xhdpi/nav_ico_createaccount_back_def.png'),
       modalSetp1: false
     })
@@ -245,14 +246,14 @@ class Payment extends Component{
     const { payPsdVal, payPsdWarning, loadingText,loadingVisible } = this.state
     if(payPsdVal.length === 0){
       this.setState({
-        payPsdWarning: 'please enter the password',
+        payPsdWarning: I18n.t('input_password'),
         loadingText: '',
         loadingVisible: false,
       })
       return
     }else{
       this.setState({
-        loadingText: 'paying',
+        loadingText: I18n.t('sending'),
         loadingVisible: true,
         visible: false,
         modalSetp1: true,
@@ -279,7 +280,7 @@ class Payment extends Component{
         visible: false,
         modalSetp1: true,
         payPsdVal: '',
-        payPsdWarning: 'password is error',
+        payPsdWarning: I18n.t('password_is_wrong'),
         loadingText: '',
         loadingVisible: false,
       })
@@ -360,18 +361,18 @@ class Payment extends Component{
               tx_token: "ETZ"
             }))
           },1000)
-          ToastAndroid.show('payment succeeful~',3000)
+          ToastAndroid.show(I18n.t('send_successful'),3000)
         }
       })
       .on('error', (error) => {
         console.log('error==',error)
         self.onPressClose()
         self.props.navigator.pop()
-        alert(error)
+        // alert(error)
       })
     }catch(error){
       this.onPressClose()
-      ToastAndroid.show('password is wrong',3000)
+      ToastAndroid.show(I18n.t('password_is_wrong'),3000)
     }
   }
   async makeTransactByToken(){
@@ -501,7 +502,7 @@ class Payment extends Component{
                   tx_token: currentTokenName
                 }))
               },1000)
-              ToastAndroid.show('payment succeeful~',3000)
+              ToastAndroid.show(I18n.t('send_successful'),3000)
             }
             
         }).on('receipt', function(receipt){
@@ -517,7 +518,7 @@ class Payment extends Component{
 
     }catch (error) {
       this.onPressClose()
-      ToastAndroid.show('password is wrong',3000)
+      ToastAndroid.show(I18n.t('password_is_wrong'),3000)
     }
 
   }
@@ -542,7 +543,7 @@ class Payment extends Component{
           onPressTouch={this.showTokenPicker}
         />
         <TextInputComponent
-          placeholder={'receiver’s account address'}
+          placeholder={I18n.t('receiver_address')}
           value={receiverAddress}
           onChangeText={this.onChangePayAddrText}
           warningText={payAddressWarning}
@@ -550,21 +551,21 @@ class Payment extends Component{
           onPressIptRight={this.toScan}
         />
         <TextInputComponent
-          placeholder={'amount'}
+          placeholder={I18n.t('amount')}
           value={payTotalVal}
           onChangeText={this.onChangePaTotalText}
           warningText={payTotalWarning}
           keyboardType={'numeric'}
         />
         <TextInputComponent
-          placeholder={'note(optional)'}
+          placeholder={I18n.t('note_1')}
           value={noteVal}
           onChangeText={this.onChangeNoteText}
         />
         <Btn
           btnMarginTop={scaleSize(60)}
           btnPress={this.onNextStep}
-          btnText={'Next'}
+          btnText={I18n.t('next')}
         />
 
         <Modal
@@ -585,33 +586,33 @@ class Payment extends Component{
               modalSetp1 ?
               <View>
                 <RowText
-                  rowTitle={'Order information'}
+                  rowTitle={I18n.t('order_note')}
                   rowContent={noteVal}
                 />
                 <RowText
-                  rowTitle={'Transfer wallet address'}
+                  rowTitle={I18n.t('to_address')}
                   rowContent={receiverAddress}
                 />
                 <RowText
-                  rowTitle={'Payment account'}
+                  rowTitle={I18n.t('from_address')}
                   rowContent={senderAddress}
                 />
                 <RowText
-                  rowTitle={'Amount'}
+                  rowTitle={I18n.t('amount_1')}
                   rowContent={payTotalVal}
                   rowUnit={currentTokenName}
                 />
 
                 <Btn
-                btnPress={this.onPressOrderModalBtn}
-                btnText={'Confirm'}
-                btnMarginTop={scaleSize(50)}
+                  btnPress={this.onPressOrderModalBtn}
+                  btnText={I18n.t('confirm')}
+                  btnMarginTop={scaleSize(50)}
                 />
               </View>
               :
               <View>
                 <TextInputComponent
-                  placeholder={'Enter password'}
+                  placeholder={I18n.t('password')}
                   value={payPsdVal}
                   onChangeText={this.onChangePayPsdText}
                   warningText={payPsdWarning}
@@ -619,7 +620,7 @@ class Payment extends Component{
                 />
                 <Btn
                   btnPress={this.onPressPayBtn}
-                  btnText={'Make Payment'}
+                  btnText={I18n.t('make_send')}
                   btnMarginTop={scaleSize(50)}
                 />
               </View>

@@ -8,6 +8,7 @@ import tradingManageReducer from '../reducers/tradingManageReducer'
 import accountManageReducer from '../reducers/accountManageReducer'
 import onSwitchDrawerReducer from '../reducers/onSwitchDrawerReducer'
 import tokenManageReducer from '../reducers/tokenManageReducer'
+import switchLanguageReducer from '../reducers/switchLanguageReducer'
 const rootReducer = combineReducers({
   	createAccountReducer,
   	getLocalDataReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   	accountManageReducer,
   	onSwitchDrawerReducer,
   	tokenManageReducer,
+  	switchLanguageReducer,
 })
 const store = createStore(
   rootReducer,

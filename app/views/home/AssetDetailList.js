@@ -18,7 +18,7 @@ const tradingSqLite = new TradingSQLite()
 let t_db
 const sqLite = new UserSQLite();  
 let db  
-
+import I18n from 'react-native-i18n'
 class AssetDetailList extends Component{
   constructor(props){
     super(props)
@@ -66,7 +66,7 @@ class AssetDetailList extends Component{
   toTradingRecordDetail = (res) => {
     this.props.navigator.push({
       screen: 'trading_record_detail',
-      title:'Transaction Records',
+      title:I18n.t('tx_records_1'),
       navigatorStyle: MainThemeNavColor,
       passProps: {
         detailInfo: res
@@ -100,7 +100,7 @@ class AssetDetailList extends Component{
   payBtn = () => {
     this.props.navigator.push({
       screen: 'on_payment',
-      title:'Payment',
+      title:I18n.t('send'),
       navigatorStyle: DetailNavigatorStyle,
       passProps:{
         curToken: this.props.curToken
@@ -109,15 +109,15 @@ class AssetDetailList extends Component{
   }
   collectBtn = () => {
     this.props.navigator.push({
-      screen: 'on_collection',
-      title:'Receive',
+      screen: 'on_receive',
+      title:I18n.t('receive'),
       navigatorStyle: DetailNavigatorStyle,
     })
   }
   ListEmptyComponent = () => {
     return(
       <View style={{marginTop: 10,alignItems:'center'}}>
-        <Text>No Trading Information</Text>
+        <Text>{I18n.t('no_tx_info')}</Text>
       </View>
     )
   }
@@ -134,10 +134,10 @@ class AssetDetailList extends Component{
         />
         <View style={[styles.bottomBtnStyle,pubS.rowCenter]}>
           <TouchableOpacity activeOpacity={.7} onPress={this.payBtn} style={[styles.btnStyle,{backgroundColor:'#FFAA3B'},pubS.center]}>
-            <Text style={pubS.font30_3}>Send</Text>
+            <Text style={pubS.font30_3}>{I18n.t('send')}</Text>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={.7} onPress={this.collectBtn} style={[styles.btnStyle,{backgroundColor:'#FF9844'},pubS.center]}>
-            <Text style={pubS.font30_3}>Receive</Text>
+            <Text style={pubS.font30_3}>{I18n.t('receive')}</Text>
           </TouchableOpacity>
         </View>
       </View>

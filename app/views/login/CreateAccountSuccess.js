@@ -12,6 +12,7 @@ import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { Btn } from '../../components/'
 import { toSplash } from '../../root'
+import I18n from 'react-native-i18n'
 class CreateAccountSuccess extends Component{
   constructor(props){
     super(props)
@@ -56,12 +57,12 @@ class CreateAccountSuccess extends Component{
       <View style={pubS.container}>
         <View style={{alignItems:'center'}}>
           <Image source={require('../../images/xhdpi/ico_createaccount_succeed.png')} style={styles.imgStyle}/>
-          <Text style={[pubS.font36_1,{marginTop: scaleSize(70),textAlign:'center',}]}>New account has been created successfullyly </Text>
-          <Text style={[pubS.font26_2,{width:'90%',marginTop: scaleSize(27),textAlign:'center',lineHeight:25,}]}>It is highly recommended that you make backup before use, export mnemonic phrase or keystore and then stored them in a safe place.</Text>
+          <Text style={[pubS.font36_1,{marginTop: scaleSize(70),textAlign:'center',}]}>{I18n.t('create_account_successful_1')}</Text>
+          <Text style={[pubS.font26_2,{width:'90%',marginTop: scaleSize(27),textAlign:'center',lineHeight:25,}]}>{I18n.t('create_account_successful_2')}</Text>
           <Btn
             btnMarginTop={scaleSize(97)}
             btnPress={this.onPressBackUp}
-            btnText={'backup account'}
+            btnText={I18n.t('backup_now')}
           />
         </View>
       </View>

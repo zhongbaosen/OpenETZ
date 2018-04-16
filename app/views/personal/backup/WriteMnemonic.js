@@ -15,6 +15,8 @@ import { Btn } from '../../../components/'
 import UserSQLite from '../../../utils/accountDB'
 const sqLite = new UserSQLite()  
 let db  
+import I18n from 'react-native-i18n'
+
 class WriteMnemonic extends Component{
 	constructor(props){
 		super(props)
@@ -51,7 +53,7 @@ class WriteMnemonic extends Component{
 		const { mnemonicText,originMneStr } = this.state
 		this.props.navigator.push({
 	      screen: 'verify_mnemonic',
-	      title: 'Verify Mnemonic',
+	      title: I18n.t('verify_mnemonic'),
 	      navigatorStyle: DetailNavigatorStyle,
 	      passProps: {
 	      	mnemonicText: originMneStr,
@@ -63,8 +65,8 @@ class WriteMnemonic extends Component{
     	const { touchable } = this.state
 	    return(
 	      <View style={[{flex:1,backgroundColor:'#F5F7FB',alignItems:'center'},pubS.paddingRow35]}>
-	      	<Text style={[pubS.font34_1,{marginTop: scaleSize(60)}]}>Write down your account mnemonic</Text>
-	      	<Text style={[pubS.font24_2,{textAlign :'center',marginTop: scaleSize(20)}]}>Mnemonic is used to restore an account, write it down, and put it in a safe place</Text>
+	      	<Text style={[pubS.font34_1,{marginTop: scaleSize(60)}]}>{I18n.t('write_down_mnemonic')}</Text>
+	      	<Text style={[pubS.font24_2,{textAlign :'center',marginTop: scaleSize(20)}]}>{I18n.t('safe_place_mnemonic')}</Text>
 	      	<View style={[styles.mneViewStyle,pubS.center]}>
 	      		<View style={[{height: scaleSize(90),width: scaleSize(600),flexDirection:'row',flexWrap: 'wrap',}]}>
 		      		{
@@ -83,7 +85,7 @@ class WriteMnemonic extends Component{
 		        btnPress={touchable ? () => this.onNextStep() : () => {return}}
 		        bgColor={touchable ? '#2B8AFF':'#BDC0C6' }
 				opacity={touchable ? .7 : 1}
-		        btnText={'Next'}
+		        btnText={I18n.t('next')}
 	      	/>
 	      </View>
 	    )

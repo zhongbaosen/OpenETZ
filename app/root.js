@@ -10,10 +10,10 @@ import { Navigation } from 'react-native-navigation'
 import { registerScreens, registerScreenVisibilityListener, } from './config/'
 import { getPixelRatio } from './utils/adapter'
 import { TabBarAppStyle,AssetsNavStyle,MainThemeNavColor } from './styles/'
+import I18n from 'react-native-i18n'
 registerScreens()
 registerScreenVisibilityListener()
 getPixelRatio()
-
 
 if (!__DEV__) {
   global.console = {
@@ -38,7 +38,7 @@ const bottomTabStyle = {
 
 const tabs = [
   {
-    label: 'Assets',
+    label: I18n.t('assets'),
     screen: 'home_assets',
     icon: require('./images/xhdpi/tab_ico_personalcenter_assets_def.png'),
     selectedIcon: require('./images/xhdpi/tab_ico_home_asset_def.png'),
@@ -46,7 +46,7 @@ const tabs = [
     iconInsets: bottomTabStyle
   },
   {
-    label: 'Mine',
+    label: I18n.t('mine'),
     screen: 'home_personal',
     icon: require('./images/xhdpi/tab_ico_home_personalcenter_def.png'),
     selectedIcon: require('./images/xhdpi/tab_ico_personalcenter_personal_def.png'),

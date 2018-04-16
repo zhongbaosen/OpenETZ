@@ -14,6 +14,7 @@ import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Loading } from '../../components/'
 import Mailer from 'react-native-mail'
+import I18n from 'react-native-i18n'
 class Support extends Component{
   constructor(props){
     super(props)
@@ -103,14 +104,14 @@ class Support extends Component{
     return(
       <View>
         <TextInputComponent
-          placeholder={'your email'}
+          placeholder={I18n.t('your_email')}
           value={emaiVal}
           onChangeText={this.onChangeEName}
-          warningText={eNameWarning}//
+          warningText={eNameWarning}
         />
         <TextInputComponent
           isMultiline={true}
-          placeholder={'please input the description of the problem'}
+          placeholder={I18n.t('input_des_problem')}
           value={contentVal}
           onChangeText={this.onChangelContent}
           warningText={contentWarning}

@@ -20,6 +20,7 @@ import org.reactnative.camera.RNCameraPackage;
 import io.realm.react.RealmReactPackage;
 import org.pgsqlite.SQLitePluginPackage;
 import com.chirag.RNMail.*;
+import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 public class MainApplication extends NavigationApplication {
 
     @Override
@@ -34,7 +35,8 @@ public class MainApplication extends NavigationApplication {
           new RNCameraPackage(),
           new RealmReactPackage(),
           new SQLitePluginPackage(),
-          new RNMail() 
+          new RNMail(),
+          new RNI18nPackage()
         );
     }
 

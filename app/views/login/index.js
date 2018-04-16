@@ -10,7 +10,7 @@ import {
 
 import { pubS,DetailNavigatorStyle} from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
-
+import I18n from 'react-native-i18n'
 class Login extends Component{
   constructor(props){
     super(props)
@@ -25,7 +25,7 @@ class Login extends Component{
 
     this.props.navigator.push({
       screen: 'create_account',
-      title:'Create',
+      title:I18n.t('create'),
       navigatorStyle: DetailNavigatorStyle,
       passProps: { from: 'login_create'}
     })
@@ -35,7 +35,7 @@ class Login extends Component{
 
     this.props.navigator.push({
       screen: 'import_account',
-      title:'import',
+      title:I18n.t('import'),
       navigatorStyle: DetailNavigatorStyle,
     })
   }
@@ -54,10 +54,10 @@ class Login extends Component{
         <Image source={require('../../images/xhdpi/logo.png')} style={styles.logoStyle}/>
         <View style={styles.btnContainer}>
           <TouchableOpacity activeOpacity={.7} onPress={this.createAccoumt} style={[pubS.center,styles.btnStyle]}>
-            <Text style={pubS.font30_1}>Create</Text>
+            <Text style={pubS.font30_1}>{I18n.t('create')}</Text>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={.7} onPress={this.importAccoumt} style={[pubS.center,styles.btnStyle,{marginTop: scaleSize(30)}]}>
-            <Text style={pubS.font30_1}>Import</Text>
+            <Text style={pubS.font30_1}>{I18n.t('import')}</Text>
           </TouchableOpacity>
           {
 

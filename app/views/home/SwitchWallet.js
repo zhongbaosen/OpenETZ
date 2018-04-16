@@ -15,7 +15,7 @@ import { insertToTokenAction } from '../../actions/tokenManageAction'
 import { toSplash } from '../../root'
 import TokenSQLite from '../../utils/tokenDB'
 const tkSqLite = new TokenSQLite()
-
+import I18n from 'react-native-i18n'
 class SwitchWallet extends Component {
 	constructor(props){
 		super(props)
@@ -33,7 +33,7 @@ class SwitchWallet extends Component {
 	onScan = () => {
 		this.props.thisPorps.props.navigator.push({
 	      screen: 'scan_qr_code',
-	      title:'Scan',
+	      title:I18n.t('scan'),
 	      navigatorStyle: Object.assign({},DetailNavigatorStyle,{
 	        navBarTextColor:'#fff',
 	        navBarBackgroundColor:'#000',
@@ -46,7 +46,7 @@ class SwitchWallet extends Component {
 	onCreate = () => {
 		this.props.thisPorps.props.navigator.push({
 	      screen: 'create_account',
-	      title:'Create',
+	      title:I18n.t('create'),
 	      navigatorStyle: DetailNavigatorStyle,
 	    })
 	    this.props.onCloseSwitchDrawer()
@@ -77,11 +77,11 @@ class SwitchWallet extends Component {
 				<View style={{width: '100%',borderWidth: StyleSheet.hairlineWidth,borderColor:'#F2F2F2',marginTop:scaleSize(30),marginBottom: scaleSize(50)}}></View>
 				<TouchableOpacity style={[pubS.rowCenter,{marginLeft: scaleSize(53)}]} activeOpacity={.7} onPress={this.onScan}>
 					<Image source={require('../../images/xhdpi/btn_ico_more_scan_def.png')} style={styles.imgStyle}/>
-					<Text style={[pubS.font26_4,{marginLeft: scaleSize(30)}]}>Scan</Text>
+					<Text style={[pubS.font26_4,{marginLeft: scaleSize(30)}]}>{I18n.t('scan')}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={[pubS.rowCenter,{marginLeft: scaleSize(53),marginTop: scaleSize(40)}]} activeOpacity={.7} onPress={this.onCreate}>
 					<Image source={require('../../images/xhdpi/btn_ico_more_createaccount_def.png')} style={styles.imgStyle}/>
-					<Text style={[pubS.font26_4,{marginLeft: scaleSize(30)}]}>Create account</Text>
+					<Text style={[pubS.font26_4,{marginLeft: scaleSize(30)}]}>{I18n.t('create')}</Text>
 				</TouchableOpacity>
 			</View>
 		)

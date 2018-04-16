@@ -10,29 +10,20 @@ import {
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
+import {ArrowToDetail} from '../../components/'
+import I18n from 'react-native-i18n'
 
-class ArrowToDetail extends Component {
-  render(){
-    const { arrowText, arrowIcon, arrowOnPress, } = this.props
-    return(
-      <TouchableOpacity activeOpacity={.7} onPress={arrowOnPress} style={[styles.arrowViewStyle,pubS.rowCenterJus,pubS.paddingRow40,pubS.bottomStyle]}>
-        <View style={[pubS.rowCenter,{}]}>
-          <Image source={arrowIcon} style={styles.arrowIconStyle}/>
-          <Text style={[pubS.font32_1,{marginLeft: scaleSize(31)}]}>{arrowText}</Text>
-        </View>
-        <Image source={require('../../images/xhdpi/btn_ico_payment_select_def.png')} style={{width: scaleSize(16),height: scaleSize(30)}}/>
-      </TouchableOpacity>
-    )
-  }
-}
 class Personal extends Component{
-
-
-
+  constructor(props){
+    super(props)
+    this.state={
+        
+    }
+  }
   toAccountManage = () => {
     this.props.navigator.push({
       screen: 'account_manage',
-      title:'Manage wallets',
+      title:I18n.t('manage_wallets'),
       navigatorStyle: DetailNavigatorStyle,
     })
   }
@@ -40,62 +31,77 @@ class Personal extends Component{
   toHelpCenter = () => {
     this.props.navigator.push({
       screen: 'help_center',
-      title:'Help center',
-      navigatorStyle: DetailNavigatorStyle,
+      // title:I18n.t('help_center'),
+      navigatorStyle:{
+        navBarHidden: true,
+        statusBarColor: '#fff',
+        screenBackgroundColor: 'white',
+        tabBarHidden: true
+      },
     })
   }
-
+  
   toContactService = () => {
     this.props.navigator.push({
       screen: 'support',
-      title:'Support',
+      title:I18n.t('support'),
       navigatorStyle: DetailNavigatorStyle,
       navigatorButtons: {
         rightButtons: [
           {
-            title: 'Send',
+            title: I18n.t('send_email'),
             id: 'send_email'
           }
         ]
       }
     })
   }
-
+  toLanguage = () => {
+    this.props.navigator.push({
+      screen: 'switch_language',
+      title: I18n.t('language'),
+      navigatorStyle: DetailNavigatorStyle,
+      navigatorButtons: {
+        rightButtons: [
+          {
+            title: I18n.t('save'),
+            id: 'save_switch_language'
+          }
+        ]
+      }
+    })
+  }
   render(){
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB',}]}>
           <Image source={require('../../images/xhdpi/bg_personalcenter.png')} style={{height: scaleSize(387),width: scaleSize(750)}}/>
           <ArrowToDetail
-            arrowText={'Manage wallets'}
+            arrowText={I18n.t('manage_wallets')}
             arrowIcon={require('../../images/xhdpi/ico_personalcenter_accountmanagement_def.png')}
             arrowOnPress={this.toAccountManage}
           />
+          <ArrowToDetail
+            arrowText={I18n.t('language')}
+            arrowIcon={require('../../images/xhdpi/ico_personalcenter_language_def.png')}
+            arrowOnPress={this.toLanguage}
+          />
           <View style={{marginTop:scaleSize(40)}}>
             <ArrowToDetail
-              arrowText={'Help center'}
+              arrowText={I18n.t('help_center')}
               arrowIcon={require('../../images/xhdpi/ico_personalcenter_helpcenter_def.png')}
               arrowOnPress={this.toHelpCenter}
             />
             <ArrowToDetail
-              arrowText={'Support'}
+              arrowText={I18n.t('support')}
               arrowIcon={require('../../images/xhdpi/ico_personalcenter_contact_def.png')}
               arrowOnPress={this.toContactService}
             />
+            
           </View>
       </View>
     )
   }
 }
 
-const styles = StyleSheet.create({
-  arrowIconStyle: {
-    height: scaleSize(50),
-    width: scaleSize(50),
-  },
-  arrowViewStyle: {
-    height: scaleSize(120),
-    width: scaleSize(750),
-    backgroundColor:'#fff',
-  },
-})
+
 export default Personal

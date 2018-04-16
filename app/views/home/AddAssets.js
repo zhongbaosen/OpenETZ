@@ -17,6 +17,7 @@ import { getAssetsListAction,deleteSelectedToListAction, addSelectedToListAction
 import TokenSQLite from '../../utils/tokenDB'
 const tkSqLite = new TokenSQLite()
 let tk_db
+import I18n from 'react-native-i18n'
 class AddAssets extends Component{
   constructor(props){
     super(props)

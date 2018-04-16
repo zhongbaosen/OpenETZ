@@ -15,6 +15,7 @@ import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import QRCode from 'react-native-qrcode'
 import { sliceAddress,timeStamp2FullDate } from '../../utils/splitNumber'
+import I18n from 'react-native-i18n'
 class TextInstructions extends Component{
   static defaultProps = {
     inColor: '#657CAB',
@@ -57,7 +58,7 @@ class TradingRecordDetail extends Component{
   }
   onCopyBtn = () => {
     Clipboard.setString(this.props.detailInfo.tx_receiver)
-    ToastAndroid.show('copy succeefully',3000)
+    ToastAndroid.show(I18n.t('copy_successfully'),3000)
   }
 
   
@@ -74,15 +75,15 @@ class TradingRecordDetail extends Component{
             <Text style={[pubS.font22_3,{marginLeft: scaleSize(18),marginTop: scaleSize(28)}]}>{detailInfo.tx_token}</Text>
           </View>
           <TextInstructions
-            title={'payer'}
+            title={I18n.t('payer')}
             instructions={detailInfo.tx_sender}
           />
           <TextInstructions
-            title={'payee'}
+            title={I18n.t('payee')}
             instructions={detailInfo.tx_receiver}
           />
           <TextInstructions
-            title={'note'}
+            title={I18n.t('note')}
             instructions={detailInfo.tx_note}
           />
 
@@ -90,17 +91,17 @@ class TradingRecordDetail extends Component{
           <View style={[pubS.rowCenterJus,{paddingRight: scaleSize(35)}]}>
             <View>
               <TextInstructions
-                title={'transaction number'}
+                title={I18n.t('tx_number')}
                 instructions={sliceAddress(detailInfo.tx_hash)} 
                 inColor={'#2B8AFF'}
                 onPressText={() => this.toWebView(detailInfo.tx_hash)}
                 />
               <TextInstructions
-                title={'block'}
+                title={I18n.t('block')}
                 instructions={detailInfo.tx_block_number}
                 />
               <TextInstructions
-                title={'transaction time'}
+                title={I18n.t('tx_time')}
                 instructions={timeStamp2FullDate(detailInfo.tx_time)}
                 />
             </View>
@@ -112,7 +113,7 @@ class TradingRecordDetail extends Component{
                 fgColor='#fff'
               />
               <TouchableOpacity onPress={this.onCopyBtn} activeOpacity={.7} style={[styles.btnStyle,pubS.center]}>
-                <Text style={pubS.font22_3}>copy URL</Text>
+                <Text style={pubS.font22_3}>{I18n.t('copy_url')}</Text>
               </TouchableOpacity>
             </View>
           </View>

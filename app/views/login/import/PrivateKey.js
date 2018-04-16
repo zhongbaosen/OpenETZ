@@ -17,6 +17,7 @@ import { toSplash } from '../../../root'
 import { importAccountAction,resetDeleteStatusAction } from '../../../actions/accountManageAction'
 import { connect } from 'react-redux'
 import { Navigation } from 'react-native-navigation'
+import I18n from 'react-native-i18n'
 class PrivateKey extends Component{
   constructor(props){
     super(props)
@@ -38,7 +39,7 @@ class PrivateKey extends Component{
       this.setState({
         visible: false
       })
-      ToastAndroid.show('import successfully',3000)
+      ToastAndroid.show(I18n.t('import_successful'),3000)
       setTimeout(() => {
         toSplash()
       },100)
@@ -76,22 +77,22 @@ class PrivateKey extends Component{
     let psdReg = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{8,}$/
     if(userNameVal.length === 0){
       this.setState({
-        userNameWarning: 'please enter the account name'
+        userNameWarning: I18n.t('enter_account_name')
       })
     }else{
       if(!privReg.test(privKeyVal)){
         this.setState({
-          privKeyWarning: 'Wrong Private Key',
+          privKeyWarning: I18n.t('private_key_warning'),
         })
       }else{
         if(!psdReg.test(psdVal)){
           this.setState({
-            psdWarning: 'password needs to contain both letters and numbers, and at least 8 digits.'
+            psdWarning: I18n.t('password_verification')
           })
         }else{
           if(psdVal !== repeadPsdVal){
             this.setState({
-              rePsdWarning: 'two passwords are different'
+              rePsdWarning: I18n.t('passwords_different')
             })
           }else{
             this.onImport()
@@ -126,30 +127,30 @@ class PrivateKey extends Component{
     const { privKeyVal, psdVal, repeadPsdVal, promptVal, privKeyWarning, psdWarning, rePsdWarning,userNameVal, userNameWarning } = this.state
     return(
       <View>
-        <Loading loadingVisible={this.state.visible} loadingText={'importing account'}/>
+        <Loading loadingVisible={this.state.visible} loadingText={I18n.t('loading_importing_account')}/>
         <TextInputComponent
-          placeholder={'wallet name'}
+          placeholder={I18n.t('account_name')}
           value={userNameVal}
           onChangeText={this.onChangeUseNameText}
           warningText={userNameWarning}//
         />
         <TextInputComponent
           isMultiline={true}
-          placeholder={'import private key'}
+          placeholder={I18n.t('private_key')}
           value={privKeyVal}
           onChangeText={this.onChangePrivateText}
           warningText={privKeyWarning}
           iptMarginTop={scaleSize(60)}
         />
         <TextInputComponent
-          placeholder={'password'}
+          placeholder={I18n.t('password')}
           value={psdVal}
           onChangeText={this.onChangPsdText}
           secureTextEntry={true}
           warningText={psdWarning}
         />
         <TextInputComponent
-          placeholder={'repeat password'}
+          placeholder={I18n.t('repeat_password')}
           value={repeadPsdVal}
           onChangeText={this.onChangeRepeatText}
           secureTextEntry={true}
@@ -166,7 +167,7 @@ class PrivateKey extends Component{
         <Btn
           btnMarginTop={scaleSize(60)}
           btnPress={this.onPressImport}
-          btnText={'import'}
+          btnText={I18n.t('import')}
         />
       </View>
     )
