@@ -114,15 +114,7 @@ class Splash extends Component{
     //     ]
     //   }
     // })
-    
-
-
-
-
-    
-
-
-
+  
 
     setTimeout(() => {
       if(!db){  

@@ -247,7 +247,12 @@ class Assets extends Component{
     
 
     return(
-      <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
+      <View style={{backgroundColor:'#F5F7FB',flex:1}}>
+        {
+          Platform.OS === 'ios' ? 
+          <View style={{height: scaleSize(40),backgroundColor:'#144396'}}/>
+          : null
+        }
         <Drawer
           ref={(ref) => this._drawer = ref}
           type="overlay"
@@ -424,7 +429,7 @@ const styles = StyleSheet.create({
     // borderWidth:1,
   },
   assetsTotalView: {
-    height: scaleSize(300),
+    height: scaleSize(260),
     backgroundColor:'#144396',
     // backgroundColor:'red',
 
