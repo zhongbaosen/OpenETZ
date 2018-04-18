@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  ToastAndroid
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../../styles/'
@@ -16,6 +15,7 @@ import { importAccountAction,resetDeleteStatusAction } from '../../../actions/ac
 import { connect } from 'react-redux'
 import { toSplash } from '../../../root'
 import I18n from 'react-native-i18n'
+import Toast from 'react-native-toast'
 class KeyStore extends Component{
   constructor(props){
     super(props)
@@ -32,7 +32,7 @@ class KeyStore extends Component{
       this.setState({
         visible: false
       })
-      ToastAndroid.show('import successfully',3000)
+      Toast.show('import successfully')
       setTimeout(() => {
         toSplash()
       },100)

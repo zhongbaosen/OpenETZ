@@ -21,6 +21,7 @@ import io.realm.react.RealmReactPackage;
 import org.pgsqlite.SQLitePluginPackage;
 import com.chirag.RNMail.*;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
+import com.remobile.toast.RCTToastPackage; 
 public class MainApplication extends NavigationApplication {
 
     @Override
@@ -36,7 +37,8 @@ public class MainApplication extends NavigationApplication {
           new RealmReactPackage(),
           new SQLitePluginPackage(),
           new RNMail(),
-          new RNI18nPackage()
+          new RNI18nPackage(),
+          new RCTToastPackage
         );
     }
 

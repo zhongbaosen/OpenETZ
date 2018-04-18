@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   Clipboard,
-  ToastAndroid
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
@@ -23,6 +22,7 @@ import TradingSQLite from '../../utils/tradingDB'
 const sqLite = new UserSQLite()
 let db
 const wallet = require('ethereumjs-wallet')
+import Toast from 'react-native-toast'
 class Receive extends Component{
   constructor(props){
     super(props)
@@ -86,7 +86,7 @@ class Receive extends Component{
 
   onPressCopyBtn = () => {
       Clipboard.setString(this.state.addressText)
-      ToastAndroid.show(I18n.t('copy_successfully'),3000)
+      Toast.show(I18n.t('copy_successfully'))
   }
 
   onHide = () => {

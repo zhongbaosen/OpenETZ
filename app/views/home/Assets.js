@@ -9,6 +9,7 @@ import {
   FlatList,
   Platform,
   RefreshControl,
+  Button,
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
@@ -27,6 +28,7 @@ let etzTitle = "ETZ"
 import I18n from 'react-native-i18n'
 
 // import { passAccountsInfoAction } from '../../actions/accountManageAction' 
+
 class Assets extends Component{
   constructor(props){
     super(props)
@@ -40,7 +42,7 @@ class Assets extends Component{
     // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
   componentWillMount(){
-    // this.props.dispatch(passAccountsInfoAction())
+    // this.props.dispatch(passAccountsInfoAction())    
     this.props.navigator.setTabButton({
       tabIndex: 0,
       label: I18n.t('assets')
@@ -177,7 +179,7 @@ class Assets extends Component{
     this.props.navigator.push({
       screen: 'trading_record',
       title:I18n.t('tx_records'),
-      navigatorStyle: MainThemeNavColor,
+      navigatorStyle: Object.assign({},MainThemeNavColor,{navBarNoBorder:true}),
       // navigatorButtons: {
       //   rightButtons: [
       //     {

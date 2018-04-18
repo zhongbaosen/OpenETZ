@@ -120,5 +120,7 @@
   "loading":"loading...",
   "input_des_problem":"please input the description of the problem",
   "send_email":"Send",
-  "creating":"creating"
+  "creating":"creating",
+  "click_again":"Click the exit program again",
+
 }	

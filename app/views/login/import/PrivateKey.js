@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  ToastAndroid
+
 } from 'react-native'
 
 import { pubS } from '../../../styles/'
@@ -18,6 +18,7 @@ import { importAccountAction,resetDeleteStatusAction } from '../../../actions/ac
 import { connect } from 'react-redux'
 import { Navigation } from 'react-native-navigation'
 import I18n from 'react-native-i18n'
+import Toast from 'react-native-toast'
 class PrivateKey extends Component{
   constructor(props){
     super(props)
@@ -39,7 +40,7 @@ class PrivateKey extends Component{
       this.setState({
         visible: false
       })
-      ToastAndroid.show(I18n.t('import_successful'),3000)
+      Toast.show(I18n.t('import_successful'))
       setTimeout(() => {
         toSplash()
       },100)

@@ -57,7 +57,7 @@ const DetailNavigatorStyle = {
   statusBarColor: '#fff',
   statusBarTextColorScheme: 'dark',
   topBarElevationShadowEnabled: false,
-  navBarNoBorder: false
+  navBarNoBorder: true,
 }
 const MainThemeNavColor = Object.assign({},DetailNavigatorStyle,{
   navBarTextColor:'#fff',
@@ -71,9 +71,14 @@ const TabBarAppStyle = {
   // tabBarButtonColor: '#C7CAD0', // change the color of the tab icons and text (also unselected)
   // tabBarSelectedButtonColor: '#2B8AFF', // change the color of the selected tab icon and text (only selected)
   // tabBarBackgroundColor: '#fff', // change the background color of the tab bar
-  tabBarTranslucent: true, // change the translucent of the tab bar to false
+  tabBarTranslucent: false, // change the translucent of the tab bar to false
   forceTitlesDisplay: true, // Android only. If true - Show all bottom tab labels. If false - only the selected tab's label is visible.
-  tabBarHideShadow: true // iOS only. Remove default tab bar top shadow (hairline)
+  tabBarHideShadow: true, // iOS only. Remove default tab bar top shadow (hairline)
+
+  tabBarTextFontFamily: 'Avenir-Medium', //change the tab font family
+  // tabBarLabelColor: '#ffb700', // iOS only. change the color of tab text
+  // tabBarSelectedLabelColor: 'red', // iOS only. change the color of the selected tab text
+
 }
 
 // login register screen  nav bar style

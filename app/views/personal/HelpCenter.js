@@ -12,7 +12,7 @@ class HelpCenter extends Component{
   render(){
     return(
         <WebView  
-          source={{uri:'http://mp.weixin.qq.com/s/8RQ8GOi0d2z03vYcTjsCrw'}}
+          source={{uri:'https://mp.weixin.qq.com/s/8RQ8GOi0d2z03vYcTjsCrw'}}
           style={{flex:1,alignSelf:'center',width: scaleSize(750)}}
         />
     )

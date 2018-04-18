@@ -1,6 +1,5 @@
 import React,{Component} from 'react';  
 import{  
-  ToastAndroid, 
   View,
 } from 'react-native';  
 import SQLiteStorage from 'react-native-sqlite-storage';  

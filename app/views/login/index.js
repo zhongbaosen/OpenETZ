@@ -26,7 +26,7 @@ class Login extends Component{
     this.props.navigator.push({
       screen: 'create_account',
       title:I18n.t('create'),
-      navigatorStyle: DetailNavigatorStyle,
+      navigatorStyle: Object.assign({},DetailNavigatorStyle,{navBarNoBorder:true}),
       passProps: { from: 'login_create'}
     })
   }
@@ -36,7 +36,7 @@ class Login extends Component{
     this.props.navigator.push({
       screen: 'import_account',
       title:I18n.t('import'),
-      navigatorStyle: DetailNavigatorStyle,
+      navigatorStyle: DetailNavigatorStyle
     })
   }
   // termsOfService = () => {

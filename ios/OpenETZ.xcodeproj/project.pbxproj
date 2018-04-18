@@ -14,6 +14,7 @@
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* OpenETZTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* OpenETZTests.m */; };
 		021BEDA620860FEC003AADA4 /* libRNRandomBytes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 021BEDA420860FDF003AADA4 /* libRNRandomBytes.a */; };
+		021BEDAD20871FBB003AADA4 /* libRCTToast.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 021BEDAC20871F3A003AADA4 /* libRCTToast.a */; };
 		02DCDE542085F9F7007B5109 /* libRCTBEEPickerManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DCDE3A2085F9E4007B5109 /* libRCTBEEPickerManager.a */; };
 		02DCDE5B2085FAD4007B5109 /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DCDE5A2085FA5B007B5109 /* libRNCamera.a */; };
 		02DCDE622085FC2E007B5109 /* libSQLite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02DCDE612085FC20007B5109 /* libSQLite.a */; };
@@ -108,6 +109,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 73EEC9391BFE4B1D00D468EB;
 			remoteInfo = RNRandomBytes;
+		};
+		021BEDAB20871F3A003AADA4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 021BEDA720871F39003AADA4 /* RCTToast.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 327633421BFAAD7E004DA88E;
+			remoteInfo = RCTToast;
 		};
 		02DCDE392085F9E4007B5109 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -325,6 +333,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* OpenETZTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OpenETZTests.m; sourceTree = "<group>"; };
 		021BED7920860FDE003AADA4 /* RNRandomBytes.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNRandomBytes.xcodeproj; path = "../node_modules/react-native-randombytes/RNRandomBytes.xcodeproj"; sourceTree = "<group>"; };
+		021BEDA720871F39003AADA4 /* RCTToast.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTToast.xcodeproj; path = "../node_modules/react-native-toast/ios/RCTToast.xcodeproj"; sourceTree = "<group>"; };
 		02DCDE322085F9E4007B5109 /* RCTBEEPickerManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBEEPickerManager.xcodeproj; path = "../node_modules/react-native-picker/ios/RCTBEEPickerManager.xcodeproj"; sourceTree = "<group>"; };
 		02DCDE552085FA5B007B5109 /* RNCamera.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RNCamera.xcodeproj"; sourceTree = "<group>"; };
 		02DCDE5C2085FC1F007B5109 /* SQLite.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SQLite.xcodeproj; path = "../node_modules/react-native-sqlite-storage/src/ios/SQLite.xcodeproj"; sourceTree = "<group>"; };
@@ -362,6 +371,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				021BEDAD20871FBB003AADA4 /* libRCTToast.a in Frameworks */,
 				021BEDA620860FEC003AADA4 /* libRNRandomBytes.a in Frameworks */,
 				02DCDE6E2085FC89007B5109 /* libRNI18n.a in Frameworks */,
 				02DCDE642085FC36007B5109 /* libsqlite3.0.tbd in Frameworks */,
@@ -472,6 +482,14 @@
 			isa = PBXGroup;
 			children = (
 				021BEDA420860FDF003AADA4 /* libRNRandomBytes.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		021BEDA820871F39003AADA4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				021BEDAC20871F3A003AADA4 /* libRCTToast.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -598,6 +616,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				021BEDA720871F39003AADA4 /* RCTToast.xcodeproj */,
 				021BED7920860FDE003AADA4 /* RNRandomBytes.xcodeproj */,
 				02DCDE652085FC76007B5109 /* RNI18n.xcodeproj */,
 				02DCDE5C2085FC1F007B5109 /* SQLite.xcodeproj */,
@@ -801,6 +820,10 @@
 					ProjectRef = 832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */;
 				},
 				{
+					ProductGroup = 021BEDA820871F39003AADA4 /* Products */;
+					ProjectRef = 021BEDA720871F39003AADA4 /* RCTToast.xcodeproj */;
+				},
+				{
 					ProductGroup = 00C302E01ABCB9EE00DB3ED1 /* Products */;
 					ProjectRef = 00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */;
 				},
@@ -898,6 +921,13 @@
 			fileType = archive.ar;
 			path = libRNRandomBytes.a;
 			remoteRef = 021BEDA320860FDF003AADA4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		021BEDAC20871F3A003AADA4 /* libRCTToast.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTToast.a;
+			remoteRef = 021BEDAB20871F3A003AADA4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		02DCDE3A2085F9E4007B5109 /* libRCTBEEPickerManager.a */ = {

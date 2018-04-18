@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  ToastAndroid,
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
@@ -28,7 +27,7 @@ const sqLite = new UserSQLite()
 let db 
 
 let self = null
-
+import Toast from 'react-native-toast'
 class Payment extends Component{
   constructor(props){
     super(props)
@@ -344,7 +343,7 @@ class Payment extends Component{
            
           // }else{
           //   self.onPressClose()
-          //   ToastAndroid.show('payment fail111111~',3000)
+          //   Toast.show('payment fail111111~')
           //   // this.props.navigator.pop()
           // }
       })
@@ -361,7 +360,7 @@ class Payment extends Component{
               tx_token: "ETZ"
             }))
           },1000)
-          ToastAndroid.show(I18n.t('send_successful'),3000)
+          Toast.show(I18n.t('send_successful'))
         }
       })
       .on('error', (error) => {
@@ -372,7 +371,7 @@ class Payment extends Component{
       })
     }catch(error){
       this.onPressClose()
-      ToastAndroid.show(I18n.t('password_is_wrong'),3000)
+      Toast.show(I18n.t('password_is_wrong'))
     }
   }
   async makeTransactByToken(){
@@ -502,7 +501,7 @@ class Payment extends Component{
                   tx_token: currentTokenName
                 }))
               },1000)
-              ToastAndroid.show(I18n.t('send_successful'),3000)
+              Toast.show(I18n.t('send_successful'))
             }
             
         }).on('receipt', function(receipt){
@@ -511,14 +510,14 @@ class Payment extends Component{
           console.error(error)
           self.onPressClose()
           self.props.navigator.pop()
-          ToastAndroid.show(error,3000)
+          Toast.show(error)
           // alert(error)
         });
       })
 
     }catch (error) {
       this.onPressClose()
-      ToastAndroid.show(I18n.t('password_is_wrong'),3000)
+      Toast.show(I18n.t('password_is_wrong'))
     }
 
   }

@@ -1,7 +1,4 @@
 import React,{Component} from 'react';  
-import{  
-  ToastAndroid,  
-} from 'react-native';  
 import SQLiteStorage from 'react-native-sqlite-storage';  
 SQLiteStorage.DEBUG(true);  
 var database_name = "trading.db";//数据库文件  
