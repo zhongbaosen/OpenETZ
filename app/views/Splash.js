@@ -3,7 +3,9 @@ import {
   View,
   Text,
   Image,
-  Button
+  Button,
+  BackHandler,
+  ToastAndroid
 } from 'react-native'
 import { toHome, toLogin} from '../root'
 import { getLocalDataAction } from '../actions/getLocalDataAction' 
@@ -30,6 +32,7 @@ class Splash extends Component{
 
   
   componentWillMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
     // if(!db){  
     //     db = sqLite.open();  
     //   }
@@ -40,6 +43,23 @@ class Splash extends Component{
     //     console.log(error)
     //   })
     // })
+  }
+  onBackAndroid = () => {
+
+    if (this.lastBackPressed && this.lastBackPressed + 2000 >= Date.now()) {
+
+      //最近2秒内按过back键，可以退出应用。
+
+      return false;
+
+    }
+
+    this.lastBackPressed = Date.now();
+
+    ToastAndroid.show('再按一次退出应用', ToastAndroid.SHORT);
+
+    return true;
+
   }
   componentDidMount(){
     // tkSqLite.deleteData()
@@ -102,7 +122,7 @@ class Splash extends Component{
   async updateAssetsTotal(val){
     let res = await web3.eth.getBalance(`0x${val.address}`)
     let newTotal = web3.utils.fromWei(res,'ether')
-    // let newTotal = '0.9348' // "0.0352"
+    //let newTotal = '0.9348' // "0.0352"
     let name = val.account_name
     db.transaction((tx) => {
       tx.executeSql(" update account set assets_total = ? where account_name = ? ",[newTotal,name],(tx,results) => {
@@ -112,7 +132,8 @@ class Splash extends Component{
       })
     })     
   }
-  compennetWillUnmount(){  
+  compennetWillUnmount(){
+    BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);  
     sqLite.close();  
   } 
 

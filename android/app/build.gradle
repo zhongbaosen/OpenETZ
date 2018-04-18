@@ -129,7 +129,7 @@ android {
 
     signingConfigs {
         release { 
-             storeFile file("F:/rn/OpenETZ/android/app/my-release-key.keystore")
+             storeFile file("G:/my_project/OpenETZ/android/app/my-release-key.keystore")
              storePassword "123456"
              keyAlias "my-key-alias"
              keyPassword "123456"
