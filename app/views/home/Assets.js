@@ -41,6 +41,14 @@ class Assets extends Component{
   }
   componentWillMount(){
     // this.props.dispatch(passAccountsInfoAction())
+    // this.props.navigator.push({
+    //     screen: 'verify_mnemonic',
+    //     title: I18n.t('verify_mnemonic'),
+    //     navigatorStyle: DetailNavigatorStyle,
+    //     passProps: {
+    //       mnemonicText: 'genius exile genius wet ethics genius tattoo boat lazy dilemma attack stand',
+    //     }
+    //   })
     this.props.navigator.setTabButton({
       tabIndex: 0,
       label: I18n.t('assets')

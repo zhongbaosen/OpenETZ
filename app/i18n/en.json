@@ -110,7 +110,7 @@
   "input_send_account":"please enter the payment amount",
   "input_password":"please enter the password",
   "sending":"sending",
-  "send_successful":"send_successfully",
+  "send_successful":"send successfully",
   "note_1":"note(optional)",
   "to_address":"To",
   "from_address":"From",

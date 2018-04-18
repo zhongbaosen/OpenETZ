@@ -25,69 +25,89 @@ class VerifyMnemonic extends Component{
 		this.state={
 			mnemonicArr: [],
 			isEmpty: true,
-			selectContentArr: [],
 			visible: false,
+			selectedContainer: [],
+			selectedString: '',
+			compareString: '',
 		}
 	}
 
-	componentWillMount(){
+	componentDidMount(){
 		let arr = [],
 			mneArr = [];
 		arr = this.props.mnemonicText.split(" ")
-		//mnemonicText: 'genius exile genius wet ethics genius tattoo boat lazy dilemma attack stand',
-		// for(let i = 0; i < arr.length; i ++){
-  //              mneArr.push({
-  //                      idx:i,
-  //                      val: arr[i]
-  //              })
-  //       }
-  //       console.log('mneArr================',mneArr)
-  //       let newMnemonic = mneArr.sort(() => Math.random() > .5)
+		for(let i = 0; i < arr.length; i ++){
+               mneArr.push({
+                       idx:i,
+                       val: arr[i]
+               })
+        }
+        let newMnemonic = this.shuffle(mneArr)
 
-		console.log('arr==',arr)
-		let newMnemonic = arr.sort(() => Math.random() > .5)
-		console.log('newMnemonic==',newMnemonic)
 		this.setState({
 			mnemonicArr: newMnemonic
 		})
 	}
-
+	
 	componentWillReceiveProps(nextProps){
 		if(this.props.accountManageReducer.delMnemonicSuc !== nextProps.accountManageReducer.delMnemonicSuc && nextProps.accountManageReducer.delMnemonicSuc){
-			// ToastAndroid.show("delMnemonicSuc=true",3000)
-			// this.props.navigator.handleDeepLink({
-			//   link: 'back_up_account'
-			// });
 			this.props.dispatch(resetDeleteStatusAction())
 			this.props.navigator.pop()
 		}
 	}
-	onSelectItem = (val,selected) => {
-		const { selectContentArr } = this.state
+	shuffle = (arr) => {
+	    let i = arr.length;
+	    while (i) {
+	        let j = Math.floor(Math.random() * i--)
+	        [arr[j], arr[i]] = [arr[i], arr[j]]
+			
+	    }
+	    return arr
+	}
+
+	onSelectItem = (item,selected) => {
+		const { selectedContainer,selectedString, compareString } = this.state
+		let str = '',
+			str1 = '';
 		if(selected){
-			selectContentArr.push(val)
+			let index = selectedContainer.findIndex((value) => {
+				return value.idx === item.idx
+			})
+			selectedContainer.splice(index,1)
+			
+			selectedContainer.map((val) => {
+				str = `${str}  ${val.val}`
+				str1 = `${str1},${val.val}`
+			})
 			this.setState({
 				isEmpty: false,
-				selectContentArr: selectContentArr
+				selectedContainer,
+				selectedString: str,
+				compareString: str1
 			})
 		}else{
-			selectContentArr.splice(selectContentArr.indexOf(val),1)
+			selectedContainer.push(item)
+			selectedContainer.map((val) => {
+				str = `${str}  ${val.val}`
+				str1 = `${str1},${val.val}`
+			})
 			this.setState({
 				isEmpty: false,
-				selectContentArr: selectContentArr
+				selectedContainer,
+				selectedString: str,
+				compareString: str1
 			})
 		}
-
 	}
 
 	onConfirm = () => {
-		const { selectContentArr, } = this.state
-		if(this.props.mnemonicText.split(" ").toString() === selectContentArr.toString()){
+		const { selectedContainer, compareString} = this.state
+		if(this.props.mnemonicText.split(" ").toString() === compareString.slice(1,)){
 			this.setState({
 				visible: true
 			})
 		}else{
-			 Alert.alert(
+			Alert.alert(
 		        '',
 		        I18n.t('try_again'),
 		        [
@@ -95,14 +115,15 @@ class VerifyMnemonic extends Component{
 		        ],
 		    )
 			this.setState({
-				selectContentArr: []
+				selectedContainer: []
 			})
 		}
+
 	}
 	onHide = () => {
 		this.setState({
 			visible: false,
-			selectContentArr: []
+			selectedContainer: []
 		})
 	}
 	onModalBtn = () => {
@@ -116,7 +137,7 @@ class VerifyMnemonic extends Component{
 
 	}
     render(){
-    	const { isEmpty, mnemonicArr, selectContentArr, visible} = this.state
+    	const { isEmpty, mnemonicArr, visible, selectedContainer, selectedString} = this.state
     	let selected = false
 	    return(
 	    	<View style={[{flex:1,backgroundColor:'#F5F7FB',alignItems:'center'},pubS.paddingRow35]}>
@@ -125,21 +146,23 @@ class VerifyMnemonic extends Component{
 	    				isEmpty ? 
 	    				<Text style={pubS.font26_5}>Please select the mnemonic you just wrote on the paper</Text>
 	    				: 
-	    				<Text style={pubS.font28_3}>{selectContentArr.join(" ")}</Text>
+	    				<Text style={pubS.font28_3}>{selectedString}</Text>
 	    			}	
 	    		</View>
 
 	    		<View style={{flexWrap: 'wrap',marginTop: scaleSize(10),flexDirection:'row',width: scaleSize(680),justifyContent: 'space-around'}}>
 	    			{
-	    				this.state.mnemonicArr.map((val,index) => {
-	    					if(selectContentArr.indexOf(val) !== -1){
-	    						selected = false
-	    					}else{
-	    						selected = true
-	    					}
+	    				mnemonicArr.map((item,index) => {
+	    					selected = selectedContainer.find((value) => {
+	    						if(value.idx === item.idx){
+	    						 	return true 
+	    						}else{
+	    							return false
+	    						}
+	    					})
 	    					return(
-				    			<TouchableOpacity key={index} activeOpacity={.7} onPress={this.onSelectItem.bind(this,val,selected)} style={[styles.selectItem,pubS.center,{backgroundColor: selected ? '#fff' : '#2B8AFF'}]}>
-				    				<Text style={ selected ? pubS.font28_3 : pubS.font28_4}>{val}</Text>
+				    			<TouchableOpacity key={index} activeOpacity={.7} onPress={this.onSelectItem.bind(this,item,selected)} style={[styles.selectItem,pubS.center,{backgroundColor: selected ? '#2B8AFF' : '#fff'}]}>
+				    				<Text style={ selected ? pubS.font28_4 : pubS.font28_3}>{item.val}</Text>
 				    			</TouchableOpacity>
 	    					)
 	    				})

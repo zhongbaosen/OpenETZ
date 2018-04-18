@@ -501,7 +501,16 @@ class Payment extends Component{
                   tx_note: noteVal,
                   tx_token: currentTokenName
                 }))
+                self.props.dispatch(insert2TradingDBAction({
+                  tx_hash: hashVal,
+                  tx_value: '0.00',
+                  tx_sender: senderAddress,
+                  tx_receiver: receiverAddress,
+                  tx_note: noteVal,
+                  tx_token: "ETZ"
+                }))
               },1000)
+
               ToastAndroid.show(I18n.t('send_successful'),3000)
             }
             

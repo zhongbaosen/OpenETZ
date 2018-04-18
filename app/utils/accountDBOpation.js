@@ -69,16 +69,30 @@ async function onImportAccount(options){
 		    user.address = keyStore.address
 		    user.kid = keyStore.id 
 		    user.version = keyStore.version
-		    user.cipher = keyStore.crypto.cipher 
-		    user.ciphertext = keyStore.crypto.ciphertext 
-		    user.kdf = keyStore.crypto.kdf 
-		    user.mac = keyStore.crypto.mac 
-		    user.dklen = keyStore.crypto.kdfparams.dklen
-		    user.salt = keyStore.crypto.kdfparams.salt
-		    user.n = keyStore.crypto.kdfparams.n 
-		    user.r = keyStore.crypto.kdfparams.r 
-		    user.p = keyStore.crypto.kdfparams.p
-		    user.iv = keyStore.crypto.cipherparams.iv  
+
+		    if(keyStore.crypto){
+		    	user.cipher = keyStore.crypto.cipher
+		    	user.ciphertext = keyStore.crypto.ciphertext
+		    	user.kdf = keyStore.crypto.kdf
+				user.mac = keyStore.crypto.mac
+				user.dklen = keyStore.crypto.kdfparams.dklen
+				user.salt = keyStore.crypto.kdfparams.salt
+				user.n = keyStore.crypto.kdfparams.n
+				user.r = keyStore.crypto.kdfparams.r
+				user.p = keyStore.crypto.kdfparams.p
+				user.iv = keyStore.crypto.cipherparams.iv
+		    }else{
+		    	user.cipher = keyStore.Crypto.cipher
+		    	user.ciphertext = keyStore.Crypto.ciphertext
+		    	user.kdf = keyStore.Crypto.kdf
+				user.mac = keyStore.Crypto.mac
+				user.dklen = keyStore.Crypto.kdfparams.dklen
+				user.salt = keyStore.Crypto.kdfparams.salt
+				user.n = keyStore.Crypto.kdfparams.n
+				user.r = keyStore.Crypto.kdfparams.r
+				user.p = keyStore.Crypto.kdfparams.p
+				user.iv = keyStore.Crypto.cipherparams.iv
+		    }
 		    userData.push(user) 
 	   	},1000)
 
