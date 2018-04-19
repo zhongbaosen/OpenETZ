@@ -29,6 +29,9 @@ let db
 
 let self = null
 
+
+
+
 class Payment extends Component{
   constructor(props){
     super(props)
