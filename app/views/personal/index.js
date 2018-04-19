@@ -31,13 +31,8 @@ class Personal extends Component{
   toHelpCenter = () => {
     this.props.navigator.push({
       screen: 'help_center',
-      // title:I18n.t('help_center'),
-      navigatorStyle:{
-        navBarHidden: true,
-        statusBarColor: '#fff',
-        screenBackgroundColor: 'white',
-        tabBarHidden: true
-      },
+      title:I18n.t('help_center'),
+      navigatorStyle: DetailNavigatorStyle,
     })
   }
   

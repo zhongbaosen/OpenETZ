@@ -1,6 +1,7 @@
 import { setScaleText, scaleSize } from '../utils/adapter'
 import { StyleSheet } from 'react-native'
 import { switchDrawer } from '../utils/switchDrawer'
+import { Platform } from 'react-native'
 //main theme color:   #144396
 
 // navigatorButtons: {
@@ -27,12 +28,12 @@ const AssetsNavStyle = {
   // navBarButtonColor: '#D2D5DB',//
   // navBarLeftButtonColor:'#D2D5DB',//only ios
   // navBarRightButtonColor:'#2B8AFF',//only ios
-  statusBarHidden: false,
+  // statusBarHidden: false,
   screenBackgroundColor: 'white',
   navBarTitleTextCentered: true,
   navBarHeight: scaleSize(87),
-  statusBarColor: '#144396',
-  statusBarTextColorScheme: 'light',
+  // statusBarColor: '#144396',
+  statusBarTextColorScheme: 'dark',
   topBarElevationShadowEnabled: false,
   navBarNoBorder: false,
 
@@ -56,7 +57,7 @@ const DetailNavigatorStyle = {
   statusBarColor: '#fff',
   statusBarTextColorScheme: 'dark',
   topBarElevationShadowEnabled: false,
-  navBarNoBorder: false
+  navBarNoBorder: true,
 }
 const MainThemeNavColor = Object.assign({},DetailNavigatorStyle,{
   navBarTextColor:'#fff',
@@ -67,15 +68,21 @@ const MainThemeNavColor = Object.assign({},DetailNavigatorStyle,{
 
 const TabBarAppStyle = {
   tabBarHidden: false, // make the tab bar hidden
-  tabBarButtonColor: '#C7CAD0', // change the color of the tab icons and text (also unselected)
-  tabBarSelectedButtonColor: '#2B8AFF', // change the color of the selected tab icon and text (only selected)
-  tabBarBackgroundColor: '#fff', // change the background color of the tab bar
-  tabBarTranslucent: true, // change the translucent of the tab bar to false
-  // tabBarTextFontFamily: 'Avenir-Medium' //change the tab font family
-  // tabBarLabelColor: '#2f3a40', // iOS only. change the color of tab text
-  // tabBarSelectedLabelColor: '#ff3366', // iOS only. change the color of the selected tab text
+
+  //ios bug
+  tabBarButtonColor: '#C7CAD0',
+  tabBarSelectedButtonColor: '#2B8AFF', 
+  tabBarBackgroundColor: '#fff',
+  //ios bug
+
+  tabBarTranslucent: false, // change the translucent of the tab bar to false
   forceTitlesDisplay: true, // Android only. If true - Show all bottom tab labels. If false - only the selected tab's label is visible.
-  tabBarHideShadow: true // iOS only. Remove default tab bar top shadow (hairline)
+  tabBarHideShadow: true, // iOS only. Remove default tab bar top shadow (hairline)
+
+  tabBarTextFontFamily: 'Avenir-Medium', //change the tab font family
+  // tabBarLabelColor: '#ffb700', // iOS only. change the color of tab text
+  // tabBarSelectedLabelColor: 'red', // iOS only. change the color of the selected tab text
+
 }
 
 // login register screen  nav bar style

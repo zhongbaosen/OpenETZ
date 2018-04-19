@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   WebView, 
-  ToastAndroid, 
   Clipboard
 } from 'react-native'
 
@@ -16,6 +15,7 @@ import { setScaleText, scaleSize } from '../../utils/adapter'
 import QRCode from 'react-native-qrcode'
 import { sliceAddress,timeStamp2FullDate } from '../../utils/splitNumber'
 import I18n from 'react-native-i18n'
+import Toast from 'react-native-toast'
 class TextInstructions extends Component{
   static defaultProps = {
     inColor: '#657CAB',
@@ -58,7 +58,7 @@ class TradingRecordDetail extends Component{
   }
   onCopyBtn = () => {
     Clipboard.setString(this.props.detailInfo.tx_receiver)
-    ToastAndroid.show(I18n.t('copy_successfully'),3000)
+    Toast.show(I18n.t('copy_successfully'))
   }
 
   

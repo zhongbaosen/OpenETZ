@@ -10,7 +10,6 @@ import {
   TextInput,
   BackHandler,
   Clipboard,
-  ToastAndroid,
   Share,
 } from 'react-native'
 import { Navigation } from 'react-native-navigation'
@@ -28,6 +27,7 @@ const sqLite = new UserSQLite()
 let db
 import { toLogin } from '../../../root'
 import I18n from 'react-native-i18n'
+import Toast from 'react-native-toast'
 class BackUpAccount extends Component{
   constructor(props){
     super(props)
@@ -107,7 +107,7 @@ class BackUpAccount extends Component{
         visible: false,
         loadingText: ''
       })
-      ToastAndroid.show(I18n.t('delete_successfully'),3000)
+      Toast.show(I18n.t('delete_successfully'))
       if(this.props.accountsNumber === 1){
         setTimeout(() => {
           toLogin()
@@ -240,7 +240,7 @@ class BackUpAccount extends Component{
         }
         this.onHide()
       } catch (err) {
-        ToastAndroid.show(I18n.t('password_is_wrong'),3000)
+        Toast.show(I18n.t('password_is_wrong'))
         this.setState({
           psdVal: '',
           visible: false,
@@ -255,7 +255,7 @@ class BackUpAccount extends Component{
 
   onCopyBtn = () => {
     Clipboard.setString(this.state.privKey)
-    ToastAndroid.show(I18n.t('copy_successfully'),3000)
+    Toast.show(I18n.t('copy_successfully'))
   }
   backupMnemonicBtn = () => {
     this.setState({
@@ -274,18 +274,17 @@ class BackUpAccount extends Component{
       dialogTitle: I18n.t('share_your_keystore'),
     })
     .then(this._showResult)
-    .catch((error) => ToastAndroid.show(I18n.t('share_error'),3000))
+    .catch((error) => Toast.show(I18n.t('share_error')))
   }
   _showResult = (result) => {
     if (result.action === Share.sharedAction) {
       if (result.activityType) {
-        // this.setState({result: 'shared with an activityType: ' + result.activityType});
+
       } else {
-        // ToastAndroid.show('shared successfully',3000)
-        // this.setState({result: 'shared'});
+
       }
     } else if (result.action === Share.dismissedAction) {
-      ToastAndroid.show(I18n.t('share_error'),3000)
+      Toast.show(I18n.t('share_error'))
     }
   }
 

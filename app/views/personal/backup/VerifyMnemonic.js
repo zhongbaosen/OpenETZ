@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ToastAndroid,
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../../styles/'
@@ -19,6 +18,7 @@ import UserSQLite from '../../../utils/accountDB'
 const sqLite = new UserSQLite()  
 let db  
 import I18n from 'react-native-i18n'
+import Toast from 'react-native-toast'
 class VerifyMnemonic extends Component{
 	constructor(props){ 
 		super(props)

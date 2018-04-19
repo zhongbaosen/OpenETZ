@@ -43,7 +43,8 @@ const tabs = [
     icon: require('./images/xhdpi/tab_ico_personalcenter_assets_def.png'),
     selectedIcon: require('./images/xhdpi/tab_ico_home_asset_def.png'),
     navigatorStyle: Object.assign({},AssetsNavStyle,{ navBarHidden: true, }), //AssetsNavStyle, //tabBarHidden: true,  navBarHidden: true,
-    iconInsets: bottomTabStyle
+    iconInsets: bottomTabStyle,
+    id:0,
   },
   {
     label: I18n.t('mine'),
@@ -51,7 +52,8 @@ const tabs = [
     icon: require('./images/xhdpi/tab_ico_home_personalcenter_def.png'),
     selectedIcon: require('./images/xhdpi/tab_ico_personalcenter_personal_def.png'),
     navigatorStyle: Object.assign({},AssetsNavStyle,{ navBarHidden: true, }),
-    iconInsets: bottomTabStyle
+    iconInsets: bottomTabStyle,
+    id:1,
   },
 
 ]
@@ -61,11 +63,6 @@ function toHome () {
    return Navigation.startTabBasedApp({
             tabs,
             appStyle: TabBarAppStyle,
-            drawer: {
-              right: {
-                screen: 'switch_wallet'
-              }
-            }
           })
 
 }

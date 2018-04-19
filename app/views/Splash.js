@@ -54,15 +54,7 @@ class Splash extends Component{
     })
     
   }
-  setDefaultLang(){
-    localStorage.save({
-      key: 'lang',
-      expires: null,
-      data:{
-        selectedLan: 'en-US'
-      }
-    })
-  }
+  
   componentDidMount(){
     // tSqLite.deleteData()
     // tSqLite.dropTable()
@@ -92,37 +84,7 @@ class Splash extends Component{
     //     ]
     //   }
     // })
-
-
-
-    // this.props.navigator.push({
-    //     screen: 'verify_mnemonic',
-    //     title: 'Verify Mnemonic',
-    //     navigatorStyle: DetailNavigatorStyle,
-    // })
-
-    // this.props.navigator.push({
-    //   screen: 'switch_language',
-    //   title: 'SwitchLanguage',
-    //   navigatorStyle: DetailNavigatorStyle,
-    //   navigatorButtons: {
-    //     rightButtons: [
-    //       {
-    //         title: 'Save',
-    //         id: 'save_switch_language'
-    //       }
-    //     ]
-    //   }
-    // })
-    
-
-
-
-
-    
-
-
-
+  
 
     setTimeout(() => {
       if(!db){  
@@ -147,6 +109,16 @@ class Splash extends Component{
 
     },2000)
   } 
+
+  setDefaultLang = () => {
+    localStorage.save({
+      key: 'lang',
+      data:{
+        selectedLan: 'en-US'
+      }
+    })
+  }
+
   componentWillReceiveProps(nextProps){
     if(nextProps.accountManageReducer.passAccInfoSuc === 'login'){
       toLogin()

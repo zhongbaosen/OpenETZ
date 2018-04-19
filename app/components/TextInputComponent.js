@@ -6,6 +6,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  Platform
 } from 'react-native'
 import { pubS } from '../styles/'
 import { setScaleText, scaleSize } from '../utils/adapter'
@@ -33,16 +34,18 @@ export default class TextInputComponent extends Component{
     const { warningText,iptMarginTop,isScan,onPressIptRight,toMore,coinUnit,touchable,onPressTouch } = this.props
     const { multiline} = this.state
     return(
-      <TouchableOpacity activeOpacity={touchable ? .7 : 1} onPress={touchable ? onPressTouch : () => {return}} style={[styles.textInputView,{marginTop: iptMarginTop,height: multiline ? scaleSize(190) :scaleSize(109)}]}>
-        <TextInput
-          multiline={multiline}
-          style={[styles.textIptStyle,{borderColor: multiline ? '#DBDFE6' : 'transparent',borderWidth: multiline ? StyleSheet.hairlineWidth : 0}]}
-          placeholderTextColor={'#C7CACF'}
-          underlineColorAndroid='#DBDFE6'
-          underlineColorAndroid={ multiline ? 'transparent' : '#DBDFE6'}
-          textAlignVertical={ multiline ? 'top' : 'center'}
-          {...this.props}
-        />
+      <TouchableOpacity 
+        activeOpacity={touchable ? .7 : 1} 
+        onPress={touchable ? onPressTouch : () => {return}} 
+        style={[styles.textInputView,{/*borderBottomWidth: multiline ? 0 : StyleSheet.hairlineWidth, */marginTop: iptMarginTop,height: multiline ? scaleSize(190) :scaleSize(109)}]}>
+          <TextInput
+            multiline={multiline}
+            style={[styles.textIptStyle,{borderColor: multiline ? '#DBDFE6' : 'transparent',borderWidth: multiline ? StyleSheet.hairlineWidth : 0}]}
+            placeholderTextColor={'#C7CACF'}
+            underlineColorAndroid={ multiline ? 'transparent' : '#DBDFE6'}
+            textAlignVertical={multiline ? 'top' : 'center'}
+            {...this.props}
+          />
         {
           toMore ?
           <View style={[{width: scaleSize(45),height: scaleSize(43),alignItems:'flex-end',position:'absolute',right:4,top:scaleSize(32)}]}>
@@ -69,7 +72,7 @@ export default class TextInputComponent extends Component{
 }
 const styles = StyleSheet.create({
   textInputView: {
-    // borderColor:'red',
+    // borderColor:'#DBDFE6',
     // borderWidth:1,
     alignSelf:'center',
     width: scaleSize(680),

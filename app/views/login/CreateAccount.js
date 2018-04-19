@@ -7,7 +7,6 @@ import {
   StyleSheet,
   TextInput,
   Alert,
-  ToastAndroid
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
@@ -19,6 +18,7 @@ import UserSQLite from '../../utils/accountDB'
 const sqLite = new UserSQLite()
 let db
 import I18n from 'react-native-i18n'
+import Toast from 'react-native-toast'
 class CreateAccount extends Component{
   constructor(props){
       super(props)
@@ -48,7 +48,7 @@ class CreateAccount extends Component{
       this.setState({
         visible: false
       })
-      ToastAndroid.show(I18n.t('create_account_successfully'),3000)
+      Toast.show(I18n.t('create_account_successfully'))
       this.props.navigator.push({
         screen: 'create_account_success',
         navigatorStyle: DetailNavigatorStyle,
@@ -67,7 +67,6 @@ class CreateAccount extends Component{
 
   onPressBtn = () => {
     const { userNameVal, psdVal, repeadPsdVal, promptVal, } = this.state
-    // let reg = /^(?=.*[a-z])(?=.)(?=.*\d)[a-z\d]{8,}$/
     let reg = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{8,}$/
     if(userNameVal.length === 0){
       this.setState({
