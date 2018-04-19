@@ -9,6 +9,8 @@ import {
   ToastAndroid,
 } from 'react-native'
 
+
+
 import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn,Loading, } from '../../components/'
