@@ -21,6 +21,7 @@ import TokenSQLite from '../utils/tokenDB'
 
 const tkSqLite = new TokenSQLite()
 let tk_db
+import I18n from 'react-native-i18n'
 class Splash extends Component{
   constructor(props){
     super(props)
@@ -34,8 +35,8 @@ class Splash extends Component{
 
     // tkSqLite.deleteData()
     // tkSqLite.dropTable()
-    //   sqLite.dropTable()
-    //   sqLite.deleteData() 
+      // sqLite.dropTable()
+      // sqLite.deleteData() 
 
     // this.props.dispatch(passAccountsInfoAction())
 
@@ -43,14 +44,15 @@ class Splash extends Component{
     //   key: 'lang'
     // })
 
+
     localStorage.load({
       key: 'lang',
       autoSync: true,
     }).then( ret => {
-      this.props.dispatch(switchLanguageAction(ret.selectedLan))
+      I18n.locale  = `${ret.selectedLan}`
+      // this.props.dispatch(switchLanguageAction(ret.selectedLan))
     }).catch (err => {
       this.setDefaultLang()
-      console.error(err)
     })
     
   }
@@ -62,29 +64,6 @@ class Splash extends Component{
     // tkSqLite.dropTable()
   //   sqLite.dropTable()
   //   sqLite.deleteData()    
-
-    // toHome()
-
-    // this.props.navigator.push({
-  //     screen: 'create_account_success',
-  //     navigatorStyle: DetailNavigatorStyle,
-  //     overrideBackPress: true,
-  //   })
-
-    // this.props.navigator.push({
-    //   screen: 'support',
-    //   title:'Support',
-    //   navigatorStyle: DetailNavigatorStyle,
-    //   navigatorButtons: {
-    //     rightButtons: [
-    //       {
-    //         title: 'send',
-    //         id: 'send_email'
-    //       }
-    //     ]
-    //   }
-    // })
-  
 
     setTimeout(() => {
       if(!db){  
@@ -111,6 +90,7 @@ class Splash extends Component{
   } 
 
   setDefaultLang = () => {
+    I18n.locale  = 'en-US'
     localStorage.save({
       key: 'lang',
       data:{

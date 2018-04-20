@@ -32,7 +32,7 @@ class KeyStore extends Component{
       this.setState({
         visible: false
       })
-      Toast.show('import successfully')
+      Toast.showLongBottom('import successfully')
       setTimeout(() => {
         toSplash()
       },100)

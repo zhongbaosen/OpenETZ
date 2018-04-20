@@ -87,7 +87,7 @@ class AssetDetailList extends Component{
     return(
       <RecordListItem
         style={{marginBottom: scaleSize(10)}}
-        listIcon={require('../../images/xhdpi/lab_ico_selectasset_collection_def.png')}
+        listIcon={res.tx_result === 1 ? require('../../images/xhdpi/lab_ico_selectasset_payment_def.png') : require('../../images/xhdpi/lab_ico_selectasset_error_def.png')}
         listIconStyle={{width: scaleSize(20),height:scaleSize(20)}}
         onPressListItem={() => this.toTradingRecordDetail(res)}
         receiverAddress={sliceAddress(res.tx_receiver)}

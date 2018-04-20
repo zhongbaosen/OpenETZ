@@ -28,7 +28,7 @@ let tk_db
 import { insertToTokenAction,initSelectedListAction,refreshTokenInfoAction } from '../../actions/tokenManageAction'
 let etzTitle = "ETZ"
 import I18n from 'react-native-i18n'
-
+import Toast from 'react-native-toast'
 // import { passAccountsInfoAction } from '../../actions/accountManageAction' 
 
 class Assets extends Component{
@@ -43,7 +43,6 @@ class Assets extends Component{
     }
   }
   componentWillMount(){
-
     this.props.navigator.setTabButton({
       tabIndex: 0,
       label: I18n.t('assets')
@@ -293,7 +292,7 @@ class Assets extends Component{
               </TouchableOpacity>
             </View>
             <View>
-              <View style={[styles.assetsTotalView,pubS.center]}>
+              <View style={[styles.assetsTotalView,pubS.center,{height: Platform.OS === 'ios' ? scaleSize(260) : scaleSize(300)}]}>
                   <Text style={pubS.font72_1}>≈0</Text>
                   <Text style={pubS.font26_3}>{I18n.t('total_assets')}(¥)</Text>
               </View>
@@ -430,7 +429,7 @@ const styles = StyleSheet.create({
     // borderWidth:1,
   },
   assetsTotalView: {
-    height: scaleSize(260),
+    
     backgroundColor:'#144396',
     // backgroundColor:'red',
 

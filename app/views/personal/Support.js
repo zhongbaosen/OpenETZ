@@ -40,7 +40,7 @@ class Support extends Component{
   }
 
   sendEmail = () => {
-    Toast.show('Stay tuned')
+    Toast.showLongBottom('Stay tuned')
     // const { emaiVal, contentVal } = this.state
     // let reg = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/
     // if(!reg.test(emaiVal)){

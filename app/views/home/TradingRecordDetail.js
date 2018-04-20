@@ -58,7 +58,7 @@ class TradingRecordDetail extends Component{
   }
   onCopyBtn = () => {
     Clipboard.setString(this.props.detailInfo.tx_receiver)
-    Toast.show(I18n.t('copy_successfully'))
+    Toast.showLongBottom(I18n.t('copy_successfully'))
   }
 
   

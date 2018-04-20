@@ -27,7 +27,7 @@ const onSwitchLang = (state,action) => {
 	const { mark } = action.payload
 	// I18n.locale = 'zh-CN'
 	// I18n.defaultLocale = `${mark}`
-    I18n.locale = `${mark}`
+    I18n.locale  = `${mark}`
 
     // global.currentLanguege = `${mark}`
 	return {

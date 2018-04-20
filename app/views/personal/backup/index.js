@@ -107,7 +107,7 @@ class BackUpAccount extends Component{
         visible: false,
         loadingText: ''
       })
-      Toast.show(I18n.t('delete_successfully'))
+      Toast.showLongBottom(I18n.t('delete_successfully'))
       if(this.props.accountsNumber === 1){
         setTimeout(() => {
           toLogin()
@@ -216,7 +216,6 @@ class BackUpAccount extends Component{
       try {
         const newWallet = Wallet.fromV3(keyStore,psdVal)
         let priv = newWallet._privKey.toString('hex')
-        
         if(backupMnemonic){
           this.props.navigator.push({
             screen: 'write_mnemonic',
@@ -240,7 +239,7 @@ class BackUpAccount extends Component{
         }
         this.onHide()
       } catch (err) {
-        Toast.show(I18n.t('password_is_wrong'))
+        Toast.showLongBottom(I18n.t('password_is_wrong'))
         this.setState({
           psdVal: '',
           visible: false,
@@ -255,7 +254,7 @@ class BackUpAccount extends Component{
 
   onCopyBtn = () => {
     Clipboard.setString(this.state.privKey)
-    Toast.show(I18n.t('copy_successfully'))
+    Toast.showLongBottom(I18n.t('copy_successfully'))
   }
   backupMnemonicBtn = () => {
     this.setState({
@@ -274,7 +273,7 @@ class BackUpAccount extends Component{
       dialogTitle: I18n.t('share_your_keystore'),
     })
     .then(this._showResult)
-    .catch((error) => Toast.show(I18n.t('share_error')))
+    .catch((error) => Toast.showLongBottom(I18n.t('share_error')))
   }
   _showResult = (result) => {
     if (result.action === Share.sharedAction) {
@@ -284,7 +283,7 @@ class BackUpAccount extends Component{
 
       }
     } else if (result.action === Share.dismissedAction) {
-      Toast.show(I18n.t('share_error'))
+      Toast.showLongBottom(I18n.t('share_error'))
     }
   }
 

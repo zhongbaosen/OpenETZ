@@ -120,22 +120,22 @@ class AddAssets extends Component{
                 selected = false
               }
               return(
-                <View style={[styles.listItemView,styles.whStyle]} key={index}>
+                <TouchableOpacity style={[styles.listItemView,styles.whStyle]} key={index}  activeOpacity={.7} onPress={this.onPressSelect.bind(this,res.tk_address,selected)}>
                   <Image source={require('../../images/xhdpi/etz_logo.png')} style={pubS.logoStyle}/>
                   <View style={[styles.listItemTextView,pubS.rowCenterJus]}>
                     <View>
                       <Text style={pubS.font36_2}>{res.tk_symbol}</Text>
                       <Text style={pubS.font24_2}>{res.tk_name}</Text>
                     </View>
-                    <TouchableOpacity style={[styles.selectIcon,pubS.center,{borderWidth: selected?0:1,borderColor: selected?'transparent':'#CACDD2',backgroundColor:selected?'#2B8AFF':'#fff'}]} activeOpacity={.7} onPress={this.onPressSelect.bind(this,res.tk_address,selected)}>
+                    <View style={[styles.selectIcon,pubS.center,{borderWidth: selected?0:1,borderColor: selected?'transparent':'#CACDD2',backgroundColor:selected?'#2B8AFF':'#fff'}]}>
                       {
                         selected ? 
                         <Image source={require('../../images/xhdpi/btn_ico_addassets_pre.png')} style={styles.selectImage}/>
                         : null
                       }
-                    </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               )
             })
           }

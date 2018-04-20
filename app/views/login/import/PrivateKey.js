@@ -40,7 +40,7 @@ class PrivateKey extends Component{
       this.setState({
         visible: false
       })
-      Toast.show(I18n.t('import_successful'))
+      Toast.showLongBottom(I18n.t('import_successful'))
       setTimeout(() => {
         toSplash()
       },100)

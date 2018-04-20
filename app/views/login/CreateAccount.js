@@ -48,7 +48,7 @@ class CreateAccount extends Component{
       this.setState({
         visible: false
       })
-      Toast.show(I18n.t('create_account_successfully'))
+      Toast.showLongBottom(I18n.t('create_account_successfully'))
       this.props.navigator.push({
         screen: 'create_account_success',
         navigatorStyle: DetailNavigatorStyle,

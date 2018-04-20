@@ -86,7 +86,7 @@ class Receive extends Component{
 
   onPressCopyBtn = () => {
       Clipboard.setString(this.state.addressText)
-      Toast.show(I18n.t('copy_successfully'))
+      Toast.showLongBottom(I18n.t('copy_successfully'))
   }
 
   onHide = () => {

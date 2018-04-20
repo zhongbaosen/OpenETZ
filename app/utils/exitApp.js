@@ -10,6 +10,6 @@ export function onExitApp() {
       return true
     }
     this.lastBackPressed = Date.now()
-    Toast.show(I18n.t('click_again'))    
+    Toast.showLongBottom(I18n.t('click_again'))    
     return true
 }
