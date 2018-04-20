@@ -9,6 +9,8 @@ import {
   ToastAndroid,
 } from 'react-native'
 
+
+
 import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { TextInputComponent,Btn,Loading, } from '../../components/'
@@ -28,6 +30,9 @@ const sqLite = new UserSQLite()
 let db 
 
 let self = null
+
+
+
 
 class Payment extends Component{
   constructor(props){
