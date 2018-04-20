@@ -13,7 +13,7 @@ import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { toHome } from '../../root'
 import { connect } from 'react-redux'
-import { sliceAddress } from '../../utils/splitNumber'
+import { sliceAddress,splitDecimal } from '../../utils/splitNumber'
 const Wallet = require('ethereumjs-wallet')
 import UserSQLite from '../../utils/accountDB'
 const sqLite = new UserSQLite();  
@@ -150,7 +150,7 @@ class AccountManage extends Component{
       <AccountCard
         accountName={res.account_name}
         accountPsd={sliceAddress(`0x${res.address}`,10)}
-        accountTotal={res.assets_total}
+        accountTotal={splitDecimal(res.assets_total)}
         accountUnit={'ether'}
         accountBackUp={() => this.toDetail(res.address,res.account_name,res.id)}
         backupState={res.backup_status}

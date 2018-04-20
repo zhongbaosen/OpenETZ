@@ -30,7 +30,7 @@ const onCreate = (state,action) => {
     let selected = 0 
 	  const { userNameVal, psdVal, promptVal, } = action.payload
 	  let mnemonic = bip39.generateMnemonic();
-    console.log('创建时生成的mnemonic==',mnemonic)
+    console.log('创建时生成的mnemonicfffffffffffff==',mnemonic)
     
     let seed = bip39.mnemonicToSeed(mnemonic)
     // console.log('seed==',seed)
@@ -45,7 +45,7 @@ const onCreate = (state,action) => {
     let w = hdWallet.getWallet()
     let keyStore = w.toV3(psdVal,{c:8192,n:8192})
 
-    console.log('keyStore==',keyStore)
+    console.log('keyStore111111111111111111==',keyStore)
 
     if(!db){  
         db = sqLite.open();  

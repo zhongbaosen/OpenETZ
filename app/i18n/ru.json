@@ -121,4 +121,6 @@
   "send_email":"послать",
   "creating":"Создание",
   "input_receive_address":"Введите адрес получателя платежа",
+  "send_failure":"Ошибка передачи",
+  
 }	

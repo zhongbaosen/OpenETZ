@@ -28,6 +28,10 @@ class AssetDetailList extends Component{
   }
 
   componentDidMount(){
+   
+    
+
+
     if(!t_db){
       t_db = tradingSqLite.open()
     }
@@ -63,6 +67,10 @@ class AssetDetailList extends Component{
     
   }
 
+
+
+
+
   toTradingRecordDetail = (res) => {
     this.props.navigator.push({
       screen: 'trading_record_detail',
@@ -75,6 +83,7 @@ class AssetDetailList extends Component{
   }
   renderItem = (item) => {
     let res = item.item
+    
     return(
       <RecordListItem
         style={{marginBottom: scaleSize(10)}}
@@ -85,6 +94,7 @@ class AssetDetailList extends Component{
         receiverTime={timeStamp2Date(res.tx_time)}
         receiverVal={res.tx_value}
         unit={this.props.curToken}
+        payFail={res.tx_result === 1 ? false : true}
       />
     )
   }

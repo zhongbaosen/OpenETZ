@@ -51,6 +51,8 @@ class Payment extends Component{
       currentTokenDecimals: 0,
       loadingVisible: false,
       loadingText: '',
+      gasValue: '',
+      tokenData: '',
     }
     self = this
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
@@ -158,10 +160,49 @@ class Payment extends Component{
     Picker.hide()
   }
   onChangePayAddrText = (val) => {
+    const { currentTokenName, payTotalVal, currentTokenDecimals } = this.state
+    const { selectedList } = this.props.tokenManageReducer 
+    let contractAddress = '';
     this.setState({
       receiverAddress: val,
       payAddressWarning: ''
     })
+
+    setTimeout(() => {
+      if(this.state.receiverAddress.length === 42){
+        if(currentTokenName === 'ETZ'){
+          web3.eth.estimateGas({to: this.state.receiverAddress,data: ""}).then( res => {
+            this.setState({
+              gasValue: `${res}`
+            })
+          })
+        }else{
+          // for(let i = 0; i < selectedList.length; i++){
+          //   if(selectedList[i].tk_symbol === currentTokenName){
+          //     contractAddress = selectedList[i].tk_address
+          //   }
+          // }
+
+          // let txNumber = payTotalVal *  Math.pow(10,currentTokenDecimals)
+
+          // let hex16 = parseInt(txNumber).toString(16)
+
+          // let myContract = new web3.eth.Contract(contractAbi, contractAddress)
+
+          // let data = myContract.methods.transfer(this.state.receiverAddress, `0x${hex16}`).encodeABI()
+          // console.log('data11',data)
+          // this.setState({
+          //   tokenData: data
+          // })
+          // web3.eth.estimateGas({to: this.state.receiverAddress,data: data}).then( res => {
+          //   console.log('res==',res)
+          //   this.setState({
+          //     gasValue: `${res}`
+          //   })
+          // })
+        }
+      }
+    },500)
   }
   onChangePaTotalText = (val) => {
     this.setState({
@@ -295,7 +336,7 @@ class Payment extends Component{
   }
   async makeTransactByETZ(){
     console.log('this.state.keyStore===',this.state.keyStore)
-    const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal } = this.state
+    const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal,gasValue } = this.state
     console.log('senderAddress==',senderAddress)
     try{  
       let newWallet = await Wallet.fromV3(this.state.keyStore,payPsdVal)
@@ -308,10 +349,13 @@ class Payment extends Component{
       console.log('payTotalVal==',payTotalVal)
       let totalValue = web3.utils.toWei(payTotalVal,'ether')
       let hex16 = parseInt(totalValue).toString(16)
+
+      
+      
       const txParams = {
           nonce: `0x${nonceNumber.toString(16)}`,
           gasPrice: '0x09184e72a000', 
-          gasLimit: '0x2710',
+          gasLimit: `0x${parseInt(gasValue).toString(16)}`,
           to: receiverAddress,
           value: `0x${hex16}`,
           data: '',
@@ -366,6 +410,7 @@ class Payment extends Component{
       })
       .on('error', (error) => {
         console.log('error==',error)
+        ToastAndroid.show(`${error}`,3000)
         self.onPressClose()
         self.props.navigator.pop()
         // alert(error)
@@ -417,7 +462,7 @@ class Payment extends Component{
     //     console.log(">>>>>>>>>>> balanceOf:", result)
     // });
 
-    const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal,currentTokenName,currentTokenDecimals } = this.state
+    const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal,currentTokenName,currentTokenDecimals, gasValue,tokenData } = this.state
     const { selectedList } = this.props.tokenManageReducer 
 
     try{
@@ -454,7 +499,8 @@ class Payment extends Component{
         const txParams = {
             nonce: web3.utils.toHex(nonce),
             gasPrice:"0x098bca5a00",
-            gasLimit: '0x7a120',
+            // gasLimit: '0x7a120',
+            gasLimit: '0x2dc6c0',
             to: contractAddr,
             value :"0x0",
             data: data,
@@ -491,31 +537,63 @@ class Payment extends Component{
 
         }).on('confirmation', function(confirmationNumber, receipt){
             console.log('confirmation:', confirmationNumber)
-            if(confirmationNumber === 24){
-              setTimeout(() => {
-                self.props.dispatch(insert2TradingDBAction({
-                  tx_hash: hashVal,
-                  tx_value: payTotalVal,
-                  tx_sender: senderAddress,
-                  tx_receiver: receiverAddress,
-                  tx_note: noteVal,
-                  tx_token: currentTokenName
-                }))
-                self.props.dispatch(insert2TradingDBAction({
-                  tx_hash: hashVal,
-                  tx_value: '0.00',
-                  tx_sender: senderAddress,
-                  tx_receiver: receiverAddress,
-                  tx_note: noteVal,
-                  tx_token: "ETZ"
-                }))
-              },1000)
-
-              ToastAndroid.show(I18n.t('send_successful'),3000)
-            }
+            // if(confirmationNumber === 24){
+              // setTimeout(() => {
+              //   self.props.dispatch(insert2TradingDBAction({
+              //     tx_hash: hashVal,
+              //     tx_value: payTotalVal,
+              //     tx_sender: senderAddress,
+              //     tx_receiver: receiverAddress,
+              //     tx_note: noteVal,
+              //     tx_token: currentTokenName
+              //   }))
+              //   self.props.dispatch(insert2TradingDBAction({
+              //     tx_hash: hashVal,
+              //     tx_value: '0.00',
+              //     tx_sender: senderAddress,
+              //     tx_receiver: receiverAddress,
+              //     tx_note: noteVal,
+              //     tx_token: "ETZ"
+              //   }))
+              // },1000)
+            // }
             
         }).on('receipt', function(receipt){
             console.log('receipt:', receipt)
+            let sendResult = 1
+            if(receipt.status==="0x1"){//"0x1" succ "0x0" fail
+               ToastAndroid.show(I18n.t('send_successful'),3000)
+            }else{
+              sendResult = 0
+              self.onPressClose()
+              ToastAndroid.show(I18n.t('send_failure'),3000)
+              setTimeout(() => {
+              self.props.navigator.popToRoot({
+                  animated: true,
+                  animationType: 'fade',
+                })
+              },100)
+            }
+
+            self.props.dispatch(insert2TradingDBAction({
+              tx_hash: hashVal,
+              tx_value: payTotalVal,
+              tx_sender: senderAddress,
+              tx_receiver: receiverAddress,
+              tx_note: noteVal,
+              tx_token: currentTokenName,
+              tx_result: sendResult,
+            }))
+            self.props.dispatch(insert2TradingDBAction({
+              tx_hash: hashVal,
+              tx_value: '0.00',
+              tx_sender: senderAddress,
+              tx_receiver: receiverAddress,
+              tx_note: noteVal,
+              tx_token: "ETZ",
+              tx_result: sendResult,
+            }))
+
         }).on('error', (error) => {
           console.error(error)
           self.onPressClose()
@@ -539,14 +617,13 @@ class Payment extends Component{
   }
   render(){
     const { receiverAddress, payTotalVal, noteVal,visible,modalTitleText,modalTitleIcon,payPsdVal,
-            modalSetp1,payAddressWarning,payTotalWarning,senderAddress,payPsdWarning,currentTokenName } = this.state
+            modalSetp1,payAddressWarning,payTotalWarning,senderAddress,payPsdWarning,currentTokenName, gasValue } = this.state
     return(
       <View style={pubS.container}>
         <Loading loadingVisible={this.state.loadingVisible} loadingText={this.state.loadingText}/>
         <TextInputComponent
           value ={currentTokenName}
           editable={false}
-          // onPressIptRight={this.showTokenPicker}
           toMore={true}
           touchable={true}
           onPressTouch={this.showTokenPicker}
@@ -571,6 +648,14 @@ class Payment extends Component{
           value={noteVal}
           onChangeText={this.onChangeNoteText}
         />
+        {
+          currentTokenName === 'ETZ' ?
+          <View style={[{ paddingLeft: 4,alignSelf:'center',width: scaleSize(680),borderBottomWidth: StyleSheet.hairlineWidth,borderColor:'#DBDFE6',height: scaleSize(99)},pubS.rowCenterJus]}>
+            <Text style={{color:'#C7CACF',fontSize: setScaleText(26)}}>Gas:</Text>
+            <Text>{gasValue}</Text>
+          </View>
+          : null
+        }
         <Btn
           btnMarginTop={scaleSize(60)}
           btnPress={this.onNextStep}

@@ -35,7 +35,7 @@ class RecordListItem extends Component{
             <Text style={{fontSize: setScaleText(28),color:moneyTextColor}}>{`${receiverVal} ${unit}`}</Text>
             {
               payFail ?
-              <Text style={pubS.font24_1}>Pay Fail</Text>
+              <Text style={pubS.font24_1}>Send Fail</Text>
               : null
             }
           </View>

@@ -29,11 +29,12 @@ const AssetsNavStyle = {
   // navBarLeftButtonColor:'#D2D5DB',//only ios
   // navBarRightButtonColor:'#2B8AFF',//only ios
   // statusBarHidden: false,
+  statusBarColor: '#144396',
+  statusBarTextColorScheme: 'light',
+  
   screenBackgroundColor: 'white',
   navBarTitleTextCentered: true,
   navBarHeight: scaleSize(87),
-  // statusBarColor: '#144396',
-  statusBarTextColorScheme: 'dark',
   topBarElevationShadowEnabled: false,
   navBarNoBorder: false,
 

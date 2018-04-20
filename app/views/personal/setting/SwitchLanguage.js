@@ -25,14 +25,14 @@ class Language extends Component {
 	}
 
 	render(){
-		const { languageText, isSelected,onSelect } = this.props
+		const { languageText, isSelected,onSelect, bgColor } = this.props
 		return(
-			<View style={[styles.lanViewStyle,pubS.rowCenterJus,pubS.paddingRow40]}>
+			<TouchableOpacity style={[styles.lanViewStyle,pubS.rowCenterJus,pubS.paddingRow40,{backgroundColor:bgColor}]}  activeOpacity={.7} onPress={onSelect}>
 				<Text style={pubS.font28_3}>{languageText}</Text>
-				<TouchableOpacity style={[styles.selectIcon,pubS.center,{borderWidth: isSelected?0:1,borderColor: isSelected?'transparent':'#CACDD2',backgroundColor:isSelected?'#2B8AFF':'#fff'}]} activeOpacity={.7} onPress={onSelect}>
+				<View style={[styles.selectIcon,pubS.center,{borderWidth: isSelected?0:1,borderColor: isSelected?'transparent':'#CACDD2',backgroundColor:isSelected?'#2B8AFF':'#fff'}]}>
                		<Image source={require('../../../images/xhdpi/btn_ico_addassets_pre.png')} style={styles.selectImage}/>
-           	   </TouchableOpacity>
-			</View>
+           	   </View>
+			</TouchableOpacity>
 		)
 	}
 }
@@ -45,7 +45,10 @@ class SwitchLanguage extends Component{
   		select_zh: false,
   		select_en: true,
   		select_ru: false,
-  		languages: ''
+  		languages: '',
+  		bgColorZh: '#fff',
+		bgColorEn: '#EEEEEE',
+		bgColorRu: '#fff',
   	}
   	this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
@@ -95,7 +98,10 @@ class SwitchLanguage extends Component{
 			this.setState({
 				select_zh: true,
 		  		select_en: false,
-		  		select_ru: false
+		  		select_ru: false,
+		  		bgColorZh: '#eee',
+				bgColorEn: '#fff',
+				bgColorRu: '#fff',
 			},() => {
 				this.setState({
 					selectedLan: 'zh-CN'
@@ -108,7 +114,10 @@ class SwitchLanguage extends Component{
 			this.setState({
 				select_zh: false,
 		  		select_en: true,
-		  		select_ru: false
+		  		select_ru: false,
+		  		bgColorZh: '#fff',
+				bgColorEn: '#eee',
+				bgColorRu: '#fff',
 			},() => {
 				this.setState({
 					selectedLan: 'en-US'
@@ -121,7 +130,10 @@ class SwitchLanguage extends Component{
 	// 		this.setState({
 	// 			select_zh: false,
 	// 	  		select_en: false,
-	// 	  		select_ru: true
+	// 	  		select_ru: true,
+				// bgColorZh: '#fff',
+				// bgColorEn: '#fff',
+				// bgColorRu: '#eee',
 	// 		},() => {
 	// 			this.setState({
 	// 				selectedLan: 'ru-RU'
@@ -130,24 +142,27 @@ class SwitchLanguage extends Component{
 	// 	}
 	// }
   	render(){
-  		const { select_zh, select_en, select_ru, } = this.state
+  		const { select_zh, select_en, select_ru,bgColorZh, bgColorEn, bgColorRu } = this.state
 	    return(
 	      <View style={{flex:1,backgroundColor: '#F5F7FB'}}>
 	      	<Language
 	      		languageText={'简体中文'}
 	      		isSelected={select_zh}
 	      		onSelect={this.onSelectZh}
+	      		bgColor={bgColorZh}
 	      	/>
 	      	<Language
 	      		languageText={'English'}
 	      		isSelected={select_en}
 	      		onSelect={this.onSelectEn}
+	      		bgColor={bgColorEn}
 	      	/>
 	      	{
 		      	// <Language
 		      	// 	languageText={'Русский язык'}
 		      	// 	isSelected={select_ru}
 		      	// 	onSelect={this.onSelectRu}
+		      		// bgColor={bgColorRu}
 		      	// />
 	      	}
 	      </View>
@@ -159,7 +174,7 @@ const styles = StyleSheet.create({
 	lanViewStyle:{
 		height: scaleSize(120),
 		width: scaleSize(750),
-		backgroundColor:'#fff',
+		// backgroundColor:'#fff',
 		borderTopWidth:StyleSheet.hairlineWidth,
 		borderColor:'#EEEEEE',
 	},

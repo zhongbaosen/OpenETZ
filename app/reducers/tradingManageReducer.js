@@ -23,7 +23,7 @@ export default function tradingManageReducer (state = initState,action) {
 }
 
 const insertToDB = (state,action) => {
-	const { tx_hash, tx_value, tx_sender, tx_receiver, tx_note, tx_token} = action.payload
+	const { tx_hash, tx_value, tx_sender, tx_receiver, tx_note, tx_token, tx_result} = action.payload
 	let currentAccount = ''
 	if(!t_db){  
         t_db = tradingSqLite.open();  
@@ -57,7 +57,7 @@ const insertToDB = (state,action) => {
 	let tradingData = [],  
   		trading = {},
   		time = '',
-  		result = 1,
+  		// result = 1,
 		  block = 0;
 
 	   web3.eth.getTransaction(tx_hash).then((res,rej)=>{
@@ -71,7 +71,7 @@ const insertToDB = (state,action) => {
    	setTimeout(() => {
    		trading.tx_account_name = currentAccount
    		trading.tx_time = time
-   		trading.tx_result = result
+   		trading.tx_result = tx_result
    		trading.tx_hash = tx_hash
    		trading.tx_value = tx_value
    		trading.tx_sender = tx_sender

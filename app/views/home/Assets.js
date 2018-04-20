@@ -10,6 +10,7 @@ import {
   Platform,
   RefreshControl,
   Button,
+  BackHandler,
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle,MainThemeNavColor,ScanNavStyle } from '../../styles/'
@@ -21,6 +22,7 @@ import SwitchWallet from './SwitchWallet'
 import { switchDrawer } from '../../utils/switchDrawer'
 import TokenSQLite from '../../utils/tokenDB'
 import { toSplash } from '../../root'
+import { splitDecimal } from '../../utils/splitNumber'
 const tkSqLite = new TokenSQLite()
 let tk_db
 import { insertToTokenAction,initSelectedListAction,refreshTokenInfoAction } from '../../actions/tokenManageAction'
@@ -39,20 +41,8 @@ class Assets extends Component{
       isRefreshing: false,
       curAddr: '',
     }
-    // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
   componentWillMount(){
-    // this.props.dispatch(passAccountsInfoAction())
-    // this.props.navigator.push({
-    //     screen: 'verify_mnemonic',
-    //     title: I18n.t('verify_mnemonic'),
-    //     navigatorStyle: DetailNavigatorStyle,
-    //     passProps: {
-    //       mnemonicText: 'genius exile genius wet ethics genius tattoo boat lazy dilemma attack stand',
-    //     }
-    //   })
-
-    // this.props.dispatch(passAccountsInfoAction())    
 
     this.props.navigator.setTabButton({
       tabIndex: 0,
@@ -136,15 +126,13 @@ class Assets extends Component{
 
     }
 
-
     if(this.props.accountManageReducer.accountInfo !== nextProps.accountManageReducer.accountInfo){
       toSplash()
     }
-
-
-
   }
 
+
+ 
   toAssetsDetail = (title,balance,token) => {
     this.props.navigator.push({
       screen: 'asset_detail_list',
@@ -334,9 +322,9 @@ class Assets extends Component{
             <AssetsItem
               shortName={etzTitle}
               fullName={'EtherZero'}
-              coinNumber={etzBalance}
+              coinNumber={splitDecimal(etzBalance)}
               price2rmb={0}
-              onPressItem={() => this.toAssetsDetail(etzTitle,this.state.etzBalance,'ETZ')}
+              onPressItem={() => this.toAssetsDetail(etzTitle,splitDecimal(etzBalance),'ETZ')}
             />
             {
               selectedAssetsList.map((res,index) => {
@@ -345,9 +333,9 @@ class Assets extends Component{
                     key={index}
                     shortName={res.tk_symbol}
                     fullName={res.tk_name}
-                    coinNumber={res.tk_number}
+                    coinNumber={splitDecimal(res.tk_number)}
                     price2rmb={0}
-                    onPressItem={() => this.toAssetsDetail(res.tk_symbol,res.tk_number,res.tk_symbol)}
+                    onPressItem={() => this.toAssetsDetail(res.tk_symbol,splitDecimal(res.tk_number),res.tk_symbol)}
                   />
                 )
               })

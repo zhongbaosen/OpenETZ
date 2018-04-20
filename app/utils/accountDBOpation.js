@@ -28,6 +28,7 @@ async function onImportAccount(options){
 	    createFinished = true
 	}else{
 		if(type === 'mnemonic'){
+			console.log('需要导入的助记词',mnemonicVal)
 			let seed = bip39.mnemonicToSeed(mnemonicVal)
 		    let hdWallet = hdkey.fromMasterSeed(seed)
 		    let w = hdWallet.getWallet()
