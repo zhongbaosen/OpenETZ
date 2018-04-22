@@ -23,7 +23,7 @@ import I18n from 'react-native-i18n'
 const EthUtil = require('ethereumjs-util')
 const Wallet = require('ethereumjs-wallet')
 const EthereumTx = require('ethereumjs-tx')
-
+const BigNumber = require('big-number')
 const sqLite = new UserSQLite()  
 let db 
 
@@ -31,7 +31,27 @@ let self = null
 
 import Toast from 'react-native-toast'
 
+ function padLeftEven (hex) {
+  hex = hex.length % 2 != 0 ? '0' + hex : hex;
+  return hex;
+}
+function sanitizeHex(hex) {
+    hex = hex.substring(0, 2) == '0x' ? hex.substring(2) : hex;
+    if (hex == "") return "";
+    return '0x' + padLeftEven(hex);
+}
 
+function decimalToHex(dec) {
+    return new BigNumber(dec).toString(16);
+}
+function stripscript(s) {
+    let pattern = new RegExp("[`~!@#$^%&*()=+|{}':;',\\-\\[\\]<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？]");
+    let rs = "";
+    for (let i = 0; i < s.length; i++) {
+        rs = rs+s.substr(i, 1).replace(pattern, '');
+    }
+    return rs;
+}
 class Payment extends Component{
   constructor(props){
     super(props)
@@ -56,6 +76,7 @@ class Payment extends Component{
       loadingText: '',
       gasValue: '',
       tokenData: '',
+      contractAddress:'',
     }
     self = this
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
@@ -75,10 +96,10 @@ class Payment extends Component{
   componentWillMount(){
 
     const { accountInfo } = this.props.accountManageReducer
-    if(this.props.curToken){
+    if(this.props.curToken !== 'ETZ'){
       this.setState({
-        currentTokenName: this.props.curToken,
-        isToken: true
+        isToken: true,
+        currentTokenName: this.props.curToken
       })
     }
     if(this.props.receive_address){
@@ -139,8 +160,11 @@ class Payment extends Component{
       onPickerConfirm: pickedValue => {
         this.setState({
           currentTokenName: pickedValue[0],
-          
         })
+        setTimeout(() => {
+          this.getGas()
+          this.getTokenDataValue()
+        },500)
         if(pickedValue[0] !== 'ETZ'){
           this.setState({
             isToken: true
@@ -158,65 +182,96 @@ class Payment extends Component{
       },
     })
   }
+
+
   componentWillUnmount(){
     // this.onPressClose()
     Picker.hide()
   }
   onChangePayAddrText = (val) => {
-    const { currentTokenName, payTotalVal, currentTokenDecimals } = this.state
-    const { selectedList } = this.props.tokenManageReducer 
-    let contractAddress = '';
+    
     this.setState({
-      receiverAddress: val,
+      receiverAddress: val.trim(),
       payAddressWarning: ''
-    })
+    })  
+    setTimeout(() => {
+      if(this.state.receiverAddress.length === 42){
+        this.getGas()
+        this.getTokenDataValue()
+      }
+    },500)
 
-    // setTimeout(() => {
-    //   if(this.state.receiverAddress.length === 42){
-    //     if(currentTokenName === 'ETZ'){
-    //       web3.eth.estimateGas({to: this.state.receiverAddress,data: ""}).then( res => {
-    //         this.setState({
-    //           gasValue: `${res}`
-    //         })
-    //       })
-    //     }else{
-    //       // for(let i = 0; i < selectedList.length; i++){
-    //       //   if(selectedList[i].tk_symbol === currentTokenName){
-    //       //     contractAddress = selectedList[i].tk_address
-    //       //   }
-    //       // }
+  }
 
-    //       // let txNumber = payTotalVal *  Math.pow(10,currentTokenDecimals)
+  getGas(){
+    const { receiverAddress, currentTokenName, payTotalVal, tokenData, senderAddress} = this.state
 
-    //       // let hex16 = parseInt(txNumber).toString(16)
+    let newTotal = stripscript(payTotalVal)
 
-    //       // let myContract = new web3.eth.Contract(contractAbi, contractAddress)
+    if(receiverAddress.length === 42 && newTotal.length > 0){
+        let valWei = web3.utils.toWei(`${newTotal}`,'ether')
+        let estObj = {
+            from:senderAddress,
+            to: receiverAddress,
+            value: sanitizeHex(decimalToHex(valWei)),
+            data: currentTokenName === 'ETZ' ? '' : sanitizeHex(tokenData)
+        }
+        console.log('estObj===',estObj)
+        web3.eth.estimateGas(estObj).then( gas => {
+          this.setState({
+            gasValue: gas
+          })
+        })
+      
+    }
+  }
+  getTokenDataValue(){
+    const { selectedList } = this.props.tokenManageReducer 
+    const { currentTokenName, payTotalVal, currentTokenDecimals,receiverAddress } = this.state
+    let contractAddress = ''
 
-    //       // let data = myContract.methods.transfer(this.state.receiverAddress, `0x${hex16}`).encodeABI()
-    //       // console.log('data11',data)
-    //       // this.setState({
-    //       //   tokenData: data
-    //       // })
-    //       // web3.eth.estimateGas({to: this.state.receiverAddress,data: data}).then( res => {
-    //       //   console.log('res==',res)
-    //       //   this.setState({
-    //       //     gasValue: `${res}`
-    //       //   })
-    //       // })
-    //     }
-    //   }
-    // },500)
+    if(receiverAddress.length === 42 && payTotalVal.length > 0 && currentTokenName !== 'ETZ'){
+      for(let i = 0; i < selectedList.length; i++){
+        if(selectedList[i].tk_symbol === currentTokenName){
+          contractAddress = selectedList[i].tk_address
+        }
+      } 
 
+      let txNumber = parseInt(parseFloat(payTotalVal) *  Math.pow(10,currentTokenDecimals))
+
+      let hex16 = parseInt(txNumber).toString(16)
+
+      let myContract = new web3.eth.Contract(contractAbi, contractAddress)
+
+      let data = myContract.methods.transfer(receiverAddress, `0x${hex16}`).encodeABI()
+
+      // console.log('data值',data)
+
+      this.setState({
+        tokenData: data,
+        contractAddr: contractAddress,
+      })
+      setTimeout(() => {
+        this.getGas()
+      },1000)
+    }
   }
   onChangePaTotalText = (val) => {
     this.setState({
       payTotalVal: val,
       payTotalWarning: ''
     })
+    //payTotalVal不能有
+    if(val.length > 0){
+      setTimeout(() => {
+        this.getGas()
+        this.getTokenDataValue()
+      },500)
+    }
   }
   onChangeNoteText = (val) => {
     this.setState({
-      noteVal: val,
+      noteVal: val.trim(),
     })
   }
 
@@ -359,8 +414,7 @@ class Payment extends Component{
       const txParams = {
           nonce: `0x${nonceNumber.toString(16)}`,
           gasPrice: '0x09184e72a000', 
-          // gasLimit: `0x${parseInt(gasValue).toString(16)}`,
-          gasLimit: '0x2dc6c0',
+          gasLimit: `0x${parseInt(gasValue).toString(16)}`,
           to: receiverAddress,
           value: `0x${hex16}`,
           data: '',
@@ -384,7 +438,7 @@ class Payment extends Component{
             animated: true,
             animationType: 'fade',
           })
-        },100)
+        },1000)
 
       })
       .on('receipt', function(receipt){
@@ -394,14 +448,7 @@ class Payment extends Component{
              Toast.showLongBottom(I18n.t('send_successful'))
           }else{
             sendResult = 0
-            self.onPressClose()
             Toast.showLongBottom(I18n.t('send_failure'))
-            setTimeout(() => {
-            self.props.navigator.popToRoot({
-                animated: true,
-                animationType: 'fade',
-              })
-            },100)
           }
 
           self.props.dispatch(insert2TradingDBAction({
@@ -431,42 +478,24 @@ class Payment extends Component{
   }
   async makeTransactByToken(){
     
-    const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal,currentTokenName,currentTokenDecimals, gasValue,tokenData } = this.state
+    const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal,currentTokenName,currentTokenDecimals, gasValue,tokenData, contractAddr } = this.state
     const { selectedList } = this.props.tokenManageReducer 
 
     try{
       let newWallet = await Wallet.fromV3(this.state.keyStore,payPsdVal)
       let privKey = await newWallet._privKey.toString('hex')
-      let contractAddr = ''
-      console.log('当前token====',currentTokenName)
-
-      for(let i = 0; i < selectedList.length; i++){
-        if(selectedList[i].tk_symbol === currentTokenName){
-          contractAddr = selectedList[i].tk_address
-        }
-      }
-
-      console.log('合约地址',contractAddr)
-      var myContract = new web3.eth.Contract(contractAbi, contractAddr)
-
-      let txNumber = payTotalVal *  Math.pow(10,currentTokenDecimals)
-      let hex16 = parseInt(txNumber).toString(16)
-
-      console.log('转币数量',hex16)
-      
-      var data = myContract.methods.transfer(receiverAddress, `0x${hex16}`).encodeABI()
-      
+     
 
       web3.eth.getTransactionCount(senderAddress, function(error, nonce) {
 
         const txParams = {
             nonce: web3.utils.toHex(nonce),
             gasPrice:"0x098bca5a00",
-            // gasLimit: '0x7a120',
-            gasLimit: '0x2dc6c0',
+            // gasLimit: `0x${parseInt(gasValue).toString(16)}`,
+            gasLimit: `0x7a120`,
             to: contractAddr,
             value :"0x0",
-            data: data,
+            data: tokenData,
             chainId: "0x58"
         }
 
@@ -496,7 +525,7 @@ class Payment extends Component{
                 animated: true,
                 animationType: 'fade',
               })
-            },100)
+            },1000)
 
         })
         // .on('confirmation', function(confirmationNumber, receipt){
@@ -510,14 +539,7 @@ class Payment extends Component{
                Toast.showLongBottom(I18n.t('send_successful'))
             }else{
               sendResult = 0
-              self.onPressClose()
               Toast.showLongBottom(I18n.t('send_failure'))
-              setTimeout(() => {
-              self.props.navigator.popToRoot({
-                  animated: true,
-                  animationType: 'fade',
-                })
-              },100)
             }
 
             self.props.dispatch(insert2TradingDBAction({
@@ -594,12 +616,12 @@ class Payment extends Component{
           onChangeText={this.onChangeNoteText}
         />
         {
-          // currentTokenName === 'ETZ' ?
-          // <View style={[{ paddingLeft: 4,alignSelf:'center',width: scaleSize(680),borderBottomWidth: StyleSheet.hairlineWidth,borderColor:'#DBDFE6',height: scaleSize(99)},pubS.rowCenterJus]}>
-          //   <Text style={{color:'#C7CACF',fontSize: setScaleText(26)}}>Gas:</Text>
-          //   <Text>{gasValue}</Text>
-          // </View>
-          // : null
+          currentTokenName === 'ETZ' ?
+          <View style={[styles.gasViewStyle,pubS.rowCenterJus]}>
+            <Text style={{color:'#C7CACF',fontSize: setScaleText(26)}}>Gas:</Text>
+            <Text>{gasValue}</Text>
+          </View>
+          : null
         }
         <Btn
           btnMarginTop={scaleSize(60)}
@@ -692,6 +714,14 @@ class RowText extends Component{
   }
 }
 const styles = StyleSheet.create({
+    gasViewStyle:{
+      paddingLeft: 4,
+      alignSelf:'center',
+      width: scaleSize(680),
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderColor:'#DBDFE6',
+      height: scaleSize(99)
+    },
     rowTextView:{
         width: scaleSize(680),
         height: scaleSize(88),

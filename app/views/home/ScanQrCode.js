@@ -26,7 +26,8 @@ class ScanQrCode extends Component{
       navigatorStyle: DetailNavigatorStyle,
       overrideBackPress: true,
       passProps: {
-        receive_address: e.data
+        receive_address: e.data,
+        curToken: 'ETZ',
       }
     })
   }

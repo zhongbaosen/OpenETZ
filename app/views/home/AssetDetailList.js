@@ -135,13 +135,15 @@ class AssetDetailList extends Component{
     console.log('交易列表',this.state.listData)
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
-        <FlatList
-          data={this.state.listData}
-          renderItem={this.renderItem}
-          keyExtractor = {(item, index) => index}
-          ListHeaderComponent={this.ListHeaderComponent}
-          ListEmptyComponent={this.ListEmptyComponent}
-        />
+        <View style={{marginBottom: scaleSize(96)}}> 
+          <FlatList
+            data={this.state.listData}
+            renderItem={this.renderItem}
+            keyExtractor = {(item, index) => index}
+            ListHeaderComponent={this.ListHeaderComponent}
+            ListEmptyComponent={this.ListEmptyComponent}
+          />
+        </View>
         <View style={[styles.bottomBtnStyle,pubS.rowCenter]}>
           <TouchableOpacity activeOpacity={.7} onPress={this.payBtn} style={[styles.btnStyle,{backgroundColor:'#FFAA3B'},pubS.center]}>
             <Text style={pubS.font30_3}>{I18n.t('send')}</Text>

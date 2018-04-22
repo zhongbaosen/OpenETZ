@@ -163,7 +163,9 @@ class Assets extends Component{
       screen: 'on_payment',
       title:I18n.t('send'),
       navigatorStyle: DetailNavigatorStyle,
-      
+      passProps:{
+        curToken: 'ETZ'
+      }
     })
   }
   onCollection = () => {
@@ -278,16 +280,15 @@ class Assets extends Component{
               />
             }
           >
-            <View style={[styles.navbarStyle,pubS.rowCenterJus,{paddingLeft: scaleSize(24),paddingRight: scaleSize(24)}]}>
+            <View style={[styles.navbarStyle,pubS.center,{paddingLeft: scaleSize(24),paddingRight: scaleSize(24)}]}>
               {
                 // <TouchableOpacity activeOpacity={.6} onPress={this.onLeftDrawer}>
                 //   <Image source={require('../../images/xhdpi/nav_ico_home_message_def.png')}style={styles.navImgStyle}/>
                 // </TouchableOpacity>
                 
               }
-              <View style={styles.navImgStyle}/>
               <Text style={pubS.font30_1}>{this.state.navTitle}</Text>
-              <TouchableOpacity activeOpacity={.6} onPress={this.onRightDrawer}>
+              <TouchableOpacity activeOpacity={.6} onPress={this.onRightDrawer} style={styles.drawerStyle}>
                 <Image source={require('../../images/xhdpi/nav_ico_home_more_def.png')} style={styles.navImgStyle}/>
               </TouchableOpacity>
             </View>
@@ -372,6 +373,17 @@ class AssetsItem extends Component {
   }
 }
 const styles = StyleSheet.create({
+  drawerStyle:{
+    // borderColor:'#fff',
+    // borderWidth:1,
+    height: scaleSize(87),
+    width: scaleSize(160),
+    position:"absolute",
+    top: 0,
+    right:scaleSize(24),
+    alignItems:'flex-end',
+    justifyContent:'center'
+  },
   navImgStyle: {
     width:scaleSize(40),
     height: scaleSize(40)
