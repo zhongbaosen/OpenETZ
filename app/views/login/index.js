@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  BackHandler,
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle} from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import I18n from 'react-native-i18n'
+import { onExitApp } from '../../utils/exitApp'
 class Login extends Component{
   constructor(props){
     super(props)
@@ -18,8 +20,14 @@ class Login extends Component{
 
     }
   }
-  componentDidMount(){
-    
+  componentWillMount(){
+    BackHandler.addEventListener('hardwareBackPress',this.onBack)
+  }
+  componentWillUnmount () {
+    BackHandler.removeEventListener('hardwareBackPress',this.onBack)
+  }
+  onBack = () => {
+    onExitApp()
   }
   createAccoumt = () => {
 

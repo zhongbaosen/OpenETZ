@@ -35,8 +35,8 @@ class Splash extends Component{
 
     // tkSqLite.deleteData()
     // tkSqLite.dropTable()
-    //   sqLite.dropTable()
-    //   sqLite.deleteData() 
+      // sqLite.dropTable()
+      // sqLite.deleteData() 
 
     // this.props.dispatch(passAccountsInfoAction())
 
@@ -101,7 +101,7 @@ class Splash extends Component{
 
   componentWillReceiveProps(nextProps){
     if(nextProps.accountManageReducer.passAccInfoSuc === 'login'){
-      toLogin()
+        toLogin()
     }else{
       if(nextProps.accountManageReducer.passAccInfoSuc === 'home'){
         toHome()

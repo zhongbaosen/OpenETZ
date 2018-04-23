@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  BackHandler
 } from 'react-native'
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
@@ -13,6 +14,7 @@ import { setScaleText, scaleSize } from '../../utils/adapter'
 import { Btn } from '../../components/'
 import { toSplash } from '../../root'
 import I18n from 'react-native-i18n'
+import { onExitApp } from '../../utils/exitApp'
 class CreateAccountSuccess extends Component{
   constructor(props){
     super(props)
@@ -22,7 +24,15 @@ class CreateAccountSuccess extends Component{
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
-  
+  componentWillMount(){
+    BackHandler.addEventListener('hardwareBackPress',this.onBack)
+  }
+  componentWillUnmount () {
+    BackHandler.removeEventListener('hardwareBackPress',this.onBack)
+  }
+  onBack = () => {
+    onExitApp()
+  }
   onNavigatorEvent(event){
     if (event.type == 'NavBarButtonPress') {
       if(event.id === 'backPress'){

@@ -30,7 +30,7 @@ let etzTitle = "ETZ"
 import I18n from 'react-native-i18n'
 import Toast from 'react-native-toast'
 // import { passAccountsInfoAction } from '../../actions/accountManageAction' 
-
+import { onExitApp } from '../../utils/exitApp'
 class Assets extends Component{
   constructor(props){
     super(props)
@@ -42,7 +42,9 @@ class Assets extends Component{
       curAddr: '',
     }
   }
+
   componentWillMount(){
+    BackHandler.addEventListener('hardwareBackPress',this.onBack)
     this.props.navigator.setTabButton({
       tabIndex: 0,
       label: I18n.t('assets')
@@ -75,7 +77,12 @@ class Assets extends Component{
       }
     })
   }
-
+  componentWillUnmount () {
+    BackHandler.removeEventListener('hardwareBackPress',this.onBack)
+  }
+  onBack(){
+    onExitApp()
+  }
   onFetch = (addr) => {
     if(!tk_db){
         tk_db = tkSqLite.open()
