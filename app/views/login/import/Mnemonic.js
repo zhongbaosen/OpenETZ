@@ -34,15 +34,20 @@ class Mnemonic extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
+    if(nextProps.accountManageReducer.importStatus !== this.props.accountManageReducer.importStatus){
       this.setState({
         visible: false
       })
-      Toast.showLongBottom(I18n.t('import_successful'))
-      setTimeout(() => {
-        toSplash()
-      },100)
-      this.props.dispatch(resetDeleteStatusAction())
+      if(nextProps.accountManageReducer.importStatus === 'success'){
+        Toast.showLongBottom(I18n.t('import_successful'))
+        setTimeout(() => {
+          toSplash()
+        },100)
+      }else{
+        if(nextProps.accountManageReducer.importStatus === 'fail'){
+          Toast.showLongBottom(I18n.t('import_fail'))
+        }
+      }
     }
   }
 
@@ -75,22 +80,22 @@ class Mnemonic extends Component{
    let psdReg = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{8,}$/
    if(userNameVal.length === 0){
       this.setState({
-        userNameWarning: I18n.t('enter_account_name')
+        userNameWarning: I18n.t('enter_account_name'),
       })
     }else{
       if(mnemonicVal.length === 0){
         this.setState({
-          mnemonicValWarning: I18n.t('mnemonic_phrase_warning')
+          mnemonicValWarning: I18n.t('mnemonic_phrase_warning'),
         })
       }else{
         if(!psdReg.test(passwordVal)){
           this.setState({
-            passwordWarning: I18n.t('password_verification')
+            passwordWarning: I18n.t('password_verification'),
           })
         }else{
           if(passwordVal !== repeadPsdVal){
             this.setState({
-              rePsdWarning: I18n.t('passwords_different')
+              rePsdWarning: I18n.t('passwords_different'),
             })
           }else{
             this.onImport()

@@ -21,22 +21,27 @@ class KeyStore extends Component{
     super(props)
     this.state={
       visible: false,
-      keystoreVal: '',
+      keystoreVal:'',
       keystoreWarning: '',
       userNameVal: '',
       userNameWarning: '',
     }
   }
   componentWillReceiveProps(nextProps){
-    if(nextProps.accountManageReducer.importSucc !== this.props.accountManageReducer.importSucc && nextProps.accountManageReducer.importSucc){
+    if(nextProps.accountManageReducer.importStatus !== this.props.accountManageReducer.importStatus){
       this.setState({
         visible: false
       })
-      Toast.showLongBottom('import successfully')
-      setTimeout(() => {
-        toSplash()
-      },100)
-      this.props.dispatch(resetDeleteStatusAction())
+      if(nextProps.accountManageReducer.importStatus === 'success'){
+        Toast.showLongBottom(I18n.t('import_successful'))
+        setTimeout(() => {
+          toSplash()
+        },100)
+      }else{
+        if(nextProps.accountManageReducer.importStatus === 'fail'){
+          Toast.showLongBottom(I18n.t('import_fail'))
+        }
+      }
     }
   }
   onChangelKeystore = (val) => {
@@ -56,12 +61,12 @@ class KeyStore extends Component{
     const { keystoreVal, keystoreWarning,userNameVal,userNameWarning } = this.state
     if(userNameVal.length === 0){
       this.setState({
-        userNameWarning: I18n.t('enter_account_name')
+        userNameWarning: I18n.t('enter_account_name'),
       })
     }else{
-      if(keystoreVal.length === 0){
+      if(typeof JSON.parse(keystoreVal) !== 'object' || JSON.parse(keystoreVal).address.length !== 40){
         this.setState({
-          keystoreWarning: I18n.t('keystore_warning')
+          keystoreWarning: I18n.t('keystore_warning'),
         })
       }else{
         this.onBtn()

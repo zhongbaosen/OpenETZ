@@ -60,13 +60,6 @@ const switchAccountAction = (addr) => {
 	}
 }
 const importAccountAction = (data) => {
-	// const getInfo = () => {
-	// 	return {
-	// 		type: types.ON_IMPORT_ACCOUNT,
-	// 		payload: {
-	// 		}
-	// 	}
-	// }
 	const importStart = () => {
 		return {
 			type: types.IMPORT_ACCOUNT_START,

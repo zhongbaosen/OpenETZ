@@ -84,6 +84,7 @@
   "create_account_successfully":"create account successfully",
   "loading_importing_account":"importing",
   "import_successful":"import successful",
+  "import_fail":"import failed",
   "your_email":"your email",
   "not_yet_backup":"backup",
   "delete_successfully":"delete successfully",

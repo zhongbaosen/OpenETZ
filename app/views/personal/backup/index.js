@@ -44,6 +44,8 @@ class BackUpAccount extends Component{
       keyStore: {},
       loadingText: '',
       visible: false,
+      time1:'',
+      time2:'',
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
@@ -214,7 +216,15 @@ class BackUpAccount extends Component{
     })  
     setTimeout(() => {
       try {
+        let d1 = new Date()
+        // this.setState({
+        //   time1: `${d1.getMinutes()}分--${d1.getSeconds()}秒`
+        // })
         const newWallet = Wallet.fromV3(keyStore,psdVal)
+        // let d2 = new Date()
+        // this.setState({
+        //   time2: `${d2.getMinutes()}分--${d2.getSeconds()}秒`
+        // })
         let priv = newWallet._privKey.toString('hex')
         if(backupMnemonic){
           this.props.navigator.push({
@@ -295,6 +305,7 @@ class BackUpAccount extends Component{
         <Loading loadingVisible={this.state.visible} loadingText={this.state.loadingText}/>
         <Image source={require('../../../images/xhdpi/Penguin.png')} style={styles.avateStyle}/>
         <Text style={pubS.font26_5}>{sliceAddress(this.props.address,10)}</Text>
+        
         <View style={[styles.userNameViewStyle,pubS.rowCenterJus,pubS.bottomStyle]}>
           <Text style={pubS.font26_4}>{I18n.t('account_name')}</Text>
           <Text style={pubS.font26_4}>{this.props.userName}</Text>
@@ -359,8 +370,6 @@ class BackUpAccount extends Component{
 
         <Modal
           isVisible={pKeyVisible}
-          onBackButtonPress={this.onPKeyHide}
-          onBackdropPress={this.onPKeyHide}
           backdropOpacity={.8}
         >
           <View style={styles.pkViewStyle}>

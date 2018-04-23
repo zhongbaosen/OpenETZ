@@ -35,8 +35,8 @@ class Splash extends Component{
 
     // tkSqLite.deleteData()
     // tkSqLite.dropTable()
-      // sqLite.dropTable()
-      // sqLite.deleteData() 
+    //   sqLite.dropTable()
+    //   sqLite.deleteData() 
 
     // this.props.dispatch(passAccountsInfoAction())
 

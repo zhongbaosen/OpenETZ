@@ -83,6 +83,7 @@
   "private_key_modal":"安全警告：私钥未经加密，导出存在风险，建议使用助记词和Keystore 进行备份",
   "create_account_successfully":"创建账户成功",
   "import_successful":"导入账户成功",
+  "import_fail":"导入账户失败",
   "loading_importing_account":"正在导入...",
   "your_email":"你的邮箱",
   "not_yet_backup":"请备份",

@@ -17,32 +17,37 @@ async function onImportAccount(options){
 	let keyStore = {}
 	let createFinished = false
 	let userName = ''
-	if(type === 'private'){
-		let buf = new Buffer(privateKey, 'hex')
+	try {
+		if(type === 'private'){
+			let buf = new Buffer(privateKey, 'hex')
 
-		let w = wallet.fromPrivateKey(buf)
-	    let p_keystore = w.toV3(privatePassword,{c:8192,n:8192})
-	    console.log('私钥导入p_keystore====',p_keystore)
-	    keyStore = p_keystore
-	    userName = privateUserName
-	    createFinished = true
-	}else{
-		if(type === 'mnemonic'){
-			console.log('需要导入的助记词',mnemonicVal)
-			let seed = bip39.mnemonicToSeed(mnemonicVal)
-		    let hdWallet = hdkey.fromMasterSeed(seed)
-		    let w = hdWallet.getWallet()
-		    let m_keystore = w.toV3(mnemonicPsd,{c:8192,n:8192})
-		    console.log('助记词导入',m_keystore)
-		    keyStore = m_keystore
-		    userName = mnemonicUserName
+			let w = wallet.fromPrivateKey(buf)
+		    let p_keystore = w.toV3(privatePassword,{c:8192,n:8192})
+		    console.log('私钥导入p_keystore====',p_keystore)
+		    keyStore = p_keystore
+		    userName = privateUserName
 		    createFinished = true
 		}else{
-			keyStore = JSON.parse(keystoreVal)
-			userName = keystoreUserName
-			createFinished  = true
-			console.log('keyStore导入完成')
+			if(type === 'mnemonic'){
+				console.log('需要导入的助记词',mnemonicVal)
+				let seed = bip39.mnemonicToSeed(mnemonicVal)
+			    let hdWallet = hdkey.fromMasterSeed(seed)
+			    let w = hdWallet.getWallet()
+			    let m_keystore = w.toV3(mnemonicPsd,{c:8192,n:8192})
+			    console.log('助记词导入',m_keystore)
+			    keyStore = m_keystore
+			    userName = mnemonicUserName
+			    createFinished = true
+			}else{
+				keyStore = JSON.parse(keystoreVal)
+				userName = keystoreUserName
+				createFinished  = true
+				console.log('keyStore导入完成')
+			}
 		}
+	} catch (err){
+		importFailure(err) 
+		return
 	}
 
 	// console.log('createFinished======',createFinished)
@@ -62,47 +67,52 @@ async function onImportAccount(options){
 	    })
 		let userData = [],  
 	  		user = {};  
-	   	setTimeout(() => {
-		    user.account_name = userName  
-		    user.backup_status = 0  
-		    user.is_selected = selected
-		    user.assets_total = '0'
-		    user.address = keyStore.address
-		    user.kid = keyStore.id 
-		    user.version = keyStore.version
+	  	try {
+		   	setTimeout(() => {
+			    user.account_name = userName  
+			    user.backup_status = 0  
+			    user.is_selected = selected
+			    user.assets_total = '0'
+			    user.address = keyStore.address
+			    user.kid = keyStore.id 
+			    user.version = keyStore.version
 
-		    if(keyStore.crypto){
-		    	user.cipher = keyStore.crypto.cipher
-		    	user.ciphertext = keyStore.crypto.ciphertext
-		    	user.kdf = keyStore.crypto.kdf
-				user.mac = keyStore.crypto.mac
-				user.dklen = keyStore.crypto.kdfparams.dklen
-				user.salt = keyStore.crypto.kdfparams.salt
-				user.n = keyStore.crypto.kdfparams.n
-				user.r = keyStore.crypto.kdfparams.r
-				user.p = keyStore.crypto.kdfparams.p
-				user.iv = keyStore.crypto.cipherparams.iv
-		    }else{
-		    	user.cipher = keyStore.Crypto.cipher
-		    	user.ciphertext = keyStore.Crypto.ciphertext
-		    	user.kdf = keyStore.Crypto.kdf
-				user.mac = keyStore.Crypto.mac
-				user.dklen = keyStore.Crypto.kdfparams.dklen
-				user.salt = keyStore.Crypto.kdfparams.salt
-				user.n = keyStore.Crypto.kdfparams.n
-				user.r = keyStore.Crypto.kdfparams.r
-				user.p = keyStore.Crypto.kdfparams.p
-				user.iv = keyStore.Crypto.cipherparams.iv
-		    }
-		    userData.push(user) 
-	   	},1000)
+			    if(keyStore.crypto){
+			    	user.cipher = keyStore.crypto.cipher
+			    	user.ciphertext = keyStore.crypto.ciphertext
+			    	user.kdf = keyStore.crypto.kdf
+					user.mac = keyStore.crypto.mac
+					user.dklen = keyStore.crypto.kdfparams.dklen
+					user.salt = keyStore.crypto.kdfparams.salt
+					user.n = keyStore.crypto.kdfparams.n
+					user.r = keyStore.crypto.kdfparams.r
+					user.p = keyStore.crypto.kdfparams.p
+					user.iv = keyStore.crypto.cipherparams.iv
+			    }else{
+			    	user.cipher = keyStore.Crypto.cipher
+			    	user.ciphertext = keyStore.Crypto.ciphertext
+			    	user.kdf = keyStore.Crypto.kdf
+					user.mac = keyStore.Crypto.mac
+					user.dklen = keyStore.Crypto.kdfparams.dklen
+					user.salt = keyStore.Crypto.kdfparams.salt
+					user.n = keyStore.Crypto.kdfparams.n
+					user.r = keyStore.Crypto.kdfparams.r
+					user.p = keyStore.Crypto.kdfparams.p
+					user.iv = keyStore.Crypto.cipherparams.iv
+			    }
+			    userData.push(user) 
+		   	},1000)
 
-	    setTimeout(() => {
-	        sqLite.insertUserData(userData)
-	    },1500)
-	    setTimeout(() => {
-	    	importSuccess(true)
-	    },3000)
+		    setTimeout(() => {
+		        sqLite.insertUserData(userData)
+		    },1500)
+		    setTimeout(() => {
+		    	importSuccess(true)
+		    },3000)
+	  		
+	  	} catch(err){
+	  		importFailure(err) 
+	  	}
  	}
 }
 

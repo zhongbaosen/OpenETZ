@@ -9,7 +9,7 @@ async function fetchFunc(options){
        tk_db = tkSqLite.open()
 	}
 
-	let res = await fetch('http://54.193.114.251/token-list.txt',{
+	let res = await fetch('http://52.74.3.64/token-list.txt',{
 		method: 'GET',
 	    headers: {
 	        'Accept': 'application/json',

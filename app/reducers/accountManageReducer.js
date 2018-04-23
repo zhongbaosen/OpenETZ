@@ -11,7 +11,7 @@ let db
 const initState = {
 	accountInfo: [],
 	currentAddr: '',
-	importSucc: false,
+	importStatus: '',
 	// deleteFinished: false,
 	updateBackupSucc: false,
 	isLoading: false,
@@ -28,12 +28,6 @@ export default function accountManageReducer (state = initState,action) {
 		case types.ON_SWITCH_ACCOUNT:
 			return onSwitch(state,action)
 			break
-		// case types.ON_IMPORT_ACCOUNT:
-		// 	return onImport(state,action)
-		// 	break
-		// case types.ON_DELETE_ACCOUNT:
-		// 	return onDelete(state,action)
-		// 	break
 		case types.ON_DELETE_ACCOUNT_START:
 			return onDelStart(state,action)
 			break
@@ -150,9 +144,8 @@ const onUpateBackup = (state,action) => {
 const onReset = (state,action) => {
 	return {
 		...state,
-		// deleteFinished: false,
+		importStatus: '',
 		updateBackupSucc: false,
-		importSucc: false,
 		deleteSuc: false,
 		createSucc: false,
 		delMnemonicSuc: false,
@@ -183,26 +176,8 @@ const onDelFail = (state,action) => {
 		deleteSuc: false
 	}
 }
-// const onDelete = (state,action) => {
-// 	const { deleteId } = action.payload
-// 	if(!db){  
-//       db = sqLite.open();  
-//     } 
-//     db.transaction((tx)=>{  
-//       tx.executeSql("delete from account where id= ? ", [deleteId],(tx,results)=>{  
-          
-//        })  
-//       },(error)=>{
-//         console.error(error)
-//     }); 
-
-// 	return {
-// 		...state,
-// 		deleteFinished: true
-// 	}
-// }	
+	
 const getAccInfo = (state,action) => {
-	// console.log('222222222222222222222==',action.payload.info)
 	return {
 		...state,
 		accountInfo: action.payload.info
@@ -262,106 +237,22 @@ const onSwitch = (state,action) => {
 	}
 }
 
-// const onImport = (state,action) => {
-// 	let succ = false
-// 	let selected = 0
-// 	const { privateKey, privatePassword, privateUserName,type,mnemonicVal, mnemonicPsd, mnemonicUserName,keystoreVal, keystoreUserName } = action.payload
-// 	let keyStore = {}
-// 	let createFinished = false
-// 	let userName = ''
-// 	if(type === 'private'){
-// 		let buf = new Buffer(privateKey, 'hex')
-
-// 		let w = wallet.fromPrivateKey(buf)
-// 	    let p_keystore = w.toV3(privatePassword,{c:8192,n:8192})
-// 	    console.log('私钥导入p_keystore====',p_keystore)
-// 	    keyStore = p_keystore
-// 	    userName = privateUserName
-// 	    createFinished = true
-// 	}else{
-// 		if(type === 'mnemonic'){
-// 			let seed = bip39.mnemonicToSeed(mnemonicVal)
-// 		    let hdWallet = hdkey.fromMasterSeed(seed)
-// 		    let w = hdWallet.getWallet()
-// 		    let m_keystore = w.toV3(mnemonicPsd,{c:8192,n:8192})
-// 		    console.log('助记词导入',m_keystore)
-// 		    keyStore = m_keystore
-// 		    userName = mnemonicUserName
-// 		    createFinished = true
-// 		}else{
-// 			keyStore = JSON.parse(keystoreVal)
-// 			userName = keystoreUserName
-// 			createFinished  = true
-// 			console.log('keyStore导入完成')
-// 		}
-// 	}
-
-// 	// console.log('createFinished======',createFinished)
-// 	if(createFinished){
-// 	    if(!db){  
-// 	        db = sqLite.open();  
-// 	    }  
-	      
-	   
-// 	   	db.transaction((tx)=>{  
-// 	        tx.executeSql("select * from account", [],(tx,results)=>{  
-
-// 	        })
-// 	    },(error)=>{
-// 	       selected = 1
-// 	       sqLite.createTable()
-// 	    })
-// 		let userData = [],  
-// 	  		user = {};  
-// 	   	setTimeout(() => {
-// 		    user.account_name = userName  
-// 		    user.backup_status = 0  
-// 		    user.is_selected = selected
-// 		    user.assets_total = '0'
-// 		    user.address = keyStore.address
-// 		    user.kid = keyStore.id 
-// 		    user.version = keyStore.version
-// 		    user.cipher = keyStore.crypto.cipher 
-// 		    user.ciphertext = keyStore.crypto.ciphertext 
-// 		    user.kdf = keyStore.crypto.kdf 
-// 		    user.mac = keyStore.crypto.mac 
-// 		    user.dklen = keyStore.crypto.kdfparams.dklen
-// 		    user.salt = keyStore.crypto.kdfparams.salt
-// 		    user.n = keyStore.crypto.kdfparams.n 
-// 		    user.r = keyStore.crypto.kdfparams.r 
-// 		    user.p = keyStore.crypto.kdfparams.p
-// 		    user.iv = keyStore.crypto.cipherparams.iv  
-// 		    userData.push(user) 
-// 	   	},1000)
-
-// 	    setTimeout(() => {
-// 	        sqLite.insertUserData(userData)
-// 	    },1500)
-
-// 	    succ = true
-// 	}
-
-// 	return {
-// 		...state,
-// 		importSucc: succ
-// 	}
-// }
 
 const importStart = (state,action) => {
 	return {
 		...state,
-		importSucc: false,
+		importStatus: '',
 	}
 }
 const importSuc = (state,action) => {
 	return {
 		...state,
-		importSucc: true,
+		importStatus: 'success',
 	}
 }
 const importFail = (state,action) => {
 	return {
 		...state,
-		importSucc: false,
+		importStatus: 'fail',
 	}
 }
