@@ -120,7 +120,8 @@ class PrivateKey extends Component{
         privateKey: privKeyVal,
         privatePassword: psdVal,
         privateUserName: userNameVal,
-        type: 'private'
+        type: 'private',
+        fromLogin: this.props.fromLogin === 'login' ? 'login' : 'accounts'
       }))
     },1000)
   }

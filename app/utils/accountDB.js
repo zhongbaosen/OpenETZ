@@ -37,7 +37,6 @@ export default class  UserSQLite extends Component{
     if (!db) {  
         this.open();  
     }  
-    //创建用户表  
     db.transaction((tx)=> {  
       tx.executeSql('CREATE TABLE IF NOT EXISTS ACCOUNT(' +  
           'id INTEGER PRIMARY KEY  AUTOINCREMENT,' +  
@@ -60,16 +59,17 @@ export default class  UserSQLite extends Component{
           'p INTEGER,' + 
           'iv VARCHAR)'  
           , [], ()=> {  
-              this._successCB('executeSql');  
+              console.log('创建用户account表成功')
+              this._successCB();  
           }, (err)=> {  
-              this._errorCB('executeSql', err);  
+              this._errorCB(err);  
         });  
     }, (err)=> {
-        // this._errorCB('transaction', err);  
+        this._errorCB(err);  
     }, ()=> {  
-        // this._successCB('transaction');  
+        this._successCB();  
     })  
-    }  
+  }  
   deleteData(){  
     if (!db) {  
         this.open();  
@@ -135,13 +135,9 @@ export default class  UserSQLite extends Component{
         );  
       }  
     },(error)=>{  
-      // this._errorCB('transaction', error);  
       // console.log('数据插入失败')
-      this.successInsertData(false)
     },()=>{  
-      // this._successCB('transaction insert data'); 
       console.log("成功插入 "+len+" 条用户数据")
-      this.successInsertData(true)
     });  
   }  
   close(){  
@@ -153,17 +149,13 @@ export default class  UserSQLite extends Component{
       }  
       db = null;  
   }
-  async successInsertData(status){
-    let s = await status
-    return s
-  }  
-  _successCB(name){  
-    // console.log("SQLiteStorage "+name+" success");  
+ 
+  _successCB(){  
+    return 'create success'
   }  
 
-  _errorCB(name, err){  
-    // console.log("SQLiteStorage "+name);  
-    // console.log(err);  
+  _errorCB(err){  
+    return 'create error'     
   }  
     render(){  
         return null

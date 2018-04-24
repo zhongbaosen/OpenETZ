@@ -85,6 +85,7 @@ class KeyStore extends Component{
         keystoreVal,
         keystoreUserName: userNameVal,
         type: 'keystore',
+        fromLogin: this.props.fromLogin === 'login' ? 'login' : 'accounts'
       }))
     },1000)
   }

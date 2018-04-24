@@ -19,14 +19,21 @@ const initState = {
 	passAccInfoSuc: '',
 	createSucc: false,
 	delMnemonicSuc: false,
+
+	globalAccountsList: [],
+	currentAccount: {},
+	deleteCurrentAccount: false
 }
 export default function accountManageReducer (state = initState,action) {
 	switch(action.type){
 		case types.GET_ACCOUNT_INFO:
 			return getAccInfo(state,action)
 			break
-		case types.ON_SWITCH_ACCOUNT:
-			return onSwitch(state,action)
+		case types.ON_SWITCH_ACCOUNT_START:
+			return onSwitchStart(state,action)
+			break
+		case types.ON_SWITCH_ACCOUNT_END:
+			return onSwitchEnd(state,action)
 			break
 		case types.ON_DELETE_ACCOUNT_START:
 			return onDelStart(state,action)
@@ -41,7 +48,10 @@ export default function accountManageReducer (state = initState,action) {
 			return onReset(state,action)
 			break
 		case types.UPDATE_BACKUP_STATUS:
-			return onUpateBackup(state,action)
+			return onUpateBackupStart(state,action)
+			break
+		case types.UPDATE_BACKUP_STATUS_SUCC:
+			return onUpateBackupSuc(state,action)
 			break
 		case types.PASS_ACCOUNTS_INFO_START:
 			return passInfoStart(state,action)
@@ -53,13 +63,10 @@ export default function accountManageReducer (state = initState,action) {
 			return passInfoFail(state,action)
 			break
 		case types.CREATE_ACCOUNT_START:
-			return createStart(state,action)
+			return accountCreateStart(state,action)
 			break
 		case types.CREATE_ACCOUNT_SUC:
-			return createSuc(state,action)
-			break
-		case types.CREATE_ACCOUNT_FAIL:
-			return createFail(state,action)
+			return accountCreateSuc(state,action)
 			break
 		case types.IMPORT_ACCOUNT_START:
 			return importStart(state,action)
@@ -73,31 +80,55 @@ export default function accountManageReducer (state = initState,action) {
 		case types.DELETE_MNEMONIC:
 			return onDelMneMonic(state,action)
 			break
+		case types.DELETE_MNEMONIC_START:
+			return onDelMneMonicStart(state,action)
+			break
+		case types.GLOBAL_ALL_ACCOUNTS_INFO:
+			return globalAccounts(state,action)
+			break
+		case types.GLOBAL_CURRENT_ACCOUNT_INFO:
+			return globalCurrentAccounts(state,action)
+			break
 		default:
 			return state
 			break
 
 	}
 }
-
-const onDelMneMonic = (state,action) => {
-	const { addr } = action.payload
-	if(!db){  
-	      db = sqLite.open();  
-	} 
-    db.transaction((tx)=>{  
-      	tx.executeSql("update account set mnemonic = '' where address= ? ", [addr],(tx,results)=>{  
-			
-       	})  
-      	},(error)=>{
-        console.error(error)
-    }) 
+const globalCurrentAccounts = (state,action) => {
 	return {
 		...state,
-		delMnemonicSuc: true
+		currentAccount: action.payload.currinfos
 	}
 }
-const createStart = (state,action) => {
+
+const globalAccounts = (state,action) => {
+	return {
+		...state,
+		globalAccountsList: action.payload.infos
+	}
+}
+const onDelMneMonicStart = (state,action) => {
+	return {
+		...state,
+		delMnemonicSuc: false,
+	}
+}
+const onDelMneMonic = (state,action) => {
+	const { data,addr } = action.payload
+
+	let newState = Object.assign({},state)
+	newState.globalAccountsList.map((list,index) => {
+		if(list.address === addr){
+			newState.globalAccountsList[index].mnemonic = ''
+		}
+	})
+	return {
+		...state,
+		delMnemonicSuc: data
+	}
+}
+const accountCreateStart = (state,action) => {
 	console.log('创建开始',)
 	return {
 		...state,
@@ -105,42 +136,39 @@ const createStart = (state,action) => {
 		createSucc: false
 	}
 }
-const createSuc = (state,action) => {
+const accountCreateSuc = (state,action) => {
+	const { data } = action.payload
 	console.log('创建完成')
 	return {
 		...state,
 		isLoading: false,
-		createSucc: true
+		createSucc: data
 	}
 }
-const createFail = (state,action) => {
-	return {
-		...state,
-		isLoading: false,
-		createSucc: false
-	}
-}
-const onUpateBackup = (state,action) => {
-	const { addr } = action.payload
-	let status = false
-	if(!db){  
-       db = sqLite.open();  
-    } 
-	db.transaction((tx)=>{  
-      tx.executeSql("update account set backup_status = 1 where address= ? ", [addr],(tx,results)=>{  
-        console.log('更新成功')  
-        // status = true
-      }) 
-    },(error)=>{
-      console.log('更新失败',error)
-    })
 
+const onUpateBackupStart = (state,action) => {
+
+	return state
+}
+
+const onUpateBackupSuc = (state,action) => {
+	const { data,updateAddr } = action.payload
+
+	let newState = Object.assign({},state)
+
+	newState.globalAccountsList.map((list,index) => {
+		if(list.address === updateAddr){
+			// list.backup_status = 1
+			newState.globalAccountsList[index].backup_status = 1
+		}
+	})
 
 	return {
-		...state,
-		updateBackupSucc: true
+		...newState,
+		updateBackupSucc: data
 	}
 }
+
 const onReset = (state,action) => {
 	return {
 		...state,
@@ -149,6 +177,7 @@ const onReset = (state,action) => {
 		deleteSuc: false,
 		createSucc: false,
 		delMnemonicSuc: false,
+		deleteCurrentAccount: false
 	}
 }
 
@@ -159,16 +188,36 @@ const onDelStart = (state,action) => {
 	}
 }
 const onDelSuc = (state,action) => {
-	const { data } = action.payload
+	const { deleteId,curId } = action.payload
+
+	let newState = Object.assign({},state)
+
+	newState.globalAccountsList.map((list,index) => {
+		console.log('list.id==',list.id)
+		console.log('deleteId==',deleteId)
+		if(list.id === deleteId){
+			newState.globalAccountsList.splice(index,1)
+		}	
+
+	})
+	//删除的是当前账号  is_selected = 1
+	let delCur = false 
+	if(deleteId === curId){
+		newState.globalAccountsList[0].is_selected = 1
+		delCur = true
+	}
+
+
+	console.log('删除成功',newState.globalAccountsList)
 
 	return {
-		...state,
+		...newState,
 		isLoading: false,
-		deleteSuc: true
+		deleteSuc: true,
+		deleteCurrentAccount: delCur
 	}
 }
 const onDelFail = (state,action) => {
-	const { msg } = action.payload
 	console.log('删除失败')
 	return {
 		...state,
@@ -205,38 +254,35 @@ const passInfoFail = (state,action) => {
 	}
 }
 
-const onSwitch = (state,action) => {
-	const addr = action.payload.addr
-	const newState = Object.assign({},state)
-	let curr =  ''
+const onSwitchStart = (state,action) => {
+	
 
-	newState.accountInfo.map((val,index) => {
-		if(addr === val.address){
-			curr = val.address
 
-			if(!db){  
-		        db = sqLite.open();  
-		    }  
-		    db.transaction((tx)=>{  
-		      tx.executeSql("update account set is_selected = 1 where address= ? ", [curr],(tx,results)=>{  
-		        db.transaction((tx) => {
-		        	tx.executeSql("update account set is_selected = 0 where address != ? ", [curr],(tx,results)=>{
-		        	})
-		        }, (error) => {
-		        	console.error(error)
-		        })
-		      });  
-		    },(error)=>{
-		      console.error(error)
-		    })
-		}	
-	})
-	return {
-		...state,
-		currentAddr: curr,
-	}
+	return state
 }
 
+const onSwitchEnd = (state,action) => {
+	const { switchAddr } = action.payload
+
+	const newState = Object.assign({},state)
+
+	newState.globalAccountsList.map((list,index) => {
+		console.log('list.address==',list.address)
+		console.log('switchAddr==',switchAddr)
+		if(list.address === switchAddr){
+			newState.globalAccountsList[index].is_selected = 1
+			newState.currentAccount = newState.globalAccountsList[index]
+		}else{
+			newState.globalAccountsList[index].is_selected = 0
+		}
+	})
+
+
+	console.log('newState.globalAccountsList===',newState.globalAccountsList)
+	return {
+		...newState,
+	}
+}
 
 const importStart = (state,action) => {
 	return {
@@ -245,8 +291,14 @@ const importStart = (state,action) => {
 	}
 }
 const importSuc = (state,action) => {
+	const { data } = action.payload //导入的这条数据
+	
+	let newState = Object.assign({},state)
+
+	newState.globalAccountsList.push(data)
+
 	return {
-		...state,
+		...newState,
 		importStatus: 'success',
 	}
 }

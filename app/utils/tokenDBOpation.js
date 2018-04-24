@@ -9,13 +9,13 @@ async function fetchFunc(options){
        tk_db = tkSqLite.open()
 	}
 
-	let res = await fetch('http://52.74.3.64/token-list.txt',{
-		method: 'GET',
-	    headers: {
-	        'Accept': 'application/json',
-	        'Content-Type': 'application/json',
-	    }
-	})
+	// let res = await fetch('http://52.74.3.64/token-list.txt',{
+	// 	method: 'GET',
+	//     headers: {
+	//         'Accept': 'application/json',
+	//         'Content-Type': 'application/json',
+	//     }
+	// })
 	let response = null
 	response = await res.json()
 	for(let i = 0; i < response.length; i++){

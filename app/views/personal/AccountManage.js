@@ -11,13 +11,8 @@ import {
 
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
-import { toHome } from '../../root'
 import { connect } from 'react-redux'
 import { sliceAddress,splitDecimal } from '../../utils/splitNumber'
-const Wallet = require('ethereumjs-wallet')
-import UserSQLite from '../../utils/accountDB'
-const sqLite = new UserSQLite();  
-let db
 import I18n from 'react-native-i18n'
 class AccountCard extends Component {
   render(){
@@ -56,55 +51,23 @@ class AccountManage extends Component{
   constructor(props){
     super(props)
     this.state = {
-      cardItems: [],
-      currentAccountId: -1
+      
     } 
   }
 
-  componentWillMount(){
 
-    
-
-    this.searchAccountList()
-
-  }
 
   componentWillReceiveProps(nextProps){
     if(this.props.accountManageReducer.deleteSuc !== nextProps.accountManageReducer.deleteSuc && nextProps.accountManageReducer.deleteSuc){
-      this.searchAccountList()
+      alert('删除成功')
     }
     if(this.props.accountManageReducer.updateBackupSucc !== nextProps.accountManageReducer.updateBackupSucc && nextProps.accountManageReducer.updateBackupSucc){
-      this.searchAccountList()
+       alert('更新备份状态成功')
     }
   }
-  searchAccountList = () => {
-    const { cardItems } = this.state
-    if(!db){  
-      db = sqLite.open()  
-    }  
-    db.transaction((tx)=>{  
-      tx.executeSql("select * from account ", [],(tx,results)=>{
-        var len = results.rows.length 
-        let empty = [] 
-        for(let i=0; i<len; i++){  
-          var u = results.rows.item(i)
-          empty.push(u)
-          this.setState({
-            cardItems: empty
-          })
 
-          if(u.is_selected === 1){
-            this.setState({
-              currentAccountId: u.id
-            })
-          }
-        }  
-      })  
-    },(error)=>{
-      console.log('打印异常信息 ',error) 
-    })
-  }
   toDetail = (address,name,id) => {
+    const { currentAccount, globalAccountsList } = this.props.accountManageReducer
     this.props.navigator.push({
       screen: 'back_up_account',
       title: name,
@@ -114,8 +77,8 @@ class AccountManage extends Component{
         userName: name,
         address: address,
         b_id: id,
-        accountsNumber: this.state.cardItems.length,
-        currentAccountId: this.state.currentAccountId
+        accountsNumber: globalAccountsList.length,
+        currentAccountId: currentAccount.id
       },
       // navigatorButtons: {
       //   rightButtons: [
@@ -158,17 +121,15 @@ class AccountManage extends Component{
     )
   }
   render(){
-    // const { localKeyStore, userName } = this.props.getLocalDataReducer
-    const { cardItems } = this.state
+    const { currentAccount, globalAccountsList } = this.props.accountManageReducer
+
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
         <View style={{marginBottom: scaleSize(96)}}>
           <FlatList
-            data={cardItems}
+            data={globalAccountsList}
             renderItem={this.renderItem}
             keyExtractor = {(item, index) => index}
-            // ListFooterComponent={this.ListFooterComponent}
-            // ListHeaderComponent={this.ListHeaderComponent}
           />
         </View>
         <View style={[{width: '100%',bottom:0,position:'absolute'},pubS.rowCenter]}>

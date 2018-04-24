@@ -30,53 +30,32 @@ class Receive extends Component{
         visible: false,
         payTotalVal: '',
         addressText: '',
-        currentAccount: { }
     }
 
   }
 
   componentWillMount(){
 
-    if(!db){  
-        db = sqLite.open();  
-    }
+    const { currentAccount } = this.props.accountManageReducer
 
-    db.transaction((tx) => {
-        tx.executeSql("select * from account ", [], (tx,results) => {
+    this.setState({
+      addressText: `0x${currentAccount.address}`
+    })
 
-          let len = results.rows.length 
-          
-          for(let i=0; i<len; i++){  
-            let result = results.rows.item(i)
-            if(result.is_selected === 1){
-              this.setState({
-                currentAccount: result,
-                addressText: `0x${result.address}`
-              })
-            }
-            
-            if(result.backup_status === 0){
-              this.setState({
-                visible: true
-              })
-            }
-          } 
-        },(error) => {
-          console.error(error)
-        })
+    if(currentAccount.backup_status === 0){
+      this.setState({
+        visible: true
       })
+    }
 
   }
 
   componentWillUnmount(){
-    // this.getContent()
     this.setState({
       visible: false
     }) 
   }
-  // async getContent(){
-  //   let a= await Clipboard.getString()
-  // }
+
 
   // onChangePayTotal = (val) => {
   //   this.setState({
@@ -95,11 +74,12 @@ class Receive extends Component{
     })
   }
   backupBtn = () => {
-    const { currentAccount } = this.state
-    console.log('currentAccount===',currentAccount)
+    const { currentAccount } = this.props.accountManageReducer
+
     this.setState({
       visible: false
     })
+    
     this.props.navigator.push({
       screen: 'back_up_account',
       title: currentAccount.account_name,

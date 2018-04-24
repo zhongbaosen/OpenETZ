@@ -6,13 +6,15 @@ const randomBytes = require('randombytes')
 
 import UserSQLite from '../utils/accountDB'
 
+import accountDB from '../db/account_db'
+
 const sqLite = new UserSQLite()
 let db
 
 async function onImportAccount(options){
 	const { importSuccess, importFailure, parames } = options
 
-	const { privateKey, privatePassword, privateUserName,type,mnemonicVal, mnemonicPsd, mnemonicUserName,keystoreVal, keystoreUserName } = parames
+	const { privateKey, privatePassword, privateUserName,type,mnemonicVal, mnemonicPsd, mnemonicUserName,keystoreVal, keystoreUserName, fromLogin } = parames
 	let selected = 0
 	let keyStore = {}
 	let createFinished = false
@@ -50,65 +52,61 @@ async function onImportAccount(options){
 		return
 	}
 
-	// console.log('createFinished======',createFinished)
 	if(createFinished){
-	    if(!db){  
-	        db = sqLite.open();  
-	    }  
-	      
-	   
-	   	db.transaction((tx)=>{  
-	        tx.executeSql("select * from account", [],(tx,results)=>{  
- 
-	        })
-	    },(error)=>{
-	       selected = 1
-	       sqLite.createTable()
-	    })
-		let userData = [],  
-	  		user = {};  
+	    
+
+	   	if(fromLogin === 'login'){
+	   		selected = 1
+	       	accountDB.createAmountTable()
+	   	}else{
+	   		selected = 0
+	   	}
+
+	    let userData = [],  
+    		user = {};
+
 	  	try {
-		   	setTimeout(() => {
-			    user.account_name = userName  
-			    user.backup_status = 0  
-			    user.is_selected = selected
-			    user.assets_total = '0'
-			    user.address = keyStore.address
-			    user.kid = keyStore.id 
-			    user.version = keyStore.version
+		    user.account_name = userName  
+		    user.backup_status = 0  
+		    user.is_selected = selected
+		    user.assets_total = '0'
+		    user.address = keyStore.address
+		    user.kid = keyStore.id 
+		    user.version = keyStore.version
 
-			    if(keyStore.crypto){
-			    	user.cipher = keyStore.crypto.cipher
-			    	user.ciphertext = keyStore.crypto.ciphertext
-			    	user.kdf = keyStore.crypto.kdf
-					user.mac = keyStore.crypto.mac
-					user.dklen = keyStore.crypto.kdfparams.dklen
-					user.salt = keyStore.crypto.kdfparams.salt
-					user.n = keyStore.crypto.kdfparams.n
-					user.r = keyStore.crypto.kdfparams.r
-					user.p = keyStore.crypto.kdfparams.p
-					user.iv = keyStore.crypto.cipherparams.iv
-			    }else{
-			    	user.cipher = keyStore.Crypto.cipher
-			    	user.ciphertext = keyStore.Crypto.ciphertext
-			    	user.kdf = keyStore.Crypto.kdf
-					user.mac = keyStore.Crypto.mac
-					user.dklen = keyStore.Crypto.kdfparams.dklen
-					user.salt = keyStore.Crypto.kdfparams.salt
-					user.n = keyStore.Crypto.kdfparams.n
-					user.r = keyStore.Crypto.kdfparams.r
-					user.p = keyStore.Crypto.kdfparams.p
-					user.iv = keyStore.Crypto.cipherparams.iv
-			    }
-			    userData.push(user) 
-		   	},1000)
+		    if(keyStore.crypto){
+		    	user.cipher = keyStore.crypto.cipher
+		    	user.ciphertext = keyStore.crypto.ciphertext
+		    	user.kdf = keyStore.crypto.kdf
+				user.mac = keyStore.crypto.mac
+				user.dklen = keyStore.crypto.kdfparams.dklen
+				user.salt = keyStore.crypto.kdfparams.salt
+				user.n = keyStore.crypto.kdfparams.n
+				user.r = keyStore.crypto.kdfparams.r
+				user.p = keyStore.crypto.kdfparams.p
+				user.iv = keyStore.crypto.cipherparams.iv
+		    }else{
+		    	user.cipher = keyStore.Crypto.cipher
+		    	user.ciphertext = keyStore.Crypto.ciphertext
+		    	user.kdf = keyStore.Crypto.kdf
+				user.mac = keyStore.Crypto.mac
+				user.dklen = keyStore.Crypto.kdfparams.dklen
+				user.salt = keyStore.Crypto.kdfparams.salt
+				user.n = keyStore.Crypto.kdfparams.n
+				user.r = keyStore.Crypto.kdfparams.r
+				user.p = keyStore.Crypto.kdfparams.p
+				user.iv = keyStore.Crypto.cipherparams.iv
+		    }
+		    userData.push(user) 
 
-		    setTimeout(() => {
-		        sqLite.insertUserData(userData)
-		    },1500)
-		    setTimeout(() => {
-		    	importSuccess(true)
-		    },3000)
+		    let importInsertRes = await accountDB.insertToAccontTable(userData)
+
+		    if(importInsertRes){
+		    	//导入成功   回调
+		    	importSuccess(userData)
+		    }else{
+		    	importFailure('import failed')
+		    }
 	  		
 	  	} catch(err){
 	  		importFailure(err) 
@@ -118,47 +116,36 @@ async function onImportAccount(options){
 
 
 async function onDelAccount(options){
-	const { parames, delSuccess, delFailure,curId } = options
+	const { parames, delSuccess, delFailure } = options
+	const { deleteId, curId } = parames
+	let delRes = await accountDB.deleteAccount({
+		sql: 'delete from account where id = ?',
+		d_id: [deleteId],
+	})
 
-	if(!db){  
-      db = sqLite.open();  
-    } 
-    db.transaction((tx)=>{  
-      tx.executeSql("delete from account where id = ? ", [parames.deleteId],(tx,results)=>{  
-      		delSuccess(true)
-      		if(parames.curId === parames.deleteId){
-	      		db.transaction((tx) => {
-	      			tx.executeSql(" select * from account ",[],(tx,selectRes) => {
-						db.transaction((tx) => {
-							tx.executeSql(" update account set is_selected = 1 where account_name = ? ",[selectRes.rows.item(0).account_name],(tx,updateRes) =>{
-								//alert('删除其他账号后 更新accountInfo信息  如果删除的是当前账号  更新accountInfo后还需要将另外的一条信息的is_selected=1')
-							},(error) => {
-								console.error(error)
-							})
-						})
-	      			})
-	      		})
-      		}
-       })  
-      },(error)=>{
-      		delFailure(error)
-        // console.error(error)
-    }); 
+	if(delRes === 'success'){
+		delSuccess()
+	}else{
+		if(delRes === 'fail'){
+			delFailure()
+		}
+	}
+
+	if(curId === deleteId){
+		let selectRes = await accountDB.selectAccountTable('select account_name from account')
+		let updateRes = await accountDB.updateTable({
+			sql: 'update account set is_selected = 1 where account_name = ?',
+			parame: [selectRes[0].account_name]
+		})
+		if(updateRes === 'success'){
+			console.log('successful===删除的是当前账号  更新 将另一个账号 is_selected=1')
+		}else{
+			if(updateRes === 'fail'){
+				console.log('failure===删除的是当前账号  更新 将另一个账号 is_selected=1')
+			}
+		}
+	}
 }
-
-// async function updateAssetsTotal (val,options) {
-// 	const { passAccInfoSuc, passAccInfoFail} = options
-// 	let res = await web3.eth.getBalance(`0x${val.address}`)
-//     let newTotal = web3.utils.fromWei(res,'ether')
-//     let name = val.account_name
-//     db.transaction((tx) => {
-//       tx.executeSql(" update account set assets_total = ? where account_name = ? ",[newTotal,name],(tx,results) => {
-//       	passAccInfoSuc(true)
-//       },(error) => {
-//         console.log(error)
-//       })
-//     })  
-// }
 
 async function onPassAccInfo(options) {
 	const { passAccInfoSuc, passAccInfoFail} = options
@@ -186,8 +173,8 @@ async function onPassAccInfo(options) {
 }
 
 async function onCreateAccount(options){
-	const { parames, createSuccess, createFailure } = options
-	const { userNameVal, psdVal, promptVal, } = parames
+	const { parames, createSuccess, } = options
+	const { userNameVal, psdVal, promptVal, fromLogin} = parames
 	
     let selected = 0 
 	let mnemonic = await bip39.generateMnemonic();
@@ -203,54 +190,117 @@ async function onCreateAccount(options){
 
     console.log('keyStore==',keyStore)
 
-    if(!db){  
-        db = sqLite.open();  
-    }  
-      
-      
+    // let selectedRes = await accountDB.selectAccountTable('select address from account')
+    
+	
 
-    db.transaction((tx)=>{  
-      tx.executeSql("select * from account", [],(tx,results)=>{  
-          console.log('有表')
-      });  
-    },(error)=>{
-      console.log('无表')
-      sqLite.createTable()
-      selected = 1
-    }); 
+    // if(selectedRes.length !== 0){
+    // 	//此时已经有数据  说明已经创建了表  
+    //     selected = 0
+    // }else{
+    // 	//创建表
+    // 	accountDB.createAmountTable()
+    // 	selected = 1
+    // }
+
+    if(fromLogin === 'login'){
+    	accountDB.createAmountTable()
+    	selected = 1
+    }else{
+    	selected = 0
+    }
 
     let userData = [],  
-        user = {};  
-    setTimeout(() => {
-	    user.mnemonic = mnemonic;
-	    user.account_name = userNameVal;  
-	    user.backup_status = 0;  
-	    user.assets_total = '0';
-	    user.is_selected = selected;
-	    user.address = keyStore.address;  
-	    user.kid = keyStore.id;  
-	    user.version = keyStore.version;  
-	    user.cipher = keyStore.crypto.cipher;  
-	    user.ciphertext = keyStore.crypto.ciphertext;  
-	    user.kdf = keyStore.crypto.kdf;  
-	    user.mac = keyStore.crypto.mac;  
-	    user.dklen = keyStore.crypto.kdfparams.dklen;  
-	    user.salt = keyStore.crypto.kdfparams.salt;  
-	    user.n = keyStore.crypto.kdfparams.n;  
-	    user.r = keyStore.crypto.kdfparams.r;  
-	    user.p = keyStore.crypto.kdfparams.p;  
-	    user.iv = keyStore.crypto.cipherparams.iv;  
-	    userData.push(user); 
-    },100)
-   // insert 
-    setTimeout(() => {
-        sqLite.insertUserData(userData)
-    },500)
+    	user = {};
+    user.mnemonic = mnemonic
+    user.account_name = userNameVal  
+    user.backup_status = 0  
+    user.assets_total = '0'
+    user.is_selected = selected
+    user.address = keyStore.address  
+    user.kid = keyStore.id  
+    user.version = keyStore.version  
+    user.cipher = keyStore.crypto.cipher  
+    user.ciphertext = keyStore.crypto.ciphertext  
+    user.kdf = keyStore.crypto.kdf  
+    user.mac = keyStore.crypto.mac  
+    user.dklen = keyStore.crypto.kdfparams.dklen 
+    user.salt = keyStore.crypto.kdfparams.salt  
+    user.n = keyStore.crypto.kdfparams.n  
+    user.r = keyStore.crypto.kdfparams.r  
+    user.p = keyStore.crypto.kdfparams.p  
+    user.iv = keyStore.crypto.cipherparams.iv  
+    userData.push(user) 
 
-    setTimeout(()=>{
+    let insertRes = await accountDB.insertToAccontTable(userData)
+
+    if(insertRes){
+    	//创建成功   回调
     	createSuccess(true)
-    },1000)
+    }else{
+    	createSuccess(false)
+    }
 
+}
+
+async  function onUpdatePrivStatus(options) {
+	const { parames, updatePrivSuccess } = options
+
+	let updateRes = await accountDB.updateTable({
+		sql: 'update account set backup_status = 1 where address= ?',
+		parame: [parames.addr]
+	})
+	if(updateRes === 'success'){
+		updatePrivSuccess(true)
+	}else{
+		if(updateRes === 'fail'){
+			updatePrivSuccess(false)
+		}
+	}
+}
+
+async function onDeleteMnemonic(options){
+	const { parames, delSuc } = options
+
+	let delMRes = await accountDB.updateTable({
+		sql: 'update account set mnemonic = "" where address= ? ',
+		parame: [parames.addr]
+	})
+
+	console.log('更新朱几次状态',delMRes)
+
+	if(delMRes === 'success'){
+		delSuc(true)
+	}else{
+		if(delMRes === 'fail'){
+			delSuc(false)
+		}
+	}
+    
+
+}
+
+async function onSwitchAccount(options){
+	const { parames, switchAccountEnd } = options
+
+	const { switchAddr } = parames
+
+	let switchRes1 = await accountDB.updateTable({
+		sql: 'update account set is_selected = 1 where address= ?',
+		parame: [switchAddr]
+	})
+
+	if(switchRes1 === 'success'){
+		let switchRes2 = await accountDB.updateTable({
+			sql: 'update account set is_selected = 0 where address != ?',
+			parame: [switchAddr]
+		})
+		if(switchRes2 === 'success'){
+			switchAccountEnd()
+		}
+	}else{
+		console.log('切换账号出错')
+	}
 }
 const accountDBOpation = {
 	importAccount:(options) => {
@@ -264,6 +314,15 @@ const accountDBOpation = {
 	},
 	createAccount:(options) => {
 		onCreateAccount(options)
+	},
+	updatePrivStatus:(options) => {
+		onUpdatePrivStatus(options)
+	},
+	deleteMnemonic:(options) => {
+		onDeleteMnemonic(options)
+	},
+	switchAccount:(options) =>{
+		onSwitchAccount(options)
 	},
 }
 

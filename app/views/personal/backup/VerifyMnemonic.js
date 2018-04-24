@@ -55,6 +55,7 @@ class VerifyMnemonic extends Component{
 			this.props.navigator.pop()
 		}
 	}
+	
 	shuffle = (arr) => {
 	    let i = arr.length;
 	    while (i) {
@@ -139,6 +140,8 @@ class VerifyMnemonic extends Component{
     render(){
     	const { isEmpty, mnemonicArr, visible, selectedContainer, selectedString} = this.state
     	let selected = false
+    	const { delMnemonicSuc } = this.props.accountManageReducer
+    	console.log('delMnemonicSuc===',delMnemonicSuc)
 	    return(
 	    	<View style={[{flex:1,backgroundColor:'#F5F7FB',alignItems:'center'},pubS.paddingRow35]}>
 	    		<View style={[styles.selectViewBox,pubS.center,pubS.paddingRow35]}>
@@ -177,7 +180,6 @@ class VerifyMnemonic extends Component{
 			        isVisible={visible}
 			        onBackButtonPress={this.onHide}
 			        onBackdropPress={this.onHide}
-			        style={styles.modalView}
 			        backdropOpacity={.8}
 			      >
 					 <View style={[{backgroundColor:'#fff',},pubS.center,styles.modalView]}>

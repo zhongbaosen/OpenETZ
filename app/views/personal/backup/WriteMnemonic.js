@@ -27,20 +27,11 @@ class WriteMnemonic extends Component{
 		}
 	}
 	componentWillMount(){
-		if(!db){  
-        	db = sqLite.open();  
-    	}
-    	db.transaction((tx)=>{  
-	      tx.executeSql("select * from account where address = ? ", [this.props.currentAddress],(tx,results)=>{  
-	        let res = results.rows.item(0)
-	        this.setState({
-	        	mnemonicText: res.mnemonic.split(" "),
-	        	originMneStr: res.mnemonic
-	        })
-	      });  
-	    },(error)=>{
-	      console.error(error)
-	    })
+    	this.setState({
+    		mnemonicText: this.props.localMnemonic.split(" "),
+	        originMneStr: this.props.localMnemonic    		
+    	})
+
 	}
 	componentWillReceiveProps(nextProps){
 		if(this.props.accountManageReducer.delMnemonicSuc !== nextProps.accountManageReducer.delMnemonicSuc && nextProps.accountManageReducer.delMnemonicSuc){

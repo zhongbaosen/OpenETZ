@@ -47,16 +47,32 @@ const passAccountsInfoAction = () => {
 	}
 }
 const switchAccountAction = (addr) => {
-	const getInfo = () => {
+	const switchStart = () => {
 		return {
-			type: types.ON_SWITCH_ACCOUNT,
+			type: types.ON_SWITCH_ACCOUNT_START,
 			payload: {
 				addr,
 			}
 		}
 	}
+
+	const switchEnd = () => {
+		return {
+			type: types.ON_SWITCH_ACCOUNT_END,
+			payload:{
+				switchAddr: addr,
+			}
+		}
+	}
+
 	return(dispatch,getState) => {
-		dispatch(getInfo())
+		dispatch(switchStart())
+		accountDBOpation.switchAccount({
+			parames: {
+				switchAddr: addr,
+			},
+			switchAccountEnd:() => {dispatch(switchEnd())}
+		})
 	}
 }
 const importAccountAction = (data) => {
@@ -97,6 +113,7 @@ const importAccountAction = (data) => {
 				mnemonicUserName: data.mnemonicUserName,
 				keystoreVal: data.keystoreVal,
 				keystoreUserName: data.keystoreUserName,
+				fromLogin: data.fromLogin
 			},
 			importSuccess: (data) => {dispatch(importSuc(data))},
 			importFailure: (msg) => {dispatch(importFail(msg))}
@@ -105,50 +122,39 @@ const importAccountAction = (data) => {
 }
 
 const deleteAccountAction = (deleteId,accountsNum,curId) => {
-	// const onDelete = () => {
-	// 	return {
-	// 		type: types.ON_DELETE_ACCOUNT,
-	// 		payload: {
-	// 			deleteId
-	// 		}
-	// 	}
-	// }
+
 	const onDelStart = () => {
 		return {
 			type: types.ON_DELETE_ACCOUNT_START,
-			payload: {
-
-			}
 		}
 	}
-	const delSuc = (data) => {
+	const delSuc = () => {
 		return {
 			type: types.ON_DELETE_ACCOUNT_SUC,
 			payload: {
-				data
+				deleteId,
+				curId
 			}
 		}
 	}
-	const delFail = (msg) => {
+	const delFail = () => {
 		return {
 			type: types.ON_DELETE_ACCOUNT_FAIL,
 			payload: {
-				msg
+				deleteId,
 			}
+			
 		}
 	}
 	return(dispatch,getState) => {
-		// dispatch(onDelete())
-
 		dispatch(onDelStart())
 		accountDBOpation.deleteAccount({
 			parames: {
 				deleteId,
-				accountsNum,
 				curId,
 			},
-			delSuccess: (data) => {dispatch(delSuc(data))},
-			delFailure: (msg) => {dispatch(delFail(msg))}
+			delSuccess: () => {dispatch(delSuc())},
+			delFailure: () => {dispatch(delFail())}
 		})
 	}
 }
@@ -172,8 +178,23 @@ const updateBackupStatusAction = (addr) => {
 			}
 		}
 	}
+	const updateSuc = (data) => {
+		return {
+			type: types.UPDATE_BACKUP_STATUS_SUCC,
+			payload: {
+				data,
+				updateAddr: addr
+			}
+		}
+	}
 	return(dispatch,getState) => {
 		dispatch(onUpdate())
+		accountDBOpation.updatePrivStatus({
+			parames: {
+				addr
+			},
+			updatePrivSuccess:(data) =>{dispatch(updateSuc(data))}
+		})
 	}
 }
 
@@ -195,14 +216,7 @@ const createAccountAction = (par) => {
 			}
 		}
 	}
-	const createFail = (msg) => {
-		return {
-			type: types.CREATE_ACCOUNT_FAIL,
-			payload: {
-				msg
-			}
-		}
-	}
+
 	return(dispatch,getState) => {
 		dispatch(onStart())
 		accountDBOpation.createAccount({
@@ -210,24 +224,65 @@ const createAccountAction = (par) => {
 				userNameVal: par.userNameVal,
 				psdVal: par.psdVal,
 				promptVal: par.promptVal,
+				fromLogin: par.from,
 			},
 			createSuccess: (data) => {dispatch(createSucc(data))},
-			createFailure: (msg) => {dispatch(createFail(msg))}
 		})
 	}
 }
 
 const deleteMnemonicAction = (addr) => {
-	const delMne = () => {
+	const deleteSuc = (data) => {
 		return {
 			type: types.DELETE_MNEMONIC,
 			payload: {
+				data,
 				addr
 			}
 		}
 	}
+	const deleteMnemonicStart = () => {
+		return {
+			type: types.DELETE_MNEMONIC_START,
+
+		}
+	}
 	return(dispatch,getState) => {
-		dispatch(delMne())
+		dispatch(deleteMnemonicStart())
+		accountDBOpation.deleteMnemonic({
+			parames: {
+				addr
+			},
+			delSuc:(data) => {dispatch(deleteSuc(data))}
+		})
+	}
+}
+
+
+const globalAllAccountsInfoAction = (infos) => {
+	const sharedInfos = () => {
+		return {
+			type: types.GLOBAL_ALL_ACCOUNTS_INFO,
+			payload:{
+				infos
+			}
+		}
+	}
+	return (dispatch,getState) => {
+		dispatch(sharedInfos())
+	}
+}
+const globalCurrentAccountInfoAction = (currinfos) => {
+	const curInfos = () => {
+		return {
+			type: types.GLOBAL_CURRENT_ACCOUNT_INFO,
+			payload:{
+				currinfos
+			}
+		}
+	}
+	return (dispatch,getState) => {
+		dispatch(curInfos())
 	}
 }
 
@@ -240,5 +295,7 @@ export {
 	updateBackupStatusAction,
 	passAccountsInfoAction,
 	createAccountAction,
-	deleteMnemonicAction
+	deleteMnemonicAction,
+	globalAllAccountsInfoAction,
+	globalCurrentAccountInfoAction,
 }

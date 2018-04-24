@@ -19,15 +19,17 @@ import { sliceAddress } from '../../../utils/splitNumber'
 import { Btn,Loading, } from '../../../components/'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
-import UserSQLite from '../../../utils/accountDB'
 
-import { deleteAccountAction,resetDeleteStatusAction,updateBackupStatusAction,passAccountsInfoAction } from '../../../actions/accountManageAction'
+
+import { deleteAccountAction,resetDeleteStatusAction,updateBackupStatusAction } from '../../../actions/accountManageAction'
 const Wallet = require('ethereumjs-wallet')
-const sqLite = new UserSQLite()
-let db
+
 import { toLogin } from '../../../root'
 import I18n from 'react-native-i18n'
 import Toast from 'react-native-toast'
+
+import accountDB from '../../../db/account_db'
+
 class BackUpAccount extends Component{
   constructor(props){
     super(props)
@@ -44,64 +46,56 @@ class BackUpAccount extends Component{
       keyStore: {},
       loadingText: '',
       visible: false,
-      time1:'',
-      time2:'',
+      localMnemonic: '',
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
   componentWillMount(){
+    const { currentAccount, globalAccountsList } = this.props.accountManageReducer
+
     this.props.dispatch(resetDeleteStatusAction())
-    if(!db){  
-        db = sqLite.open();  
-    }  
-    db.transaction((tx)=>{  
-      tx.executeSql("select * from account where address= ? ", [this.props.address],(tx,results)=>{  
-        let res = results.rows.item(0)
-        let keyStore = {
-          "version":res.version,
-          "id":res.kid,
-          "address":res.address,
-          "crypto":{
-            "ciphertext":res.ciphertext,
-            "cipherparams":{
-                "iv":res.iv
-            },
-            "cipher":res.cipher,
-            "kdf":res.kdf,
-            "kdfparams":{
-              "dklen":res.dklen,
-              "salt":res.salt,
-              "n":res.n,
-              "r":res.r,
-              "p":res.p
-            },
-            "mac":res.mac
-          }
-        }
+    
+    globalAccountsList.map((list,index) => {
+      if(list.address === this.props.address){
         this.setState({
-          keyStore
+          localMnemonic: list.mnemonic
         })
-        if(res.backup_status === 1){
+        if(list.backup_status === 1){
           this.setState({
             privBackuped: true
           })
         }
-        if(!res.mnemonic){
+        if(!list.mnemonic){
           this.setState({
-            mncBackuped: true
+            mncBackuped: true,
           })
         }
-
-      });  
-    },(error)=>{
-      console.error(error)
-    }); 
+        let keyStore = {
+          "version":list.version,
+          "id":list.kid,
+          "address":list.address,
+          "crypto":{
+            "ciphertext":list.ciphertext,
+            "cipherparams":{
+                "iv":list.iv
+            },
+            "cipher":list.cipher,
+            "kdf":list.kdf,
+            "kdfparams":{
+              "dklen":list.dklen,
+              "salt":list.salt,
+              "n":list.n,
+              "r":list.r,
+              "p":list.p
+            },
+            "mac":list.mac
+          }
+        }
+        this.setState({ keyStore })
+      }
+    })
   }
 
-
-  compennetDidUnmount(){  
-    sqLite.close()  
-  } 
 
   componentWillReceiveProps(nextProps){
     if(this.props.accountManageReducer.deleteSuc !== nextProps.accountManageReducer.deleteSuc && nextProps.accountManageReducer.deleteSuc){
@@ -114,15 +108,8 @@ class BackUpAccount extends Component{
         setTimeout(() => {
           toLogin()
         },1000)
-        sqLite.dropTable()
-        sqLite.deleteData()  
+        accountDB.dropAccountTable() 
       }else{
-        //删除其他账号后 更新accountInfo信息  如果删除的是当前账号  更新accountInfo后还需要将另外的一条信息的is_selected=1
-        this.setState({
-          visible: false,
-          loadingText: ''
-        })
-        this.props.dispatch(passAccountsInfoAction())
         setTimeout(() => {
           this.props.navigator.pop()
         },1000)
@@ -216,15 +203,7 @@ class BackUpAccount extends Component{
     })  
     setTimeout(() => {
       try {
-        let d1 = new Date()
-        // this.setState({
-        //   time1: `${d1.getMinutes()}分--${d1.getSeconds()}秒`
-        // })
         const newWallet = Wallet.fromV3(keyStore,psdVal)
-        // let d2 = new Date()
-        // this.setState({
-        //   time2: `${d2.getMinutes()}分--${d2.getSeconds()}秒`
-        // })
         let priv = newWallet._privKey.toString('hex')
         if(backupMnemonic){
           this.props.navigator.push({
@@ -232,7 +211,8 @@ class BackUpAccount extends Component{
             title: '',
             navigatorStyle: DetailNavigatorStyle,
             passProps: {
-              currentAddress: this.props.address
+              currentAddress: this.props.address,
+              localMnemonic: this.state.localMnemonic
             }
           })
         }else{
@@ -299,7 +279,7 @@ class BackUpAccount extends Component{
 
   render(){
     const { iptPsdVisible,psdVal,pKeyVisible,privKey,privBackuped,mncBackuped,keyStore,dVisible } = this.state
-    const { isLoading } = this.props.accountManageReducer
+    const { isLoading,delMnemonicSuc } = this.props.accountManageReducer
     return(
       <View style={[pubS.container,{backgroundColor:'#fff',alignItems:'center'}]}>
         <Loading loadingVisible={this.state.visible} loadingText={this.state.loadingText}/>
@@ -373,13 +353,13 @@ class BackUpAccount extends Component{
           backdropOpacity={.8}
         >
           <View style={styles.pkViewStyle}>
-            <View style={[{height: scaleSize(90),backgroundColor:'#2B8AFF',width: '100%',borderTopLeftRadius: scaleSize(10),borderTopRightRadius: scaleSize(10),},pubS.center]}>
+            <View style={[styles.privViewStyle,pubS.center]}>
               <Text style={[pubS.font36_4,{fontWeight: 'bold'}]}>{I18n.t('backup_private_key')}</Text>
               <TouchableOpacity activeOpacity={.7} onPress={this.onPKeyHide} style={styles.iconStyle}>
                 <Image source={require('../../../images/xhdpi/btn_ico_collectionnobackup_close_def.png')} style={{height: scaleSize(30),width: scaleSize(30)}}/>
               </TouchableOpacity>
             </View>
-            <View style={{backgroundColor:'#FFE186',paddingLeft: scaleSize(28),paddingRight: scaleSize(28),paddingTop: scaleSize(13),paddingBottom: scaleSize(13)}}>
+            <View style={styles.privModalView}>
               <Text style={pubS.font22_1}>{I18n.t('private_key_modal')}</Text>
             </View>
             <View style={[styles.pkStyle,pubS.center]}>
@@ -410,6 +390,21 @@ class BackUpAccount extends Component{
   }
 }
 const styles = StyleSheet.create({
+  privModalView: {
+    backgroundColor:'#FFE186',
+    paddingLeft: scaleSize(28),
+    paddingRight: scaleSize(28),
+    paddingTop: scaleSize(13),
+    paddingBottom: scaleSize(13)
+  },
+  privViewStyle:{
+    height: scaleSize(90),
+    backgroundColor:'#2B8AFF',
+    width: '100%',
+    borderTopLeftRadius: scaleSize(10),
+    borderTopRightRadius: scaleSize(10)
+  },
+
   btnViewStyle: {
     position: 'absolute',
     bottom:0,

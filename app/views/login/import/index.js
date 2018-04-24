@@ -42,16 +42,16 @@ class ImportAccount extends Component{
 
           renderTabBar={() => (
             <DefaultTabBar
-              underlineStyle={[styles.underlineStyle]}
+              underlineStyle={[styles.underlineStyle]}  
               tabBarBackgroundColor={'#fff'}
               style={{ alignItems: 'center', backgroundColor: '#fff',borderColor:'transparent',marginBottom:-1,}}
               tabStyle={{ paddingTop: 10, height: 45, zIndex: 999, }}
             />
           )}
         >
-            <Mnemonic key={1} tabLabel={I18n.t('mnemonic_phrase')} thisProps={this}/>
-            <KeyStore key={2} tabLabel={"Keystore"} thisProps={this}/>
-            <PrivateKey key={3} tabLabel={I18n.t('private_key')} thisProps={this}/>
+            <Mnemonic key={1} tabLabel={I18n.t('mnemonic_phrase')} thisProps={this} fromLogin={this.props.fromLogin}/>
+            <KeyStore key={2} tabLabel={"Keystore"} thisProps={this} fromLogin={this.props.fromLogin}/>
+            <PrivateKey key={3} tabLabel={I18n.t('private_key')} thisProps={this} fromLogin={this.props.fromLogin}/>
         </ScrollableTabView>
       </View>
     )

@@ -12,7 +12,7 @@ import {
 import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { Btn } from '../../components/'
-import { toSplash } from '../../root'
+import { toHome } from '../../root'
 import I18n from 'react-native-i18n'
 import { onExitApp } from '../../utils/exitApp'
 class CreateAccountSuccess extends Component{
@@ -36,14 +36,14 @@ class CreateAccountSuccess extends Component{
   onNavigatorEvent(event){
     if (event.type == 'NavBarButtonPress') {
       if(event.id === 'backPress'){
-          toSplash()
+          toHome()
       }
     }
   }
 
 
   onPressBackUp = () => {
-    toSplash()
+    toHome()
     // this.props.navigator.push({
     //   screen: 'back_up_account',
     //   title: 'username',

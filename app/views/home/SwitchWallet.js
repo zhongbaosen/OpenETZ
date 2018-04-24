@@ -52,34 +52,50 @@ class SwitchWallet extends Component {
 	    this.props.onCloseSwitchDrawer()
 	}
 	onSwitch = (addr) => {
-		tkSqLite.deleteData()
-    	tkSqLite.dropTable()
-		this.props.dispatch(insertToTokenAction(addr))
+		// tkSqLite.deleteData()
+  //   	tkSqLite.dropTable()
+		// this.props.dispatch(insertToTokenAction(addr))
 		this.props.dispatch(switchAccountAction(addr))
+
 		this.props.onCloseSwitchDrawer()
-		toSplash()
+	}
+	closeDrawer = () => {
+		this.props.onCloseSwitchDrawer()
 	}
 	render(){
-		const { accountInfo,currentAddr } = this.props.accountManageReducer
+		const { currentAccount, globalAccountsList } = this.props.accountManageReducer
 		return(
-			<View style={{backgroundColor:'#fff',flex:1,width:scaleSize(450),paddingTop: scaleSize(50)}}>
+			<View style={styles.switchView}>
 					{
-						accountInfo.map((val,index) => {
+						globalAccountsList.map((val,index) => {
 							return(
-								<TouchableOpacity key={index} style={[pubS.rowCenter,{height: scaleSize(100),backgroundColor: val.is_selected===1 ? '#E9ECF0' : '#fff'}]} activeOpacity={.7} onPress={() => this.onSwitch(val.address)}>
-									<Image source={require('../../images/xhdpi/Penguin.png')} style={{width:scaleSize(55),height: scaleSize(55),marginLeft: scaleSize(33)}}/>
+								<TouchableOpacity 
+									key={index} 
+									style={[pubS.rowCenter,{height: scaleSize(100),backgroundColor: val.is_selected===1 ? '#E9ECF0' : '#fff'}]} 
+									activeOpacity={.7} 
+									onPress={val.is_selected === 1 ? () => this.closeDrawer : () => this.onSwitch(val.address)}
+								>
+									<Image source={require('../../images/xhdpi/Penguin.png')} style={[{marginLeft: scaleSize(33)},styles.imgStyle]}/>
 									<Text style={[pubS.font24_2,{marginLeft: scaleSize(33)}]}>{val.account_name}</Text>
 								</TouchableOpacity>
 							)
 						})
 					}
 				
-				<View style={{width: '100%',borderWidth: StyleSheet.hairlineWidth,borderColor:'#F2F2F2',marginTop:scaleSize(30),marginBottom: scaleSize(50)}}></View>
-				<TouchableOpacity style={[pubS.rowCenter,{marginLeft: scaleSize(53)}]} activeOpacity={.7} onPress={this.onScan}>
+				<View style={styles.lineStyle}></View>
+				<TouchableOpacity 
+					style={[pubS.rowCenter,{marginLeft: scaleSize(53)}]} 
+					activeOpacity={.7} 
+					onPress={this.onScan}
+				>
 					<Image source={require('../../images/xhdpi/btn_ico_more_scan_def.png')} style={styles.imgStyle}/>
 					<Text style={[pubS.font26_4,{marginLeft: scaleSize(30)}]}>{I18n.t('scan')}</Text>
 				</TouchableOpacity>
-				<TouchableOpacity style={[pubS.rowCenter,{marginLeft: scaleSize(53),marginTop: scaleSize(40)}]} activeOpacity={.7} onPress={this.onCreate}>
+				<TouchableOpacity 
+					style={[pubS.rowCenter,{marginLeft: scaleSize(53),marginTop: scaleSize(40)}]} 
+					activeOpacity={.7} 
+					onPress={this.onCreate}
+				>
 					<Image source={require('../../images/xhdpi/btn_ico_more_createaccount_def.png')} style={styles.imgStyle}/>
 					<Text style={[pubS.font26_4,{marginLeft: scaleSize(30)}]}>{I18n.t('create')}</Text>
 				</TouchableOpacity>
@@ -89,6 +105,19 @@ class SwitchWallet extends Component {
 }
 
 const styles = StyleSheet.create({
+	lineStyle:{
+		width: '100%',
+		borderWidth: StyleSheet.hairlineWidth,
+		borderColor:'#F2F2F2',
+		marginTop:scaleSize(30),
+		marginBottom: scaleSize(50)
+	},
+	switchView:{
+		backgroundColor:'#fff',
+		flex:1,
+		width:scaleSize(450),
+		paddingTop: scaleSize(50)
+	},
 	imgStyle: {
 		width: scaleSize(56),
 		height: scaleSize(56),

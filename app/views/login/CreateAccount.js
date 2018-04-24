@@ -103,6 +103,7 @@ class CreateAccount extends Component{
         userNameVal,
         psdVal,
         promptVal,
+        from: this.props.fromLogin === 'login' ? 'login' : 'accounts'
       }))
     },1000)
     
@@ -138,21 +139,21 @@ class CreateAccount extends Component{
             placeholder={I18n.t('account_name')}
             value={userNameVal}
             onChangeText={this.onChangeUserNameText}
-            warningText={userNameWarning}//
+            warningText={userNameWarning}
           />
           <TextInputComponent
             placeholder={I18n.t('password')}
             value={psdVal}
             onChangeText={this.onChangPsdText}
             secureTextEntry={true}
-            warningText={psdWarning}//
+            warningText={psdWarning}
           />
           <TextInputComponent
             placeholder={I18n.t('repeat_password')}
             value={repeadPsdVal}
             onChangeText={this.onChangeRepeatText}
             secureTextEntry={true}
-            warningText={rePsdWarning}//
+            warningText={rePsdWarning}
           />
           <TextInputComponent
             placeholder={I18n.t('password_hint')}

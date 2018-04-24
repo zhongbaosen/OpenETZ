@@ -13,7 +13,7 @@ import { setScaleText, scaleSize } from '../../../utils/adapter'
 import { TextInputComponent,Btn,Loading } from '../../../components/'
 import { importAccountAction,resetDeleteStatusAction } from '../../../actions/accountManageAction'
 import { connect } from 'react-redux'
-import { toSplash } from '../../../root'
+import { toHome } from '../../../root'
 import I18n from 'react-native-i18n'
 import Toast from 'react-native-toast'
 class Mnemonic extends Component{
@@ -21,14 +21,14 @@ class Mnemonic extends Component{
     super(props)
     this.state={
       visible: false,
-      // mnemonicVal: 'rhythm example taxi leader divorce prosper arm add tower snake domain still',
-      mnemonicVal: '',
+      mnemonicVal: 'rhythm example taxi leader divorce prosper arm add tower snake domain still',
+      // mnemonicVal: '',
       mnemonicValWarning: '',
-      passwordVal: '',
+      passwordVal: '1234567q',
       passwordWarning: '',
-      repeadPsdVal: '',
+      repeadPsdVal: '1234567q',
       rePsdWarning: '',
-      userNameVal: '',
+      userNameVal: '导入1',
       userNameWarning: '',
     }
   }
@@ -41,7 +41,7 @@ class Mnemonic extends Component{
       if(nextProps.accountManageReducer.importStatus === 'success'){
         Toast.showLongBottom(I18n.t('import_successful'))
         setTimeout(() => {
-          toSplash()
+          toHome()
         },100)
       }else{
         if(nextProps.accountManageReducer.importStatus === 'fail'){
@@ -116,6 +116,7 @@ class Mnemonic extends Component{
         mnemonicPsd: passwordVal,
         mnemonicUserName: userNameVal,
         type: 'mnemonic',
+        fromLogin: this.props.fromLogin === 'login' ? 'login' : 'accounts'
       }))
     },1000)
     

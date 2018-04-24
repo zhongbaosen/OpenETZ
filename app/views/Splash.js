@@ -22,6 +22,9 @@ import TokenSQLite from '../utils/tokenDB'
 const tkSqLite = new TokenSQLite()
 let tk_db
 import I18n from 'react-native-i18n'
+
+import accountDB from '../db/account_db'
+
 class Splash extends Component{
   constructor(props){
     super(props)
@@ -32,19 +35,6 @@ class Splash extends Component{
 
   
   componentWillMount(){
-
-    // tkSqLite.deleteData()
-    // tkSqLite.dropTable()
-      // sqLite.dropTable()
-      // sqLite.deleteData() 
-
-    // this.props.dispatch(passAccountsInfoAction())
-
-    // localStorage.remove({
-    //   key: 'lang'
-    // })
-
-
     localStorage.load({
       key: 'lang',
       autoSync: true,
@@ -54,41 +44,97 @@ class Splash extends Component{
     }).catch (err => {
       this.setDefaultLang()
     })
-    
   }
-  
+  onCreate = () => {
+    accountDB.createAmountTable()
+  }
+  async onInsert(){
+    let userData = [],  
+        user = {};  
+
+        user.mnemonic = 'mnemonic';
+        user.account_name = 'userNameVal';  
+        user.backup_status = 0;  
+        user.assets_total = '0';
+        user.is_selected = 1;
+        user.address = 'keyStore.address';  
+        user.kid = 'keyStore.id';  
+        user.version = 3;  
+        user.cipher = 'keyStore.crypto.cipher';  
+        user.ciphertext = 'keyStore.crypto.ciphertext';  
+        user.kdf = 'keyStore.crypto.kdf';  
+        user.mac = 'keyStore.crypto.mac';  
+        user.dklen = 100;  
+        user.salt = 'keyStore.crypto.kdfparams.salt';  
+        user.n = 123;  
+        user.r = 456;  
+        user.p = 789;  
+        user.iv = 666;  
+        userData.push(user); 
+
+
+    let res = await accountDB.insertToAccontTable(userData)
+    if(res){
+      console.log('insert语句返回结果',res)
+    }
+  }
+  async onFind(){
+    let res = await accountDB.selectAccountTable('select id,address,account_name from account')
+    // if(res.length === 0){
+      //还没有账户信息
+    // }else{
+      console.log('select语句结果',res)
+      
+    // }
+  }
+  onDrop = () => {
+    accountDB.dropAccountTable()
+  }
+  onDelete = () => {
+    accountDB.deleteAccount({
+      sql: 'delete from account where id = ?',
+      d_id: [10]
+    })
+  }
   componentDidMount(){
-    // tSqLite.deleteData()
-    // tSqLite.dropTable()
-    // tkSqLite.deleteData()
-    // tkSqLite.dropTable()
-  //   sqLite.dropTable()
-  //   sqLite.deleteData()    
-
-    setTimeout(() => {
-      if(!db){  
-        db = sqLite.open();  
-      }  
-      db.transaction((tx) => {
-        tx.executeSql("select * from account ", [], (tx,results) => {
-
-          let len = results.rows.length 
-          let allAccounts = [] 
-          for(let i=0; i<len; i++){  
-            let u = results.rows.item(i)
-            allAccounts.push(u)
-            this.updateAssetsTotal(u)
-          } 
-          this.props.dispatch(getAccountInfoAction(allAccounts))
-          toHome()
-        },(error) => {
-          toLogin()
-        })
-      })
-
-    },2000)
+    this.getAccounts()
   } 
+  async getAccounts(){
+    let res = await accountDB.selectAccountTable('select id,address,account_name from account')
+    if(res.length === 0){
+      //还没有账户信息
+      toLogin()  
 
+      //此时  没有任何账户信息  
+
+    }else{
+      console.log('select语句结果',res)
+
+      this.updateAssetsTotal(res)
+
+    }
+  }
+  async updateAssetsTotal(infos){
+    let updateRes = false
+    for(let i = 0; i < infos.length; i ++){
+      let balance = await web3.eth.getBalance(`0x${infos[i].address}`)
+      let newTotal = web3.utils.fromWei(balance,'ether')
+
+      updateRes = await accountDB.updateTable({
+        sql: 'update account set assets_total = ? where account_name = ?',
+        parame:[newTotal, infos[i].account_name]
+      })
+    }
+
+    console.log('更新结果',updateRes)
+    if(updateRes === 'success'){
+      // setTimeout(() => {
+        toHome()
+      // },2000)
+    }else{
+      console.log('还没有更新完')
+    }
+  }
   setDefaultLang = () => {
     I18n.locale  = 'en-US'
     localStorage.save({
@@ -99,37 +145,32 @@ class Splash extends Component{
     })
   }
 
-  componentWillReceiveProps(nextProps){
-    if(nextProps.accountManageReducer.passAccInfoSuc === 'login'){
-        toLogin()
-    }else{
-      if(nextProps.accountManageReducer.passAccInfoSuc === 'home'){
-        toHome()
-      }
-    }
-  }
-
-  async updateAssetsTotal(val){
-    let res = await web3.eth.getBalance(`0x${val.address}`)
-    let newTotal = web3.utils.fromWei(res,'ether')
-    // let newTotal = '0.9348' // "0.0352"
-    let name = val.account_name
-    db.transaction((tx) => {
-      tx.executeSql(" update account set assets_total = ? where account_name = ? ",[newTotal,name],(tx,results) => {
-
-      },(error) => {
-        console.log(error)
-      })
-    })     
-  }
-
-  compennetWillUnmount(){  
-    sqLite.close();  
-  } 
 
   render(){
   	return(
       <View style={{flex:1}}>
+        {
+          // <Button
+          //   title={'create'}
+          //   onPress={this.onCreate}
+          // />
+          // <Button
+          //   title={'insert'}
+          //   onPress={this.onInsert}
+          // />
+          // <Button
+          //   title={'find'}
+          //   onPress={this.onFind}
+          // />
+          // <Button
+          //   title={'drop'}
+          //   onPress={this.onDrop}
+          // />
+          // <Button
+          //   title={'delete'}
+          //   onPress={this.onDelete}
+          // />
+        }
       	 <Image source={require('../images/xhdpi/splash.png')} style={{width: '100%', height:'100%'}}/>
       </View>
   	)

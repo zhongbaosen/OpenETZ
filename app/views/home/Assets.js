@@ -29,13 +29,17 @@ import { insertToTokenAction,initSelectedListAction,refreshTokenInfoAction } fro
 let etzTitle = "ETZ"
 import I18n from 'react-native-i18n'
 import Toast from 'react-native-toast'
-// import { passAccountsInfoAction } from '../../actions/accountManageAction' 
+
 import { onExitApp } from '../../utils/exitApp'
+
+import accountDB from '../../db/account_db'
+
+import { globalAllAccountsInfoAction,globalCurrentAccountInfoAction } from '../../actions/accountManageAction'
 class Assets extends Component{
   constructor(props){
     super(props)
     this.state = {
-      etzBalance: 0,
+      etzBalance: '0',
       navTitle: '',
       selectedAssetsList: [],
       isRefreshing: false,
@@ -53,36 +57,39 @@ class Assets extends Component{
       tabIndex:1,
       label: I18n.t('mine')
     })
-  }
-
-  componentDidMount(){
-    const { accountInfo } = this.props.accountManageReducer
     this.setState({
       isRefreshing: true
     })
-    accountInfo.map((val,index) => {
-      if(val.is_selected === 1){
-        this.onFetch(val.address)
-        
-        this.setState({
-          navTitle: val.account_name,
-          curAddr: val.address
-        })
-        web3.eth.getBalance(`0x${val.address}`).then((res,rej)=>{
-          // console.log('res==',res)
-          this.setState({
-            etzBalance: web3.utils.fromWei(res,'ether')
-          })
-        })
-      }
-    })
+    
+    this.getAllAccounts()
   }
+
   componentWillUnmount () {
     BackHandler.removeEventListener('hardwareBackPress',this.onBack)
   }
+
+  async getAllAccounts(){
+    //所有的账户数据
+    let findAccountsList = await accountDB.selectAccountTable('select * from account')
+    this.props.dispatch(globalAllAccountsInfoAction(findAccountsList))
+
+    findAccountsList.map((value,index) => {
+      if(value.is_selected === 1){
+        this.setState({
+          navTitle: value.account_name,
+          etzBalance: web3.utils.fromWei(value.assets_total,'ether')
+        })
+        //当前账户信息
+        this.props.dispatch(globalCurrentAccountInfoAction(value))
+      }
+    })
+  }
+
   onBack(){
     onExitApp()
   }
+
+  //获取 token表数据 
   onFetch = (addr) => {
     if(!tk_db){
         tk_db = tkSqLite.open()
@@ -134,6 +141,23 @@ class Assets extends Component{
 
     if(this.props.accountManageReducer.accountInfo !== nextProps.accountManageReducer.accountInfo){
       toSplash()
+    }
+
+
+
+    //删除了当前账号
+    const { globalAccountsList, currentAccount } = nextProps.accountManageReducer
+
+    if(this.props.accountManageReducer.deleteCurrentAccount !== nextProps.accountManageReducer.deleteCurrentAccount && nextProps.accountManageReducer.deleteCurrentAccount){
+      this.setState({
+        navTitle: globalAccountsList[0].account_name
+      })
+    }
+    //切换账号
+    if(this.props.accountManageReducer.currentAccount.account_name !== currentAccount.account_name){
+      this.setState({
+        navTitle: currentAccount.account_name
+      })
     }
   }
 
@@ -216,11 +240,9 @@ class Assets extends Component{
 
   onDrawerCloseStart = () => {
     switchDrawer(false)
-    // this.props.dispatch(onSwitchDrawerAction(0))
   }
   onDrawerOpenStart = () => {
     switchDrawer(true)
-    // this.props.dispatch(onSwitchDrawerAction(1))
   }
   onCloseDrawer = () => {
     this._drawer.close()
@@ -254,7 +276,9 @@ class Assets extends Component{
   render(){
     const { selectedAssetsList,etzBalance, isRefreshing} = this.state
     
-
+    const { currentAccount, globalAccountsList } = this.props.accountManageReducer
+    console.log('当前账户',currentAccount)
+    console.log('所有账户',globalAccountsList)
     return(
       <View style={{backgroundColor:'#F5F7FB',flex:1}}>
         {
@@ -334,18 +358,18 @@ class Assets extends Component{
               onPressItem={() => this.toAssetsDetail(etzTitle,splitDecimal(etzBalance),'ETZ')}
             />
             {
-              selectedAssetsList.map((res,index) => {
-                return(
-                  <AssetsItem
-                    key={index}
-                    shortName={res.tk_symbol}
-                    fullName={res.tk_name}
-                    coinNumber={splitDecimal(res.tk_number)}
-                    price2rmb={0}
-                    onPressItem={() => this.toAssetsDetail(res.tk_symbol,splitDecimal(res.tk_number),res.tk_symbol)}
-                  />
-                )
-              })
+              // selectedAssetsList.map((res,index) => {
+              //   return(
+              //     <AssetsItem
+              //       key={index}
+              //       shortName={res.tk_symbol}
+              //       fullName={res.tk_name}
+              //       coinNumber={splitDecimal(res.tk_number)}
+              //       price2rmb={0}
+              //       onPressItem={() => this.toAssetsDetail(res.tk_symbol,splitDecimal(res.tk_number),res.tk_symbol)}
+              //     />
+              //   )
+              // })
             }
             <TouchableOpacity style={[styles.whStyle,styles.addBtnStyle,pubS.center]} activeOpacity={.7} onPress={this.addAssetsBtn}>
               <Text style={pubS.font24_3}>{`+ ${I18n.t('add_assets')}`}</Text>
