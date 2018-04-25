@@ -8,7 +8,8 @@ const initState = {
 	isLoading: true,
 	assetsList: [],
 	selectedList: [],
-	refreshEnd: false
+	refreshEnd: false,
+	fetchTokenList: [],
 }
 
 
@@ -38,87 +39,81 @@ export default function tokenManageReducer(state=initState,action){
 		case types.REFRESH_TOKEN_SUCCESS:
 			return onRefreshSuc(state,action)
 			break
+		case types.REFRESH_TOKEN_FAIL:
+			return onRefreshFail(state,state)
+			break
+		case types.FETCH_TOKEN_LIST:
+			return onFetchStart(state,action)
+			break
+		case types.FETCH_TOKEN_LIST_SUC:
+			return onFetchSuc(state,action)
+			break
+		case types.FETCH_TOKEN_LIST_ERR:
+			return onFetchFail(state,action)
+			break	
+		case types.GLOBAL_TOKEN_LIST:
+			return globalToken(state,action)
+			break
+		case types.SWITCH_TOKEN_LIST_START:
+			return onSwitchTokenStart(state,action)
+			break
+		case types.SWITCH_TOKEN_LIST:
+			return onSwitchToken(state,action)
+			break
 		default:
 			return state
 			break
 	}
 }
-const onInitSelectedList = (state,action) => {
-	const { initList,curAddr } = action.payload
+const onSwitchTokenStart = (state,action) => {
 	return {
 		...state,
-		selectedList: initList
+		fetchTokenList: []
+	}
+}
+const onSwitchToken = (state,action) => {
+	const { data } = action.payload
+	return {
+		...state,
+		fetchTokenList: data
+	}
+}
+
+const onInitSelectedList = (state,action) => {
+	const { data } = action.payload
+	return {
+		...state,
+		fetchTokenList: data
 	}
 }
 const onDelSelected = (state,action) => {
-	const { delAddr,asList } = action.payload
+	const { delAddr, } = action.payload
 
 	let newState = Object.assign({},state)
-	let newList = []
 
-	asList.map((val,idx) => {
+	newState.fetchTokenList.map((val,idx) => {
 		if(val.tk_address === delAddr){
-			newState.selectedList.splice(idx,1)
+			newState.fetchTokenList[idx].tk_selected = 0
 		}
 	})
-	newList = newState.selectedList
-	if(!tk_db){
-       tk_db = tkSqLite.open()
-    }
-    tk_db.transaction((tx) => {
-    	tx.executeSql( " update token set tk_selected = 0 where tk_address = ? ",[delAddr], (tx,results) => {
+		
 
-    	},error => {
-    		console.error('delete select token error ',error)
-    	})
-    })
-
-	return {
-		...state,
-		selectedList: newList
-	}
+	return newState
 }
 const onAddSelected = (state,action) => {
-	const { addAddr,asList } = action.payload
+	const { addAddr } = action.payload
 
 	let newState = Object.assign({},state)
-	let newList = []
 
-	asList.map((val,idx) => {
+
+	newState.fetchTokenList.map((val,idx) => {
 		if(val.tk_address === addAddr){
-			newState.selectedList.push(val)
+			newState.fetchTokenList[idx].tk_selected = 1
 		}
 	})
-
-	newList = newState.selectedList
-
-	if(!tk_db){
-       tk_db = tkSqLite.open()
-    }
-    tk_db.transaction((tx) => {
-    	tx.executeSql( " update token set tk_selected = 1 where tk_address = ? ",[addAddr], (tx,results) => {
-
-    	},error => {
-    		console.error('delete select token error ',error)
-    	})
-    })
-
-	return {
-		...state,
-		selectedList: newList
-	}
+	return newState
 }
-// const onSelectedList = (state,action) => {
-// 	const { sele } = action.payload
-// 	let newList = []
-// 	// let newState = Object.assign({},state)
-// 	// newState.selectedList.push(sele)
-// 	newList.push(sele)
-// 	return {
-// 		...state,
-// 		selectedList: newList
-// 	}
-// }
+
 const getAssetsList = (state,action) => {
 	if(!tk_db){
        tk_db = tkSqLite.open()
@@ -139,6 +134,35 @@ const getAssetsList = (state,action) => {
 		...state,
 		assetsList: resArr,
 		isLoading: false 
+	}
+}
+const globalToken = (state,action) => {
+	const { list } = action.payload
+	return {
+		...state,
+		fetchTokenList: list
+	}
+}
+const onFetchStart = (state,action) => {
+
+	return {
+		...state,
+		fetchTokenList: []
+	}
+}
+const onFetchSuc = (state,action) => {
+	const { list } = action.payload
+
+	return {
+		...state,
+		fetchTokenList: list
+	}
+}
+const onFetchFail = (state,action) => {
+
+	return {
+		...state,
+		fetchTokenList: []
 	}
 }
 const onInsterDB = (state,action) => {
@@ -199,10 +223,16 @@ const onRefresh = (state,action) => {
 }
 
 const onRefreshSuc = (state,action) => {
-	const {data} = action.payload
+	const { data } = action.payload
 	return {
 		...state,
-		selectedList: data,
+		fetchTokenList: data,
+		refreshEnd: true
+	}
+}
+const onRefreshFail = (state,action) => {
+	return {
+		...state,
 		refreshEnd: true
 	}
 }

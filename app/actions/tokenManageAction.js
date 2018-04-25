@@ -13,6 +13,55 @@ const insertToTokenAction = (addr) => {
 		dispatch(onInsert())
 	}
 }
+const gloablTokenList = (list) => {
+	const getList = () => {
+		return {
+			type: types.GLOBAL_TOKEN_LIST,
+			payload: {
+				list
+			}
+		}
+	}
+	return (dispatch,getState) => {
+		dispatch(getList())
+	}
+}
+const fetchTokenAction = (addr) => {
+	const onFetchStart = () => {
+		return {
+			type: types.FETCH_TOKEN_LIST,
+			payload: {
+				addr
+			}
+		}
+	}
+	const suc = (list) => {
+		return {
+			type: types.FETCH_TOKEN_LIST_SUC,
+			payload: {
+				list
+			}	
+		}
+	}
+	const err = () => {
+		return {
+			type: types.FETCH_TOKEN_LIST_ERR,
+			payload: {
+
+			}	
+		}
+	}
+	return (dispatch,getState) => {
+		dispatch(onFetchStart())
+		tokenDBOpation.fetchToken({
+			parames: {
+				addr
+			},
+			fetchTokenSuccess: (list) => {dispatch(suc(list))},
+			fetchTokenFail: (msg) => {dispatch(err(msg))}
+		})
+	}
+}
 const getAssetsListAction = () => {
 	const onGet = () => {
 		return {
@@ -23,68 +72,66 @@ const getAssetsListAction = () => {
 		dispatch(onGet())
 	}
 }
-// const selectedTokenListAction = (sele) => {
-// 	console.log('发出的action',sele)
-// 	const list = () => {
-// 		return {
-// 			type: types.SELECTED_TOKEN_LIST,
-// 			payload:{
-// 				sele
-// 			}
-// 		}
-// 	}
-// 	return(dispatch,getState) => {
-// 		dispatch(list())
-// 	}
-// }
 
-const deleteSelectedToListAction = (delAddr,asList) => {
+
+const deleteSelectedToListAction = (delAddr) => {
 	const onDelete = () => {
 		return {
 			type: types.DELETE_TOKEN_LIST,
 			payload:{
 				delAddr,
-				asList
 			}
 		}
 	}
+	
 	return(dispatch,getState) => {
-		dispatch(onDelete())
+		tokenDBOpation.deleteSelectedToken({
+			parames: {
+				delAddr
+			},
+			deleteSelected: (data) => {dispatch(onDelete(data))}
+		})
 	}
 }
 
-const addSelectedToListAction = (addAddr,asList) => {
+const addSelectedToListAction = (addAddr) => {
 	const onAdd = () => {
 		return {
 			type: types.ADD_TOKEN_LIST,
 			payload:{
-				addAddr,
-				asList
+				addAddr
 			}
 		}
 	}
 	return(dispatch,getState) => {
-		dispatch(onAdd())
+		tokenDBOpation.addSelectedToken({
+			parames: {
+				addAddr
+			},
+			addSelected: (data) => {dispatch(onAdd(data))}
+		})
 	}
 }
-const initSelectedListAction = (data,addr) => {
-	// console.log('initSelectedListAction',data)
-	// console.log('initSelectedListAction',addr)
-	const onInit = () => {
+const initSelectedListAction = () => {
+	const onInitSel = (data) => {
 		return {
 			type: types.INIT_SELECTED_LIST,
 			payload: {
-				initList: data,
-				curAddr: addr
+				data
 			}
 		}
 	}
 	return(dispatch,getState) => {
-		dispatch(onInit())
+		tokenDBOpation.initSelectedToken({
+			parames: {
+
+			},
+			initSelectedTokenList: (data) => {dispatch(onInitSel(data))}
+		})
 	}
 }
 
-const refreshTokenInfoAction = (addr) => {
+const refreshTokenAction = (addr,tokenlist) => {
 	const onRef = () => {
 		return {
 			type: types.REFRESH_TOKEN_INFO,
@@ -101,13 +148,48 @@ const refreshTokenInfoAction = (addr) => {
 			}
 		}
 	}
+	const fail = (msg) => {
+		return {
+			type: types.REFRESH_TOKEN_FAIL,
+			payload: {
+				msg
+			}
+		}
+	}
 	return(dispatch,getState) => {
 		dispatch(onRef())
-		tokenDBOpation.refresh({
+		tokenDBOpation.tokenRefresh({
 			parames:{
 				addr,
+				tokenlist
 			},
-			refreshSuccess: (data) => { dispatch(suc(data))}
+			refreshSuccess: (data) => { dispatch(suc(data))},
+			refreshFail: (msg) => { dispatch(fail(msg))}
+		})
+	}
+}
+
+const switchTokenAction = (addr) => {
+	const onSwitchStart = () => {
+		return {
+			type:types.SWITCH_TOKEN_LIST_START,
+		}
+	}
+	const onSwitch = (data) => {
+		return {
+			type: types.SWITCH_TOKEN_LIST,
+			payload: {
+				data
+			}
+		}
+	}
+	return(dispatch,getState) => {
+		dispatch(onSwitchStart())
+		tokenDBOpation.switchTokenList({
+			parames: {
+				addr
+			},
+			switchTokenSuc: (data) => { dispatch(onSwitch(data))}
 		})
 	}
 }
@@ -117,5 +199,8 @@ export {
 	deleteSelectedToListAction,
 	addSelectedToListAction,
 	initSelectedListAction,
-	refreshTokenInfoAction,
+	refreshTokenAction,
+	fetchTokenAction,
+	gloablTokenList,
+	switchTokenAction,
 }

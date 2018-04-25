@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert
 } from 'react-native'
 
 
@@ -17,6 +18,7 @@ import { connect } from 'react-redux'
 import Modal from 'react-native-modal'
 import Picker from 'react-native-picker'
 import { insert2TradingDBAction } from '../../actions/tradingManageAction'
+import { refreshTokenAction } from '../../actions/tokenManageAction'
 import UserSQLite from '../../utils/accountDB'
 import { contractAbi } from '../../utils/contractAbi'
 import I18n from 'react-native-i18n'
@@ -56,7 +58,7 @@ class Payment extends Component{
   constructor(props){
     super(props)
     this.state={
-      receiverAddress: '',
+      receiverAddress: '0xec80a9fe89b05e337efa9c801c07c8444d9cb32e',
       payTotalVal: '',
       noteVal: '',
       payAddressWarning: '',
@@ -77,6 +79,7 @@ class Payment extends Component{
       gasValue: '',
       tokenData: '',
       contractAddress:'',
+      currentAccountName: '',
     }
     self = this
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
@@ -95,7 +98,7 @@ class Payment extends Component{
 
   componentWillMount(){
 
-    const { accountInfo } = this.props.accountManageReducer
+    const { currentAccount } = this.props.accountManageReducer
     if(this.props.curToken !== 'ETZ'){
       this.setState({
         isToken: true,
@@ -106,44 +109,44 @@ class Payment extends Component{
       this.setState({
         receiverAddress: this.props.receive_address
       })
-    }
+    } 
 
-    accountInfo.map((val,index) => {
-      if(val.is_selected === 1){
-        let ks =  {
-          "version": val.version,
-          "id": val.kid,
-          "address": val.address,
-          "crypto": {
-            ciphertext: val.ciphertext,
-            cipherparams: {
-              "iv": val.iv
-            },
-            "cipher": val.cipher,
-            "kdf": val.kdf,
-            "kdfparams": {
-              "dklen": val.dklen,
-              "salt": val.salt,
-              "n":val.n,
-              "r":val.r,
-              "p":val.p
-            },
-            "mac": val.mac
-          }
-        }
 
-        this.setState({
-          senderAddress: `0x${val.address}`,
-          keyStore: ks
-        })
+    let ks =  {
+      "version": currentAccount.version,
+      "id": currentAccount.kid,
+      "address": currentAccount.address,
+      "crypto": {
+        ciphertext: currentAccount.ciphertext,
+        cipherparams: {
+          "iv": currentAccount.iv
+        },
+        "cipher": currentAccount.cipher,
+        "kdf": currentAccount.kdf,
+        "kdfparams": {
+          "dklen": currentAccount.dklen,
+          "salt": currentAccount.salt,
+          "n":currentAccount.n,
+          "r":currentAccount.r,
+          "p":currentAccount.p
+        },
+        "mac": currentAccount.mac
       }
+    }
+    this.setState({
+      senderAddress: `0x${currentAccount.address}`,//也就是当前账户地址
+      keyStore: ks,
+      currentAccountName: currentAccount.account_name
     })
+
   }
   componentDidMount(){
     const tokenPickerData = ["ETZ"]
-    const { selectedList } = this.props.tokenManageReducer 
-    selectedList.map((val,idx) => {
-      tokenPickerData.push(val.tk_symbol)
+    const { fetchTokenList } = this.props.tokenManageReducer 
+    fetchTokenList.map((val,idx) => {
+      if(val.tk_selected === 1){
+        tokenPickerData.push(val.tk_symbol)
+      }
     })
     Picker.init({
       pickerConfirmBtnText: I18n.t('confirm'),
@@ -170,7 +173,7 @@ class Payment extends Component{
             isToken: true
           })
         }
-        selectedList.map((val,idx) => {
+        fetchTokenList.map((val,idx) => {
           if(val.tk_symbol === this.state.currentTokenName){
             this.setState({
               currentTokenDecimals: val.tk_decimals
@@ -394,9 +397,8 @@ class Payment extends Component{
       }
   }
   async makeTransactByETZ(){
-    console.log('this.state.keyStore===',this.state.keyStore)
     const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal,gasValue } = this.state
-    console.log('senderAddress==',senderAddress)
+    const { fetchTokenList } = this.props.tokenManageReducer 
     try{  
       let newWallet = await Wallet.fromV3(this.state.keyStore,payPsdVal)
       let privKey = await newWallet._privKey.toString('hex')
@@ -446,9 +448,17 @@ class Payment extends Component{
           let sendResult = 1
           if(receipt.status==="0x1"){
              Toast.showLongBottom(I18n.t('send_successful'))
+             //更新etz数量
+             
           }else{
             sendResult = 0
-            Toast.showLongBottom(I18n.t('send_failure'))
+            Alert.alert(
+                '',
+                I18n.t('send_failure'),
+                [
+                  {text: I18n.t('ok'), onPress:() => {console.log('1')}},
+                ],
+            )
           }
 
           self.props.dispatch(insert2TradingDBAction({
@@ -459,6 +469,7 @@ class Payment extends Component{
             tx_note: noteVal,
             tx_token: "ETZ",
             tx_result: sendResult,
+            currentAccountName: senderAddress
           }))
       })
       // .on('confirmation', function(confirmationNumber, receipt){ 
@@ -466,7 +477,14 @@ class Payment extends Component{
       // })
       .on('error', (error) => {
         console.log('error==',error)
-        Toast.showLongBottom(`${error}`)
+        Alert.alert(
+            '',
+            `${error}`,
+            [
+              {text: I18n.t('ok'), onPress:() => {console.log('1')}},
+            ],
+        )
+
         self.onPressClose()
         self.props.navigator.pop()
         // alert(error)
@@ -479,7 +497,7 @@ class Payment extends Component{
   async makeTransactByToken(){
     
     const { payPsdVal,senderAddress,payTotalVal,receiverAddress,noteVal,currentTokenName,currentTokenDecimals, gasValue,tokenData, contractAddr } = this.state
-    const { selectedList } = this.props.tokenManageReducer 
+    const { fetchTokenList } = this.props.tokenManageReducer 
 
     try{
       let newWallet = await Wallet.fromV3(this.state.keyStore,payPsdVal)
@@ -536,10 +554,17 @@ class Payment extends Component{
             console.log('receipt:', receipt)
             let sendResult = 1
             if(receipt.status==="0x1"){//"0x1" succ "0x0" fail
-               Toast.showLongBottom(I18n.t('send_successful'))
+              Toast.showLongBottom(I18n.t('send_successful'))
+              this.props.dispatch(refreshTokenAction(senderAddress,fetchTokenList))
             }else{
               sendResult = 0
-              Toast.showLongBottom(I18n.t('send_failure'))
+              Alert.alert(
+                  '',
+                  I18n.t('send_failure'),
+                  [
+                    {text: I18n.t('ok'), onPress:() => {console.log('1')}},
+                  ],
+              )
             }
 
             self.props.dispatch(insert2TradingDBAction({
@@ -550,6 +575,7 @@ class Payment extends Component{
               tx_note: noteVal,
               tx_token: currentTokenName,
               tx_result: sendResult,
+              currentAccountName: senderAddress
             }))
             self.props.dispatch(insert2TradingDBAction({
               tx_hash: hashVal,
@@ -559,13 +585,21 @@ class Payment extends Component{
               tx_note: noteVal,
               tx_token: "ETZ",
               tx_result: sendResult,
+              currentAccountName: senderAddress
             }))
 
         }).on('error', (error) => {
           console.error(error)
           self.onPressClose()
           self.props.navigator.pop()
-          Toast.showLongBottom(error)
+          Alert.alert(
+            '',
+            `${error}`,
+            [
+              {text: I18n.t('ok'), onPress:() => {console.log('1')}},
+            ],
+          )
+
           // alert(error)
         });
       })

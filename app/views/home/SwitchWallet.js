@@ -11,7 +11,7 @@ import { pubS,ScanNavStyle,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { connect } from 'react-redux'
 import { switchAccountAction } from '../../actions/accountManageAction'
-import { insertToTokenAction } from '../../actions/tokenManageAction'
+import { switchTokenAction } from '../../actions/tokenManageAction'
 import { toSplash } from '../../root'
 import TokenSQLite from '../../utils/tokenDB'
 const tkSqLite = new TokenSQLite()
@@ -56,7 +56,8 @@ class SwitchWallet extends Component {
   //   	tkSqLite.dropTable()
 		// this.props.dispatch(insertToTokenAction(addr))
 		this.props.dispatch(switchAccountAction(addr))
-
+		//切换账号后 执行一条查询语句  找出切换的账号下的token list  
+		this.props.dispatch(switchTokenAction(addr))
 		this.props.onCloseSwitchDrawer()
 	}
 	closeDrawer = () => {

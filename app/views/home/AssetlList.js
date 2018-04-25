@@ -19,57 +19,35 @@ let t_db
 const sqLite = new UserSQLite();  
 let db  
 import I18n from 'react-native-i18n'
-class AssetDetailList extends Component{
+import { connect } from 'react-redux'
+import accountDB from '../../db/account_db'
+class AssetlList extends Component{
   constructor(props){
     super(props)
     this.state = {
-      listData: []
+      recordList: []
     }
   }
 
-  componentDidMount(){
-   
-    
+  componentWillMount(){
+    this.getRecordList()    
+  }
 
 
-    if(!t_db){
-      t_db = tradingSqLite.open()
-    }
-    if(!db){
-      db = sqLite.open()
-    }
 
-    db.transaction((tx) => {
-      tx.executeSql("select * from account where is_selected = 1",[],(tx,results)=>{
-        let aName = results.rows.item(0).account_name
-        t_db.transaction((tx)=>{  
-            tx.executeSql("select * from trading where tx_account_name = ?", [aName],(tx,t_results)=>{  
-              let len = t_results.rows.length 
-              let list = []
-              for(let i=0; i<len; i++){  
-                let u = t_results.rows.item(i)
-                if(u.tx_token === this.props.curToken){
-                  list.push(u)
-                }
-              }
-              this.setState({
-                listData: list
-              })
-            })
-        },(error)=>{
-
-        })
-      })
-    },(error) => {
-
+  async getRecordList(){
+    const { currentAccount, globalAccountsList } = this.props.accountManageReducer
+    //根据当前账户(0x${currentAccount.address} = tx_sender)地址查找 交易记录
+    let selRes = await accountDB.selectTable({
+      sql: 'select * from trading where tx_sender = ?',
+      parame: [`0x${currentAccount.address}`]
     })
 
-    
+    this.setState({
+      recordList: selRes
+    })
+
   }
-
-
-
-
 
   toTradingRecordDetail = (res) => {
     this.props.navigator.push({
@@ -132,12 +110,12 @@ class AssetDetailList extends Component{
     )
   }
   render(){
-    console.log('交易列表',this.state.listData)
+    console.log('交易列表',this.state.recordList)
     return(
       <View style={[pubS.container,{backgroundColor:'#F5F7FB'}]}>
         <View style={{marginBottom: scaleSize(96)}}> 
           <FlatList
-            data={this.state.listData}
+            data={this.state.recordList}
             renderItem={this.renderItem}
             keyExtractor = {(item, index) => index}
             ListHeaderComponent={this.ListHeaderComponent}
@@ -173,4 +151,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#144396',
   },
 })
-export default AssetDetailList
+export default connect(
+  state => ({
+    tradingManageReducer: state.tradingManageReducer,
+    accountManageReducer: state.accountManageReducer,
+  })
+)(AssetlList)

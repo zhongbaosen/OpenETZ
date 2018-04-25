@@ -58,6 +58,8 @@ async function onImportAccount(options){
 	   	if(fromLogin === 'login'){
 	   		selected = 1
 	       	accountDB.createAmountTable()
+	       	accountDB.createTokenTable()
+	       	accountDB.createTradingTable()
 	   	}else{
 	   		selected = 0
 	   	}
@@ -132,7 +134,10 @@ async function onDelAccount(options){
 	}
 
 	if(curId === deleteId){
-		let selectRes = await accountDB.selectAccountTable('select account_name from account')
+		let selectRes = await accountDB.selectTable({
+			sql: 'select account_name from account',
+			parame: []
+		})
 		let updateRes = await accountDB.updateTable({
 			sql: 'update account set is_selected = 1 where account_name = ?',
 			parame: [selectRes[0].account_name]
@@ -190,21 +195,10 @@ async function onCreateAccount(options){
 
     console.log('keyStore==',keyStore)
 
-    // let selectedRes = await accountDB.selectAccountTable('select address from account')
-    
-	
-
-    // if(selectedRes.length !== 0){
-    // 	//此时已经有数据  说明已经创建了表  
-    //     selected = 0
-    // }else{
-    // 	//创建表
-    // 	accountDB.createAmountTable()
-    // 	selected = 1
-    // }
-
     if(fromLogin === 'login'){
     	accountDB.createAmountTable()
+    	accountDB.createTokenTable()
+    	accountDB.createTradingTable()
     	selected = 1
     }else{
     	selected = 0

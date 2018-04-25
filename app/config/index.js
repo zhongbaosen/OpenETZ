@@ -30,7 +30,7 @@ import Receive from '../views/home/Receive'
 import Payment from '../views/home/Payment'
 import TradingRecord from '../views/home/tradingRecord/'
 import ScanQrCode from '../views/home/ScanQrCode'
-import AssetDetailList from '../views/home/AssetDetailList'
+import AssetlList from '../views/home/AssetlList'
 import TradingRecordDetail from '../views/home/TradingRecordDetail'
 import TxWebView from '../views/home/TxWebView'
 import SwitchWallet from '../views/home/SwitchWallet'
@@ -53,7 +53,7 @@ export function registerScreens() {
   Navigation.registerComponent('on_receive', () => Receive,store,Provider)
   Navigation.registerComponent('trading_record', () => TradingRecord,store,Provider)
   Navigation.registerComponent('scan_qr_code', () => ScanQrCode,store,Provider)
-  Navigation.registerComponent('asset_detail_list', () => AssetDetailList,store,Provider)
+  Navigation.registerComponent('asset_detail_list', () => AssetlList,store,Provider)
   Navigation.registerComponent('trading_record_detail', () => TradingRecordDetail,store,Provider)
   Navigation.registerComponent('support', () => Support,store,Provider)
   Navigation.registerComponent('help_center', () => HelpCenter,store,Provider)

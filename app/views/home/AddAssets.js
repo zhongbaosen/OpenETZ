@@ -13,53 +13,42 @@ import { pubS,DetailNavigatorStyle } from '../../styles/'
 import { setScaleText, scaleSize } from '../../utils/adapter'
 import { connect } from 'react-redux'
 import { Loading } from '../../components/'
-import { getAssetsListAction,deleteSelectedToListAction, addSelectedToListAction } from '../../actions/tokenManageAction'
+import { getAssetsListAction,deleteSelectedToListAction, addSelectedToListAction,fetchTokenAction,gloablTokenList } from '../../actions/tokenManageAction'
 import TokenSQLite from '../../utils/tokenDB'
 const tkSqLite = new TokenSQLite()
 let tk_db
 import I18n from 'react-native-i18n'
+import accountDB from '../../db/account_db'
+
 class AddAssets extends Component{
   constructor(props){
     super(props)
     this.state={
-      assetsList: [],
-      selectedContainer: []
+      tokenList: [],
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this))
   }
 
   componentWillMount(){
-    // this.props.dispatch(getAssetsListAction())
-    const { selectedContainer } = this.state 
-    if(!tk_db){
-       tk_db = tkSqLite.open()
-    }
-    
-    tk_db.transaction((tx) => {
-       tx.executeSql(" select * from token ",[], (tx,results)=>{
-          let len = results.rows.length,
-              resArr = [];
-          for(let i = 0; i < len; i ++){
-            resArr.push(results.rows.item(i)) 
-          } 
-          console.log('resArr===',resArr)
-          this.setState({
-            assetsList: resArr
-          })
-
-          this.state.assetsList.map((val,index) => {
-            if(val.tk_selected === 1){
-              selectedContainer.push(val.tk_address)
-              this.setState({
-                selectedContainer
-              })
-            }
-          })
-
-       },error => {
-        console.error('search token error',error)
-       })
+    this.onFetch()
+  }
+  async onFetch(){
+    //fetch token列表 并通过当前账户地址得到 token账户余额
+    const { currentAccount } = this.props.accountManageReducer
+    console.log('添加资产当前账号currentAccount===',currentAccount)
+    let selTokenRes = await accountDB.selectTable({
+      sql: 'select * from token where account_addr = ?',
+      parame: [currentAccount.address]
     })
+    //如果token list已经有数据  那么不需要再去 fetch数据  不需要再去插入数据  只需要将查询到的selTokenRes放在reducers中 全局使用
+    //切换账号后需要更新  当前账号下的token list
+    console.log('selTokenRes11111111===',selTokenRes)
+    if(selTokenRes.length === 0){
+      this.props.dispatch(fetchTokenAction(currentAccount.address))
+    }else{
+      this.props.dispatch(gloablTokenList(selTokenRes))
+    }
+
   }
   onNavigatorEvent(event){
     if (event.type == 'NavBarButtonPress') {
@@ -69,35 +58,18 @@ class AddAssets extends Component{
     }
   }
 
-  onPressSelect = (addr,selected) => {
-    const { selectedContainer,assetsList } = this.state
-    if(selected){//取消选中
-      selectedContainer.splice(selectedContainer.indexOf(addr),1)
-      this.setState({
-        selectedContainer
-      })
-      this.props.dispatch(deleteSelectedToListAction(addr,assetsList))
-
-    }else{//选中
-      selectedContainer.push(addr)
-      this.setState({
-        selectedContainer
-      })
-      this.props.dispatch(addSelectedToListAction(addr,assetsList))
+  onPressSelect = (pressAddr,selected) => {
+    if(selected){
+      this.props.dispatch(deleteSelectedToListAction(pressAddr))
+    }else{
+      this.props.dispatch(addSelectedToListAction(pressAddr))
     }
-
-    // assetsList.map((val,index) => {
-    //   if(val.tk_address === selectedContainer[index]){
-    //     this.props.dispatch(selectedTokenListAction(val))
-    //   }
-    // })
   }
 
   render(){
     let selected = false
-    // const { assetsList,isLoading } = this.props.tokenManageReducer
-    const { selectedContainer,assetsList } = this.state
-    // console.log('资产列表',assetsList)
+    const { fetchTokenList } = this.props.tokenManageReducer
+    console.log('资产列表fetchTokenList===',fetchTokenList)
     return(
       <View style={{flex:1,backgroundColor:'#F5F7FB'}}>
 
@@ -113,8 +85,8 @@ class AddAssets extends Component{
 
         <ScrollView showsVerticalScrollIndicator={false}>
           {
-            assetsList.map((res,index) => {
-              if(selectedContainer.indexOf(res.tk_address) !== -1){
+            fetchTokenList.map((res,index) => {
+              if(res.tk_selected === 1){
                 selected = true
               }else{
                 selected = false
@@ -184,6 +156,7 @@ const styles = StyleSheet.create({
 
 export default connect(
   state => ({
-    tokenManageReducer: state.tokenManageReducer
+    tokenManageReducer: state.tokenManageReducer,
+    accountManageReducer: state.accountManageReducer
   })
 )(AddAssets)

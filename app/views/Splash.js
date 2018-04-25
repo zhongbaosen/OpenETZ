@@ -35,6 +35,12 @@ class Splash extends Component{
 
   
   componentWillMount(){
+    // this.onDelete()
+    // this.onDrop1()
+    // this.onDrop2()
+
+    
+    
     localStorage.load({
       key: 'lang',
       autoSync: true,
@@ -79,7 +85,10 @@ class Splash extends Component{
     }
   }
   async onFind(){
-    let res = await accountDB.selectAccountTable('select id,address,account_name from account')
+    let res = await accountDB.selectTable({
+      sql: 'select id,address,account_name from account',
+      parame: []
+    })
     // if(res.length === 0){
       //还没有账户信息
     // }else{
@@ -87,20 +96,30 @@ class Splash extends Component{
       
     // }
   }
-  onDrop = () => {
-    accountDB.dropAccountTable()
+  onDrop1 = () => {
+    accountDB.dropAccountTable({
+      sql: 'drop table token'
+    })
+  }
+  onDrop2 = () => {
+    accountDB.dropAccountTable({
+      sql: 'drop table account'
+    })
   }
   onDelete = () => {
     accountDB.deleteAccount({
       sql: 'delete from account where id = ?',
-      d_id: [10]
+      d_id: [17]
     })
   }
   componentDidMount(){
     this.getAccounts()
   } 
   async getAccounts(){
-    let res = await accountDB.selectAccountTable('select id,address,account_name from account')
+    let res = await accountDB.selectTable({
+      sql: 'select id,address,account_name from account',
+      parame: []
+    })
     if(res.length === 0){
       //还没有账户信息
       toLogin()  

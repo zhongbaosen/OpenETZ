@@ -50,6 +50,48 @@ class AmountDatabase  {
         }) 
     } 
 
+    createTokenTable(){ 
+        this.conn.transaction( tx => {
+            tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN(' +  
+              'id INTEGER PRIMARY KEY  AUTOINCREMENT,' +  
+              'account_addr VARCHAR,'+ 
+              'tk_address VARCHAR,'+
+              'tk_decimals INTEGER,'+  
+              'tk_name VARCHAR,' + 
+              'tk_price VARCHAR,' + 
+              'tk_symbol VARCHAR,' +    
+              'tk_selected INTEGER,' + 
+              'tk_number INTEGER)'  
+              , [], ()=> {  
+                console.log('create token table successful')
+              }, (err)=> {  
+                console.log('create token table err',err)
+            })
+        }) 
+    }
+
+    createTradingTable(){
+        this.conn.transaction( tx => {
+            tx.executeSql('CREATE TABLE IF NOT EXISTS TRADING(' +  
+                  'id INTEGER PRIMARY KEY  AUTOINCREMENT,' +  
+                  'tx_token VARCHAR,'+
+                  'tx_time VARCHAR,'+  
+                  'tx_result INTEGER,' + 
+                  'tx_hash VARCHAR,' + 
+                  'tx_value VARCHAR,' +    
+                  'tx_sender VARCHAR,' + 
+                  'tx_receiver VARCHAR,' + 
+                  'tx_note VARCHAR,' + 
+                  'tx_account_name VARCHAR,' + 
+                  'tx_block_number INTEGER)'
+              , [], ()=> {  
+                console.log('create trading table successful')
+              }, (err)=> {  
+                console.log('create trading table err',err)
+            })
+        }) 
+    }
+
     deleteAccountAllData(query){  
         this.conn.transaction( tx => {
             tx.executeSql(query.sql,query.parame,() => {
@@ -58,11 +100,11 @@ class AmountDatabase  {
         })   
     } 
 
-    dropAccountTable(){  
+    dropAccountTable(query){  
 
         this.conn.transaction( tx => {
-            tx.executeSql('drop table account',[],() => {
-                console.log('delete account table successful')
+            tx.executeSql(query.sql,[],() => {
+                console.log('delete table successful')
             })
         })
     } 
@@ -114,7 +156,7 @@ class AmountDatabase  {
         return upFinished
     }
 
-    async selectAccountTable(query){
+    async selectTable(query){
 
         let res = []
         try {
@@ -131,7 +173,7 @@ class AmountDatabase  {
     async select(tx1,query){
         let allAccounts = []
         try {
-            let res = await tx1.executeSql(query,[])
+            let res = await tx1.executeSql(query.sql,query.parame)
             let len = res[1].rows.length 
             for(let i=0; i<len; i++){  
               let u = res[1].rows.item(i)
@@ -143,6 +185,40 @@ class AmountDatabase  {
         }
         return allAccounts
     }
+
+    
+    // async insertToTable(query){
+    //     let succ = false
+    //     console.log('插入',query)
+    //     try {
+    //         await this.conn.transaction( tx => {
+    //             succ = this.insertTo(tx,query)
+    //         })
+    //     } catch (err){
+    //         succ = false
+    //         console.log('插入失败1',err)
+    //     }
+        
+    //     return succ
+    // }
+
+    // async insertTo(tx,query){
+    //     console.log('query.parame===',query.parame)
+    //     console.log('query.parame22==', typeof query.parame + '-------------' + query.parame.length)
+
+    //     let insertSuccess = false
+    //     try {
+
+    //         await tx.executeSql(query.sql,query.parame)
+
+    //         insertSuccess = true
+
+    //     } catch(err){
+    //         insertSuccess = false
+    //         console.log('插入失败2',err)
+    //     }
+    //     return insertSuccess
+    // }
 
     async insertToAccontTable(accountData){  
         let len = accountData.length;  
@@ -174,6 +250,58 @@ class AmountDatabase  {
         return insertSuccess
     }  
 
+
+    async insertToTokenTable(tokenData){
+        console.log('token表插入的数据',tokenData)
+        let insertSuccess = false
+        await this.conn.transaction( tx =>{  
+
+            return Promise.all(tokenData.map(async (query,idx) => {
+                try {
+                    const { tk_address,account_addr, tk_decimals, tk_name, tk_price, tk_symbol, tk_selected, tk_number } = query
+
+                    let sql = "INSERT INTO token(tk_address, account_addr,tk_decimals, tk_name, tk_price, tk_symbol, tk_selected, tk_number) values(?,?,?,?,?,?,?,?)";  
+                    
+                    await tx.executeSql(sql,[tk_address, account_addr, tk_decimals, tk_name, tk_price, tk_symbol, tk_selected, tk_number])
+
+                    insertSuccess = true
+
+                } catch(err){
+                    
+                    insertSuccess = false
+
+                    console.log('insert token err',err)
+                }
+            })) 
+        })
+        return insertSuccess
+    }
+
+    async insertToTradingTable(tradingData){
+        let insertTradingSuccess = false
+        console.log('交易插入的数据',tradingData)
+        await this.conn.transaction( tx =>{  
+
+            return Promise.all(tradingData.map(async (query,idx) => {
+                try {
+                    const { tx_time,tx_token,tx_account_name,tx_result,tx_hash,tx_value,tx_sender,tx_receiver,tx_note,tx_block_number } = query
+
+                    let sql = "INSERT INTO trading(tx_time,tx_token,tx_account_name,tx_result,tx_hash,tx_value,tx_sender,tx_receiver,tx_note,tx_block_number) values(?,?,?,?,?,?,?,?,?,?)";  
+                    
+                    await tx.executeSql(sql,[tx_time,tx_token,tx_account_name,tx_result,tx_hash,tx_value,tx_sender,tx_receiver,tx_note,tx_block_number])
+
+                    insertTradingSuccess = true
+
+                } catch(err){
+                    
+                    insertTradingSuccess = false
+
+                    console.log('insert trading err',err)
+                }
+            })) 
+        })
+        return insertTradingSuccess
+    }
 
     // closeDatabase(){
     //     this.conn.close().then(this.dbCloseSuccess).catch(this.dbCloseError)
