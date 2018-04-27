@@ -71,9 +71,9 @@ const TabBarAppStyle = {
   tabBarHidden: false, // make the tab bar hidden
 
   //ios bug
-  tabBarButtonColor: '#C7CAD0',
-  tabBarSelectedButtonColor: '#2B8AFF', 
-  tabBarBackgroundColor: '#fff',
+  // tabBarButtonColor: '#C7CAD0',
+  // tabBarSelectedButtonColor: '#2B8AFF', 
+  // tabBarBackgroundColor: '#fff',
   //ios bug
 
   tabBarTranslucent: false, // change the translucent of the tab bar to false

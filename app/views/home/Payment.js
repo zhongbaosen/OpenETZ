@@ -510,7 +510,7 @@ class Payment extends Component{
             nonce: web3.utils.toHex(nonce),
             gasPrice:"0x098bca5a00",
             // gasLimit: `0x${parseInt(gasValue).toString(16)}`,
-            gasLimit: `0x7a120`,
+            gasLimit: `0x4c4b40`,
             to: contractAddr,
             value :"0x0",
             data: tokenData,
